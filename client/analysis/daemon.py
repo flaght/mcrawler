@@ -48,6 +48,9 @@ def main():
                           '【KID解析程序】程序已停止，正在重启。')
 #             sms.main()
         time.sleep(30)
+        
+def kafka_main():
+    
 
 if __name__ == '__main__':
-    main()
+    kafka_main()

@@ -10,13 +10,13 @@
 
 # Where to find user code.
 
-LIB_DIR = ./../../../library
+LIB_DIR = ../../../../library
 USER_DIR = ./../../pub
 SO_DIR = ./../../bin
 
-THIRD_PATH = $(LIB_DIR)/public
+THIRD_PATH = $(LIB_DIR)/mylib/public
 
-CUSTOM_THIRD_PATH = $(LIB_DIR)/third_party
+CUSTOM_THIRD_PATH = $(LIB_DIR)/mylib/third_party
 
 LINK_PATHS = -L./ -L/usr/local/libmemcached-1.0.7/lib/  -L/usr/lib64/mysql
 
@@ -31,14 +31,14 @@ CXXFLAGS += -g  -Wextra -pthread -shared -fPIC
 PLUGIN = $(SO_DIR)/crawler_schduler/crawler_schduler.so
                 
 INCLUDE_PATHS = -I/usr/local/libmemcached-1.0.7/include \
-				-I$(LIB_DIR)/core \
+				-I$(LIB_DIR)/BasicCore \
 				-I$(THIRD_PATH)\
 				-I/usr/local/include\
 				-I/usr/include/mysql\
 				-I$(USER_DIR)\
 				-I$(CUSTOM_THIRD_PATH)/hiredis\
 				-I$(CUSTOM_THIRD_PATH)\
-				-I$(LIB_DIR)/base\
+				-I$(LIB_DIR)/mylib/base\
 				-I../\
 				
 
@@ -95,45 +95,14 @@ logic_unit.o :  $(USER_DIR)/logic/logic_unit.cc $(USER_DIR)/logic/logic_unit.h
 pub_db_comm.o :  $(USER_DIR)/logic/pub_db_comm.cc $(USER_DIR)/logic/pub_db_comm.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/pub_db_comm.cc $(INCLUDE_PATHS)
 	
-mig_log.o: $(THIRD_PATH)/log/mig_log.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/log/mig_log.cc $(INCLUDE_PATHS)
-	
 comm_impl.o :  $(USER_DIR)/net/comm_impl.cc $(USER_DIR)/net/comm_head.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/net/comm_impl.cc $(INCLUDE_PATHS)
 
 error_comm.o :  $(USER_DIR)/net/error_comm.cc $(USER_DIR)/net/error_comm.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/net/error_comm.cc $(INCLUDE_PATHS)
 	
-basictypes.o: $(THIRD_PATH)/basic/basictypes.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/basic/basictypes.cc $(INCLUDE_PATHS)
-	
-basic_util.o: $(THIRD_PATH)/basic/basic_util.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/basic/basic_util.cc $(INCLUDE_PATHS)
-	
-config.o: $(THIRD_PATH)/config/config.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/config/config.cc $(INCLUDE_PATHS)
-	
-md5sum.o:$(THIRD_PATH)/basic/md5sum.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/basic/md5sum.cc $(INCLUDE_PATHS)
-
-radom_in.o:$(THIRD_PATH)/basic/radom_in.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/basic/radom_in.cc $(INCLUDE_PATHS)
-
-data_packet.o:$(THIRD_PATH)/protocol/data_packet.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/protocol/data_packet.cc $(INCLUDE_PATHS)
-	
-native_library.o: $(THIRD_PATH)/basic/native_library.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(THIRD_PATH)/basic/native_library.cc $(INCLUDE_PATHS)
-	
-unzip.o:$(LIB_DIR)/public/basic/unzip.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(LIB_DIR)/public/basic/unzip.cc $(INCLUDE_PATHS)
-	
-zip.o:$(LIB_DIR)/public/basic/zip.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(LIB_DIR)/public/basic/zip.cc $(INCLUDE_PATHS)
-	
-$(PLUGIN) : crawler_schduler_engine.o  auto_crawler_infos.o packet_processing.o logic_unit.o config.o\
+$(PLUGIN) : crawler_schduler_engine.o  auto_crawler_infos.o packet_processing.o logic_unit.o\
 	auto_crawler_infos.o\
-	mig_log.o basictypes.o basic_util.o config.o md5sum.o radom_in.o data_packet.o native_library.o unzip.o zip.o\
-	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/base/lib/mybase.a $(LIB_DIR)/lib/libhiredis.a
+	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -lpthread -ldl -liconv -lmysqlclient -lcurl -lmemcached -lmemcachedutil \
 	$^ -o $@
