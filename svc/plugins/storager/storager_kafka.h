@@ -20,10 +20,12 @@ class StroagerKafka {
     StroagerKafka();
     virtual ~StroagerKafka();
 
+
  public:
     bool AddStorageInfo(const std::list<struct StorageUnit*>& list,
             const int32 type = 1);
 
+    void Test();
  private:
     kafka_producer kafka_producer_;
 };

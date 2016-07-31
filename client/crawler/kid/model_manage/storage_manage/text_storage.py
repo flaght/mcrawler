@@ -109,7 +109,7 @@ class TextStorage(threading.Thread):
 
 def main():
     '''test'''
-    text_storage = TextStorage('127.0.0.1', 21, 'root', 'rootnimei0', 5)
+    text_storage = TextStorage('61.147.80.233', 21, 'crawler', '123456x', 5)
     text_storage.upload_data('dsadasdasd', '3/20151116/', 'hello2.html')
 #     text_storage.close()
     while True:

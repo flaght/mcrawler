@@ -12,8 +12,10 @@ namespace storager_logic {
 
 StroagerKafka::StroagerKafka() {
     if (PRODUCER_INIT_SUCCESS !=
-        kafka_producer_.Init(0, "newsparser_task", "localhost:9092", NULL))
-        LOG_ERROR("producer newsparser_task init failed");
+        kafka_producer_.Init(0, "newsparser_task_algo", "192.168.1.245:9092", NULL))
+        LOG_ERROR("producer newsparser_task_test init failed");
+    else
+    	LOG_ERROR("producer newsparser_task_test init success");
 }
 
 StroagerKafka::~StroagerKafka() {
@@ -27,6 +29,11 @@ void PrintTaskInfo(const base_logic::DictionaryValue* task_info) {
     task_info->GetInteger(L"analyze_id", &id);
     task_info->GetString(L"pos_name", &value);
     LOG_DEBUG2("analyze_id = %d pos_name=%s", id, value.c_str());
+}
+
+void StroagerKafka::Test() {
+	const std::string test = "TTTTTTT";
+	kafka_producer_.PushData(test.c_str(),test.length());
 }
 
 bool StroagerKafka::AddStorageInfo(const std::list<struct StorageUnit*>& list,

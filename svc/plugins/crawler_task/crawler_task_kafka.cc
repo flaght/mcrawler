@@ -15,10 +15,10 @@ namespace crawler_task_logic {
 
 CrawlerTaskKafka::CrawlerTaskKafka() {
     if ( CONSUMER_INIT_SUCCESS !=
-        kafka_consumer_.Init(0, "newsparser_url", "localhost:9092", NULL))
-        LOG_DEBUG("kafka consumer newsparser_url init failed");
+        kafka_consumer_.Init(0, "newsparser_url_algo", "localhost:9092", NULL))
+        LOG_DEBUG("kafka consumer newsparser_url_test init failed");
     else
-        LOG_DEBUG("kafka consumer newsparser_url init success");
+        LOG_DEBUG("kafka consumer newsparser_url_test init success");
 }
 
 CrawlerTaskKafka::~CrawlerTaskKafka() {
