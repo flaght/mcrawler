@@ -55,7 +55,12 @@ class SingleSpider(scrapy.Spider):
         url = task_info.url.rstrip(' ')
         # url = url[url.find('://'):]
         url_info = urlparse.urlparse(url)
+        if task_info.method == 1:
+            method = 'POST'
+        else:
+            method = 'GET'
         req = Request(url,
+                      method=method,
                       headers={'Cookie':cookie,
                                'Referer':url_info[0]+'://'+url_info[1]},
                       callback=self.parse,
