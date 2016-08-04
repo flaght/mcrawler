@@ -9,6 +9,7 @@ import json
 import re
 import time
 import threading
+import icu
 from kid.common.ftp_ext import FTPExt
 
 
@@ -21,6 +22,7 @@ class TextStorage(threading.Thread):
         '''
         Constructor
         '''
+        self.detecotr = icu.CharsetDetector()
         super(TextStorage, self).__init__(name='ftp_manager')
         self.charset_list = ['utf-8', 'UTF-8', 'utf8', 'UTF8', 'gbk', 'GBK',
                              'gb2312', 'GB2312', 'gb18030', 'GB18030']
@@ -83,6 +85,7 @@ class TextStorage(threading.Thread):
         if filename in self.ftp.nlst():
             self.ftp.delete(filename)
         with open('tmp', 'wb') as f:
+            '''
             if '<!DOCTYPE html' in data:
                 charset = re.search(r'charset=(.*?)>', data).group(0)
                 for code in self.charset_list:
@@ -90,7 +93,12 @@ class TextStorage(threading.Thread):
                         charset = code
                         break
                 data = data.decode(charset)
-            obj = {'content':data, 'timestamp': time.time()}
+            '''
+            self.detecotr.setText(data)
+            match = self.detecotr.detect()
+            charset_name = match.getName()
+            data = data.decode(charset_name)
+            obj = {'charset':charset_name,'content':data, 'timestamp': time.time()}
             f.write(json.dumps(obj))
         with open('tmp', 'rb') as f:
             self.__upload_cnt += 1
