@@ -10,6 +10,8 @@ import re
 import time
 import threading
 import icu
+import zlib
+import base64
 from kid.common.ftp_ext import FTPExt
 
 
@@ -97,14 +99,20 @@ class TextStorage(threading.Thread):
             self.detecotr.setText(data)
             match = self.detecotr.detect()
             charset_name = match.getName()
-            data = data.decode(charset_name)
-            obj = {'charset':charset_name,'content':data, 'timestamp': time.time()}
-            f.write(json.dumps(obj))
+            
+            #data = data.decode(charset_name)
+            #zlib
+            compressed = zlib.compress(data)
+            obj = {'charset':charset_name, 
+                   'content':base64.b32encode(compressed),
+                   'timestamp': time.time()}
+            jsons = json.dumps(obj)
+            f.write(jsons)
         with open('tmp', 'rb') as f:
             self.__upload_cnt += 1
             self.ftp.storbinary(cmd='STOR %s' % filename,
                                 fp=f,
-                                blocksize=8192,
+                                blocksize=len(jsons),
                                 callback=self.__uploaded)
         self.is_stop = True
 
