@@ -12,7 +12,7 @@ class AnalysisConfManager(object):
     classdocs
     '''
 
-    __conf_path = '/etc/kid_conf/analysis/analysis.conf'
+    __conf_path = '/Users/kerry/work/pj/gitfork/mcrawler/client/analysis/analysis.conf'
 
     def __init__(self):
         '''
@@ -21,11 +21,13 @@ class AnalysisConfManager(object):
         self.hbase_info = {}
         self.redis_info = {}
         self.ftp_info = {}
+        self.kafka_info = {}
         self.conf_file = ConfigParser.ConfigParser()
         self.conf_file.read(self.__conf_path)
         self.__read_hbase_info()
         self.__read_redis_info()
         self.__read_ftp_info()
+        self.__read_kafka_info()
 
     def __read_hbase_info(self):
         '''
@@ -63,5 +65,13 @@ class AnalysisConfManager(object):
         self.ftp_info['passwd'] = passwd
         timeout = self.conf_file.get('ftp_info', 'timeout')
         self.ftp_info['timeout'] = int(timeout)
+        local = self.conf_file.get('ftp_info', 'local')
+        self.ftp_info['local'] = local
+        
+    def __read_kafka_info(self):
+        host = self.conf_file.get('kafka_info', 'host')
+        self.kafka_info['host'] = host
+        name = self.conf_file.get('kafka_info', 'name')
+        self.kafka_info['name'] = name
 
 analysis_conf = AnalysisConfManager()
