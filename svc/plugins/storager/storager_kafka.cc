@@ -12,7 +12,7 @@ namespace storager_logic {
 
 StroagerKafka::StroagerKafka() {
     if (PRODUCER_INIT_SUCCESS !=
-        kafka_producer_.Init(0, "newsparser_task_algo", "192.168.1.245:9092", NULL))
+        kafka_producer_.Init(0, "newsparser_task_algo", "192.168.1.85:9092", NULL))
         LOG_ERROR("producer newsparser_task_test init failed");
     else
     	LOG_ERROR("producer newsparser_task_test init success");
