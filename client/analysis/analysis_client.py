@@ -35,6 +35,9 @@ def main():
     pool.join()
     if ret.successful():
         print 'create processes successful'
+        
+def kafka_main():
+    pass
 
 if __name__ == '__main__':
     sysstr = platform.system()
@@ -42,7 +45,9 @@ if __name__ == '__main__':
     if(platform.system()=="Darwin" or platform.system()=="Linux"):
         reload(sys)
         sys.setdefaultencoding('utf-8')  # @UndefinedVariable
-    init_account()
-#     main()
-    start_process(account_list[10], '1234567') 
+        
+    main()
+#    init_account()
+#    main()
+#    start_process(account_list[10], '1234567') 
     

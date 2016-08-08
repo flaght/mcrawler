@@ -14,13 +14,9 @@ namespace storager_logic {
 
 StroagerDB::StroagerDB() {
     mysql_engine_.reset(base_logic::DataControllerEngine::Create(MYSQL_TYPE));
-    if (PRODUCER_INIT_SUCCESS !=
-        kafka_producer_.Init(0, "newsparser_task", "localhost:9092", NULL))
-        LOG_ERROR("producer newsparser_task init failed");
 }
 
 StroagerDB::~StroagerDB() {
-    kafka_producer_.Close();
 }
 
 bool StroagerDB::RecordTempCrawlerTask(
@@ -47,7 +43,7 @@ bool StroagerDB::AddStorageInfo(const std::list<struct StorageUnit*>& list,
         task_info->Set(L"max_depth", base_logic::Value::CreateIntegerValue(hbase->max_depth));
         task_info->Set(L"cur_depth", base_logic::Value::CreateIntegerValue(hbase->cur_depth));
         task_info->Set(L"type", base_logic::Value::CreateIntegerValue(type));
-        re = kafka_producer_.PushData(task_info);
+        //re = kafka_producer_.PushData(task_info);
         delete task_info;
     }
     if (PUSH_DATA_SUCCESS == re)

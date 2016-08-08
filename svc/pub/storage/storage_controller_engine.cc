@@ -32,7 +32,7 @@ DataControllerEngine* DataControllerEngine::Create(int32 type) {
 }
 
 void DataControllerEngine::Init(config::FileConfig* config) {
-    base_dic::RedisPool::Init(config->redis_list_);
+   // base_dic::RedisPool::Init(config->redis_list_);
     base_db::MysqlDBPool::Init(config->mysql_db_list_);
 }
 

@@ -41,7 +41,6 @@ class StroagerDB {
 
  private:
     scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
-    kafka_producer kafka_producer_;
 };
 }  // namespace storager_logic
 

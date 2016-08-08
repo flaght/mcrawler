@@ -9,6 +9,9 @@ import json
 import re
 import time
 import threading
+import icu
+import zlib
+import base64
 from kid.common.ftp_ext import FTPExt
 
 
@@ -21,6 +24,7 @@ class TextStorage(threading.Thread):
         '''
         Constructor
         '''
+        self.detecotr = icu.CharsetDetector()
         super(TextStorage, self).__init__(name='ftp_manager')
         self.charset_list = ['utf-8', 'UTF-8', 'utf8', 'UTF8', 'gbk', 'GBK',
                              'gb2312', 'GB2312', 'gb18030', 'GB18030']
@@ -83,6 +87,7 @@ class TextStorage(threading.Thread):
         if filename in self.ftp.nlst():
             self.ftp.delete(filename)
         with open('tmp', 'wb') as f:
+            '''
             if '<!DOCTYPE html' in data:
                 charset = re.search(r'charset=(.*?)>', data).group(0)
                 for code in self.charset_list:
@@ -90,13 +95,24 @@ class TextStorage(threading.Thread):
                         charset = code
                         break
                 data = data.decode(charset)
-            obj = {'content':data, 'timestamp': time.time()}
-            f.write(json.dumps(obj))
+            '''
+            self.detecotr.setText(data)
+            match = self.detecotr.detect()
+            charset_name = match.getName()
+            
+            #data = data.decode(charset_name)
+            #zlib
+            compressed = zlib.compress(data)
+            obj = {'charset':charset_name, 
+                   'content':base64.b32encode(compressed),
+                   'timestamp': time.time()}
+            jsons = json.dumps(obj)
+            f.write(jsons)
         with open('tmp', 'rb') as f:
             self.__upload_cnt += 1
             self.ftp.storbinary(cmd='STOR %s' % filename,
                                 fp=f,
-                                blocksize=8192,
+                                blocksize=len(jsons),
                                 callback=self.__uploaded)
         self.is_stop = True
 
@@ -109,7 +125,7 @@ class TextStorage(threading.Thread):
 
 def main():
     '''test'''
-    text_storage = TextStorage('127.0.0.1', 21, 'root', 'rootnimei0', 5)
+    text_storage = TextStorage('61.147.80.233', 21, 'crawler', '123456x', 5)
     text_storage.upload_data('dsadasdasd', '3/20151116/', 'hello2.html')
 #     text_storage.close()
     while True:
