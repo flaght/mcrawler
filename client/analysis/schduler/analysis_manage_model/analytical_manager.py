@@ -8,12 +8,12 @@ Created on 2015年10月6日
 '''
 
 import time
-from netsvc.package_manage.login_manager import login_manager
-from netsvc.package_manage.state_manager import state_manager
-from netsvc.packet_processing import AnalyzedURLInfo, AnalyzedURLs
-import netsvc.packet_processing as packet
-from schduler.analysis_manage_model.analyzer import Analysiser
-from schduler.storage.storage_manage import StorageManager
+#from netsvc.package_manage.login_manager import login_manager
+#from netsvc.package_manage.state_manager import state_manager
+#from netsvc.packet_processing import AnalyzedURLInfo, AnalyzedURLs
+#import netsvc.packet_processing as packet
+#from schduler.analysis_manage_model.analyzer import Analysiser
+#from schduler.storage.storage_manage import StorageManager
 
 
 class AnalyticalManager(object):
@@ -25,6 +25,7 @@ class AnalyticalManager(object):
         '''
         Constructor
         '''
+        '''
         self.network = None
         self.feedback = None
         self.transport = None
@@ -32,6 +33,7 @@ class AnalyticalManager(object):
         self.manager_id = 0
         self.token = ''
         self.storage_manager = StorageManager()
+        '''
 
     def UnpackHead(self, data):
         '''
