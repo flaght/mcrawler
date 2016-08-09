@@ -1,2 +1,4 @@
 */**/*.pyc
 .idea
+client/ENV
+client/crawler/info.log
