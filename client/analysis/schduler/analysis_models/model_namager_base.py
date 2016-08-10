@@ -1,9 +1,9 @@
 # -.- coding:utf-8 -.-
-'''
+"""
 Created on 2015年10月30日
 
 @author: chenyitao
-'''
+"""
 
 import threading
 import time
@@ -15,16 +15,16 @@ from schduler.analysis_models.analysis_base import AnalysisBase
 
 
 class ModelManagerBase(threading.Thread):
-    '''
+    """
     平台模块管理基类
     start()启动
-    '''
+    """
     platform_id = 0
 
     def __init__(self, finished_callback=None):
-        '''
+        """
         Constructor
-        '''
+        """
         threading.Thread.__init__(self)
         self.finished_callback = finished_callback
         self.wait_queue = []
@@ -57,7 +57,7 @@ class ModelManagerBase(threading.Thread):
                 task = self.wait_queue.pop(0)
                 try:
                     self.__dispatch(**task)
-                except Exception,e:
+                except Exception, e:
                     print 'analyzing error:%s' % e
             else:
                 time.sleep(0.5)
@@ -82,7 +82,7 @@ class ModelManagerBase(threading.Thread):
                         self.is_stop = True
                     except Exception, e:
                         print e
-                        self.analyzed({})
+                        self.analyzed()
                     return
             for tag_dic in tag_list:
                 if AnalysisBase.default_analysis_model in tag_dic.keys():
@@ -93,36 +93,37 @@ class ModelManagerBase(threading.Thread):
                         self.is_stop = True
                     except Exception, e:
                         print e
-                        self.analyzed({})
+                        self.analyzed()
                 else:
                     print '无对应解析规则=>'
-#                 self.is_stop = True
-                    self.analyzed({})
+                    #                 self.is_stop = True
+                    self.analyzed()
                     break
         else:
-#             print task['content']
+            #             print task['content']
             print '无对应解析规则'
-#             self.is_stop = True
-            self.analyzed({})
+            #             self.is_stop = True
+            self.analyzed()
 
     def reg_models(self):
-        '''
+        """
         子模块注册（子类需重写）
-        '''
+        """
         pass
 
     def analyzed(self, **params):
-        '''
+        """
         解析完成（子类需重写并在最后调用）
-        '''
+        """
         self.is_stop = True
         if self.finished_callback:
             self.finished_callback(**params)
 
     def get_tag(self, data):
-        '''
+        """
         解析当前页面，获取唯一标识
-        '''
+        """
+        rule = None
         try:
             doc = html.fromstring(data)
         except:
@@ -135,22 +136,22 @@ class ModelManagerBase(threading.Thread):
         for rule in rule_list:
             try:
                 value = doc.xpath(rule)
-            except Exception,e:
+            except Exception, e:
                 print 'html error:'
                 print e
-                return None,rule
+                return None, rule
             if len(value):
-                tag = None
                 if value[0].__class__ == HtmlElement:
                     tag = value[0].text.encode('utf-8')
                 else:
                     tag = str(value[0])
-                return tag,rule
-        return None,rule
+                return tag, rule
+        return None, rule
 
-    def rules_clash(self, rules):
-        '''
+    @staticmethod
+    def rules_clash():
+        """
         出现多条解析规则都能提取tag时调用，子类需重写
-        '''
+        """
         rule = None
         return rule
