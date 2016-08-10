@@ -1,12 +1,13 @@
 # -.- coding:utf-8 -.-
-'''
+"""
 Created on 2015年12月3日
 
 @author: slm
-'''
+"""
+
 
 class AnalyzedInfo(object):
-    '''
+    """
     Args:
     current_id:当前新闻id
     date:日期
@@ -16,7 +17,7 @@ class AnalyzedInfo(object):
     like_num:点赞数
     unlike_num:踩数量
     comment_detail:评论详情
-    '''
+    """
     __struct_fmt = '=H'
     current_id = None
     date = None
@@ -27,9 +28,9 @@ class AnalyzedInfo(object):
     comment_detail = None
 
     def __init__(self, params=None):
-        '''
+        """
         Constructor
-        '''
+        """
         if not params:
             return
         self.current_id = ''

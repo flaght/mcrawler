@@ -1,23 +1,24 @@
 # -.- coding:utf-8 -.-
-'''
+"""
 Created on 2015年10月9日
 
 @author: chenyitao
-'''
+"""
 
 import ConfigParser
 
+
 class AnalysisConfManager(object):
-    '''
-    classdocs
-    '''
+    """
+    class docs
+    """
 
     __conf_path = '/Users/kerry/work/pj/gitfork/mcrawler/client/analysis/analysis.conf'
 
     def __init__(self):
-        '''
+        """
         Constructor
-        '''
+        """
         self.hbase_info = {}
         self.redis_info = {}
         self.ftp_info = {}
@@ -30,18 +31,18 @@ class AnalysisConfManager(object):
         self.__read_kafka_info()
 
     def __read_hbase_info(self):
-        '''
+        """
         read hbase info
-        '''
+        """
         host = self.conf_file.get('hbase_info', 'host')
         self.hbase_info['host'] = host
         port = self.conf_file.get('hbase_info', 'port')
         self.hbase_info['port'] = int(port)
 
     def __read_redis_info(self):
-        '''
+        """
         read redis info
-        '''
+        """
         host = self.conf_file.get('redis_info', 'host')
         self.redis_info['host'] = host
         port = self.conf_file.get('redis_info', 'port')
@@ -52,9 +53,9 @@ class AnalysisConfManager(object):
         self.redis_info['password'] = password
 
     def __read_ftp_info(self):
-        '''
+        """
         read ftp info
-        '''
+        """
         host = self.conf_file.get('ftp_info', 'host')
         self.ftp_info['host'] = host
         port = self.conf_file.get('ftp_info', 'port')

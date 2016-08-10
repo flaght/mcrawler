@@ -1,23 +1,23 @@
-#-*-coding:utf-8-*-
-'''
+# -*- coding: utf-8 -*-
+"""
 Created on 2015年9月29日
 
 @author: kerry
-'''
+"""
 import logging
 import datetime
 
 
 class Log(object):
-    '''
-    classdocs
-    '''
+    """
+    class docs
+    """
 
     def __init__(self):
-        '''
+        """
         Constructor
-        '''
-        filename = 'robots_'+datetime.datetime.now().strftime('%b_%d_%y-%H')+'.log'
+        """
+        filename = 'robots_' + datetime.datetime.now().strftime('%b_%d_%y-%H') + '.log'
         format_str = 'pid :%(process)d tid :%(thread)d  \
         %(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'
         logging.basicConfig(level=logging.DEBUG,
@@ -25,7 +25,7 @@ class Log(object):
                             datefmt='%a, %d %b %Y %H:%M:%S',
                             filename=filename,
                             filemode='a')
-        ##控制台输出
+        # 控制台输出
         console = logging.StreamHandler()
         console.setLevel(logging.INFO)
         console.setLevel(logging.DEBUG)
@@ -34,10 +34,12 @@ class Log(object):
         # 将定义好的console日志handler添加到root logger
         logging.getLogger('').addHandler(console)
 
-    def log(self):
-        '''
+    @staticmethod
+    def log():
+        """
         return logging
-        '''
+        """
         return logging
 
-kidlog = Log()
+
+kid_log = Log()
