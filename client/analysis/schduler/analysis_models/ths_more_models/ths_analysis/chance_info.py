@@ -1,18 +1,20 @@
 # -.- coding:utf-8 -.-
-'''
+"""
 Created on 2015年12月25日
 
 @author: slm
-'''
+"""
 import urllib2
 import os
+import traceback
 from lxml import html
 from schduler.analysis_models.ths_more_models.ths_analysis.more_news_base import MoreNewsBase
 
+
 class THSChanceInfo(MoreNewsBase):
-    '''
+    """
     机会情报（6.机会情报）
-    '''
+    """
     tag = {'rule': '/html/head/title',
            'tag': '第一情报,股市机会情报_同花顺财经'}
 
@@ -25,22 +27,22 @@ class THSChanceInfo(MoreNewsBase):
         self.analyzed()
 
     def __analysis(self):
-        '''
+        """
         解析
-        '''
+        """
 #         with open('./ths_qingbao.html', 'r') as f:
 #             self.html_data = f.read()
         try:
-            self.html_data = self.gzdecode(self.html_data)
+            self.html_data = self.gz_decode(self.html_data)
         except:
-            pass
+            traceback.print_exc()
         doc = html.fromstring(self.html_data)
         self.__more_news(doc)
 
     def __more_news(self, doc):
-        '''
+        """
         更多新闻
-        '''
+        """
         model = '新闻'
         more_news = doc.xpath(r'//div[@id="Newslist"]//h2//a')
         print len(more_news)
@@ -49,19 +51,21 @@ class THSChanceInfo(MoreNewsBase):
             url = new.xpath(r'@href')[0]
             self.set_analyzed_info(title, self._type, model, None, url)
 
+
 def load_data():
-    '''
+    """
     加载网页html
-    '''
+    """
     if not os.path.exists('./ths_qingbao.html'):
         response = urllib2.urlopen('http://yuanchuang.10jqka.com.cn/qingbao/')
         with open('./ths_qingbao.html', 'w') as f:
             f.write(response.read())
 
+
 def main():
-    '''
+    """
     执行
-    '''
+    """
     analysis = THSChanceInfo()
     for info in analysis.analyzed_info_list:
         print info.title
@@ -74,4 +78,3 @@ def main():
 if __name__ == '__main__':
     load_data()
     main()
-    

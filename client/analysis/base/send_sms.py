@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#coding: utf-8
+# coding: utf-8
 #
 # send_sms
 # $Id: send_sms.py  2015-09-30 Haitao $
@@ -38,29 +38,20 @@ send_sms.py
 Send message.
 """
 
-
 import re
 import urllib2
 
 
 class SendSms(object):
-
-    """Send message.
-
-    Send mobele message.
-
-    Attributes:
-        mobile: mobele phone number.
-        content: message to be sent.
+    """
+    Send mobile message.
     """
 
     def __init__(self, phone, message):
-        """inition for LoadData.
-
-        Args:
-            no
         """
-        userid = '66'
+        initialization for LoadData.
+        """
+        user_id = '66'
         account = 'HY_KunYanData'
         password = '98349823984'
         mobile = phone
@@ -68,37 +59,32 @@ class SendSms(object):
         self.url = 'http://115.29.49.158:8888/sms.aspx?' \
                    'action=send&userid=%s&account=%s' \
                    '&password=%s&mobile=%s&content=%s' \
-                   % (userid, account, password, mobile, content)
+                   % (user_id, account, password, mobile, content)
 
     def _run(self):
-        """run function.
-
-        Args:
-            no
+        """
+        run function.
         """
         response = urllib2.urlopen(self.url)
         data = response.read()
-        result = re.search(r'Success',data)
+        result = re.search(r'Success', data)
         if result:
             print "message sent success!"
             return True
         else:
-            print "message sent faild!"
+            print "message sent failed!"
             return False
 
     def main(self):
-        """Main function.
-
-        Args:
-            no
+        """
+        Main function.
         """
         return self._run()
 
-if __name__ == '__main__':
-    """Main function.
 
-        Args:
-            no
-   """
+if __name__ == '__main__':
+    """
+    Main function.
+    """
     sms = SendSms('18118973826', '【支撑平台】嘿嘿')
     sms.main()

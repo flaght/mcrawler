@@ -1,28 +1,29 @@
 # -.- coding:utf-8 -.-
-'''
+"""
 Created on 2015年12月15日
 
 @author: chenyitao
-'''
+"""
 
 from ftplib import FTP, parse227, parse229
 import socket
 
-class FTPExt(FTP):
-    '''
-    classdocs
-    '''
 
+class FTPExt(FTP):
+    """
+    class docs
+    """
 
     def __init__(self):
-        '''
+        """
         Constructor
-        '''
+        """
+        self.passive_server = None
         self.fix_host = None
         FTP.__init__(self)
 
     def set_pasv(self, val, addr=None):
-        self.passiveserver = val
+        self.passive_server = val
         self.fix_host = addr
 
     def makepasv(self):
