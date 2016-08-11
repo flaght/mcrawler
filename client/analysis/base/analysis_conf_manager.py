@@ -13,7 +13,7 @@ class AnalysisConfManager(object):
     class docs
     """
 
-    __conf_path = '/Users/kerry/work/pj/gitfork/mcrawler/client/analysis/analysis.conf'
+    __conf_path = 'analysis.conf'
 
     def __init__(self):
         """
