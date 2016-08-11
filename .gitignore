@@ -3,3 +3,4 @@
 */**/ENV
 client/crawler/info.log
 */**/*.o
+*/**/*.log
