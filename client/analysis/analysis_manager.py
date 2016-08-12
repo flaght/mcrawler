@@ -8,11 +8,11 @@ from common.ftp_manager import ftp_manager_t
 from common.mstring import MString
 from schduler.storage.kafka_manage_model import kafka_consumer_t
 
-'''
+"""
 Created on 2015年9月29日
 
 @author: kerry
-'''
+"""
 
 
 class AnalysisManager:
