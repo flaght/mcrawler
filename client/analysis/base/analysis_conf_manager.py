@@ -6,6 +6,7 @@ Created on 2015年10月9日
 """
 
 import ConfigParser
+import os
 
 
 class AnalysisConfManager(object):
@@ -13,7 +14,7 @@ class AnalysisConfManager(object):
     class docs
     """
 
-    __conf_path = 'analysis.conf'
+    __conf_path = os.path.dirname(os.path.dirname(__file__)) + '/analysis.conf'
 
     def __init__(self):
         """
