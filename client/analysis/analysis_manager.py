@@ -3,9 +3,9 @@
 import json
 import zlib
 import base64
-from analysis.schduler.storage.kafka_manage_model import kafka_consumer_t
-from analysis.common.ftp_manager import ftp_manager_t
-from analysis.common.mstring import MString
+from schduler.storage.kafka_manage_model import kafka_consumer_t
+from common.ftp_manager import ftp_manager_t
+from common.mstring import MString
 
 
 """
@@ -24,7 +24,7 @@ def func(msg):
 
 class AnalysisManager:
     def __init__(self):
-        ftp_manager_t.connent()
+        ftp_manager_t.connect()
         kafka_consumer_t.set_callback(self.kafka_callback)
 
     def kafka_callback(self, data):
@@ -60,7 +60,6 @@ class AnalysisManager:
 
         # html解析对象
         print name
-
 
     def ftp_downdata(self, name, ftp_url):
         ftp_manager_t.download(name, ftp_url)
