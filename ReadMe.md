@@ -13,9 +13,12 @@ Features
 
 Structure
 ========
-....\\svc \n
-....\\...\\plugins
-....\\...\\...\\crawler_schduler(爬虫调度器)
+....\\svc  
+
+....\\...\\plugins  
+
+....\\...\\...\\crawler_schduler(爬虫调度器)  
+
 ....\\...\\...\\crawler_task(爬虫任务分配管理)
 ....\\...\\...\\forgery(反防爬管理)
 ....\\...\\...\\login(模拟登录管理)
