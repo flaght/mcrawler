@@ -1,17 +1,24 @@
-# encoding=utf-8
+# -*- coding: utf-8 -*-
 
-import base64
 import json
 import zlib
-
+import base64
+from schduler.storage.kafka_manage_model import kafka_consumer_t
 from common.ftp_manager import ftp_manager_t
 from common.mstring import MString
-from schduler.storage.kafka_manage_model import kafka_consumer_t
+
 
 """
 Created on 2015年9月29日
 
 @author: kerry
+"""
+
+"""
+def func(msg):
+    print "msg:", msg
+    time.sleep(3)
+    print "end"
 """
 
 
@@ -20,21 +27,18 @@ class AnalysisManager:
         ftp_manager_t.connect()
         kafka_consumer_t.set_callback(self.kafka_callback)
 
-        # self.detecotr = icu.CharsetDetector()
-
     def kafka_callback(self, data):
         name = data['key_name'] + data['pos_name']
         ftp_url = '~/text_storage/' + data['key_name'] + '/' + data['pos_name']
-        print ftp_url
+        # 采用多进程方式进行拉取
         ftp_string = MString(name)
         ftp_manager_t.get(ftp_url, ftp_string.write)
-        self.parser(ftp_string.string)
+        self.text_parser(ftp_string.string, data['key_name'])
 
-    @staticmethod
-    def parser(string):
+    def text_parser(self, ftp_string, name):
         charset_name = ''
-        html_dict = json.loads(string)
-        data = None
+        html_dict = json.loads(ftp_string)
+        data = ''
         # 解base64
         try:
             data = base64.b32decode(html_dict['content'])
@@ -54,20 +58,26 @@ class AnalysisManager:
         except Exception, e:
             print e
 
-            # html解析对象
+        # html解析对象
+        print name
 
-    @staticmethod
-    def ftp_download(name, ftp_url):
+    def ftp_downdata(self, name, ftp_url):
         ftp_manager_t.download(name, ftp_url)
 
-    @staticmethod
-    def run():
+    def run(self):
         kafka_consumer_t.run()
 
 
 def main():
+    # type: () -> object
     analysis = AnalysisManager()
     analysis.run()
+    # pool = multiprocessing.Pool(processes = 1)
+    # for i in xrange(4):
+    #   msg = "hello %d " %(i)
+    #  pool.apply_async(func, (msg, ))
+    #  #time.sleep(3)
+    #  print "1111"
 
 
 if __name__ == '__main__':

@@ -1,6 +1,4 @@
-#!/usr/bin/python2.6  
-# -*- coding: utf-8 -*-  
-# encoding=utf-8
+# -*- coding: utf-8 -*-
 
 """
 Created on 2015年9月29日
