@@ -115,8 +115,8 @@ class TextStorage(threading.Thread):
                                     fp=f,
                                     blocksize=8192,
                                     callback=self.uploaded)
-            except:
-                print 'upload %s failed' % filename
+            except Exception, e:
+                print 'upload %s failed ' % filename
                 return None
 
     def uploaded(self, param=None):
