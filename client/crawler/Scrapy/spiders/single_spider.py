@@ -53,18 +53,19 @@ class SingleSpider(scrapy.Spider):
         if task_info.attr_id == 20001:
             cookie = None
         url = task_info.url.rstrip(' ')
-        # url = url[url.find('://'):]
         url_info = urlparse.urlparse(url)
         if task_info.method == 1:
             method = 'POST'
         else:
             method = 'GET'
+
         req = Request(url,
                       method=method,
                       headers={'Cookie':cookie,
                                'Referer':url_info[0]+'://'+url_info[1]},
                       callback=self.parse,
-                      meta={'item':task},
+                      meta={'item':task,
+                            'isforge':task_info.is_forge},
                       dont_filter=True,
                       errback=self.req_err)
         self.crawler.engine.schedule(req, self)

@@ -38,6 +38,7 @@ class AnalysisManager:
     def text_parser(self, ftp_string, name):
         charset_name = ''
         html_dict = json.loads(ftp_string)
+        
         data = ''
         # 解base64
         try:
@@ -71,7 +72,7 @@ class AnalysisManager:
 def main():
     # type: () -> object
     analysis = AnalysisManager()
-    analysis.run()
+    #analysis.run()
     # pool = multiprocessing.Pool(processes = 1)
     # for i in xrange(4):
     #   msg = "hello %d " %(i)
