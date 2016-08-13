@@ -12,10 +12,10 @@ SOCKET INFO
 # socket state
 CONNECT=0
 # socket host
-TEST=3
+TEST=0
 if TEST == 0:
-    SERVER_IP='222.73.34.92'
-    SERVER_PORT=15555
+    SERVER_IP='61.147.114.87'
+    SERVER_PORT=15000
     __VER=1
 elif TEST == 1:
     SERVER_IP='222.73.34.92'
