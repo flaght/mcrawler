@@ -74,6 +74,17 @@ class FTPManager:
     def write(self, path, content):
         self.ftp.storbinary("STOR " + path, io.BytesIO(content))
 
+    def exist_dir(self, path, folder_name):
+        filelist = []
+        self.ftp.retrlines('LIST ' + path, filelist.append)
+        for f in filelist:
+            if f.split()[-1] == folder_name:
+                return True
+        return False
+
+    def mkd(self, path):
+        return self.ftp.mkd(path)
+
     def close(self):
         self.ftp.close()
 
@@ -87,7 +98,7 @@ def main():
                              analysis_conf.ftp_info['local'])
     ftp_manager.connect()
     ftp_manager.run()
-    ftp_manager.get('~/text_storage/60005/ffc926edd312d4e1dd1c2d4fc22314f4', None)
+    # ftp_manager.get('~/text_storage/60005/ffc926edd312d4e1dd1c2d4fc22314f4', None)
     # ftp_manager.download('./3.txt', '~/text_storage/60005/fd0c096acbf091ff81f1f7f925044187')
     ftp_manager.close()
 
