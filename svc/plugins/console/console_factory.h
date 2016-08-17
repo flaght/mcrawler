@@ -5,6 +5,8 @@
 
 #include "config/config.h"
 #include "console_db.h"
+#include "console_stock_manager.h"
+#include "hexun_task_manager.h"
 
 namespace console_logic {
 
@@ -27,7 +29,9 @@ class ConsoleFactory {
 
   void TimeEvent(int opcode, int time);
  private:
-  console_logic::ConsoleDB*             console_db_;
+  console_logic::ConsoleStockManager*  stock_mgr_;
+  console_logic::ConsoleDB* console_db_;
+  console_logic::HexunTaskManager*  hexun_task_mgr_;
 };
 }
 #endif

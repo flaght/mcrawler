@@ -31,12 +31,9 @@ static handler_t OnConsoleShutdown(struct server* srv, void* pd) {
   return HANDLER_GO_ON;
 }
 
-
-
 static handler_t OnUnknow(struct server *srv, int fd, void *data, int len) {
   return HANDLER_GO_ON;
 }
-
 
 static handler_t OnIniTimer(struct server* srv) {
   console_logic::Consolelogic::GetInstance()->OnIniTimer(srv);

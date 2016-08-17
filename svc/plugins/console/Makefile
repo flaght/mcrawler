@@ -93,6 +93,15 @@ console_db.o : ./console_db.cc ./console_db.h
 	
 console_factory.o : ./console_factory.cc ./console_factory.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_factory.cc $(INCLUDE_PATHS)
+
+console_infos.o : ./console_infos.cc ./console_infos.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_infos.cc $(INCLUDE_PATHS)
+
+console_stock_manager.o : ./console_stock_manager.cc ./console_stock_manager.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_stock_manager.cc $(INCLUDE_PATHS)
+
+hexun_task_manager.o : ./hexun_task_manager.cc ./hexun_task_manager.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./hexun_task_manager.cc $(INCLUDE_PATHS)
 	
 auto_crawler_infos.o :  $(USER_DIR)/logic/auto_crawler_infos.cc $(USER_DIR)/logic/auto_crawler_infos.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/auto_crawler_infos.cc $(INCLUDE_PATHS)
@@ -102,10 +111,13 @@ packet_processing.o :  $(USER_DIR)/net/packet_processing.cc $(USER_DIR)/net/pack
 	
 logic_unit.o :  $(USER_DIR)/logic/logic_unit.cc $(USER_DIR)/logic/logic_unit.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/logic_unit.cc $(INCLUDE_PATHS)
+
+time.o :  $(USER_DIR)/logic/time.cc $(USER_DIR)/logic/time.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/time.cc $(INCLUDE_PATHS)
 	
 
-$(PLUGIN) : console_init.o  console_logic.o console_db.o packet_processing.o logic_unit.o\
-	auto_crawler_infos.o console_factory.o\
+$(PLUGIN) : console_init.o  console_logic.o console_db.o packet_processing.o logic_unit.o time.o\
+	auto_crawler_infos.o console_factory.o console_infos.o console_stock_manager.o hexun_task_manager.o\
 	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient -lcurl -lmemcached -lmemcachedutil \
 	$^ -o $@

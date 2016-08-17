@@ -34,7 +34,6 @@ bool Consolelogic::Init() {
   return true;
 }
 
-
 Consolelogic*
 Consolelogic::GetInstance() {
   if (instance_ == NULL)
