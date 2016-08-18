@@ -18,7 +18,7 @@ THIRD_PATH = $(LIB_DIR)/mylib/public
 
 CUSTOM_THIRD_PATH = $(LIB_DIR)/mylib/third_party
 
-LINK_PATHS = -L./ -L/usr/local/libmemcached-1.0.7/lib/  -L/usr/lib64/mysql
+LINK_PATHS = -L./ -L/usr/local/libmemcached-1.0.7/lib/  -L/usr/lib64/mysql -L$(CUSTOM_THIRD_PATH)/librdkafka
 
 # Flags passed to the preprocessor.
 CPPFLAGS += -isystem -shared -fPIC -D_DB_POOL_ -D_DEBUG -DUSR_LOG_MSG\
@@ -41,6 +41,7 @@ INCLUDE_PATHS = -I/usr/local/libmemcached-1.0.7/include \
 				-I$(CUSTOM_THIRD_PATH)/hiredis\
 				-I$(CUSTOM_THIRD_PATH)\
 				-I$(LIB_DIR)/mylib/base\
+				-I$(CUSTOM_THIRD_PATH)/librdkafka/src\
 				-I../\
 				
 
@@ -100,6 +101,10 @@ console_infos.o : ./console_infos.cc ./console_infos.h
 console_stock_manager.o : ./console_stock_manager.cc ./console_stock_manager.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_stock_manager.cc $(INCLUDE_PATHS)
 
+
+console_kafka.o : ./console_kafka.cc ./console_kafka.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_kafka.cc $(INCLUDE_PATHS)
+
 hexun_task_manager.o : ./hexun_task_manager.cc ./hexun_task_manager.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./hexun_task_manager.cc $(INCLUDE_PATHS)
 	
@@ -116,8 +121,8 @@ time.o :  $(USER_DIR)/logic/time.cc $(USER_DIR)/logic/time.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/time.cc $(INCLUDE_PATHS)
 	
 
-$(PLUGIN) : console_init.o  console_logic.o console_db.o packet_processing.o logic_unit.o time.o\
+$(PLUGIN) : console_init.o  console_logic.o console_db.o console_kafka.o packet_processing.o logic_unit.o time.o\
 	auto_crawler_infos.o console_factory.o console_infos.o console_stock_manager.o hexun_task_manager.o\
-	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a
+	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a $(CUSTOM_THIRD_PATH)/librdkafka/librdkafka.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient -lcurl -lmemcached -lmemcachedutil \
 	$^ -o $@

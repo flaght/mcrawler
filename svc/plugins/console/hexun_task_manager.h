@@ -3,6 +3,7 @@
 
 #include "logic/auto_crawler_infos.h"
 #include "console_stock_manager.h"
+#include "console_kafka.h"
 
 
 #define HX_DAY_HEAT   588
@@ -20,6 +21,7 @@ class HexunTaskManager {
 
  private:
   ConsoleStockManager*     stock_manager_;
+  console_logic::ConsoleKafka   kafka_producer_;
 };
 
 }

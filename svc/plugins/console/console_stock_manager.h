@@ -57,10 +57,12 @@ class ConsoleStockEngine {
 
   static void FreeConsoleStockEngine(){
     delete console_stock_engine_;
+    console_stock_engine_ = NULL;
   }
 
   static void FreeConsoleStockManager() {
     delete console_stock_manager_;
+    console_stock_manager_ = NULL;
   }
 };
 

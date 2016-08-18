@@ -21,6 +21,7 @@ void ConsoleStockManager::Init() {
 
 ConsoleStockManager::~ConsoleStockManager() {
   DeinitThreadrw (lock_);
+  if (stock_cache_) {delete stock_cache_;stock_cache_ = NULL;}
 }
 
 void ConsoleStockManager::Init(console_logic::ConsoleDB* console_db) {

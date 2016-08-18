@@ -15,7 +15,7 @@ namespace crawler_task_logic {
 
 CrawlerTaskKafka::CrawlerTaskKafka() {
     if ( CONSUMER_INIT_SUCCESS !=
-        kafka_consumer_.Init(0, "newsparser_url_algo", "localhost:9092", NULL))
+        kafka_consumer_.Init(0, "kafka_newsparser_algo", "192.168.1.85:9092", NULL))
         LOG_DEBUG("kafka consumer newsparser_url_test init failed");
     else
         LOG_DEBUG("kafka consumer newsparser_url_test init success");
@@ -74,6 +74,14 @@ void CrawlerTaskKafka::SetTaskInfo(base_logic::TaskInfo &task_info, base_logic::
 	task_info.set_current_depth((int8)temp_int);
 	task_info_dic->GetBigInteger(L"attrid", &temp_int);
 	task_info.set_attrid(temp_int);
+	task_info_dic->GetBigInteger(L"machine",&temp_int);
+	task_info.set_machine(temp_int);
+	task_info_dic->GetBigInteger(L"storage",&temp_int);
+	task_info.set_storage(temp_int);
+	task_info_dic->GetBigInteger(L"is_login", &temp_int);
+	task_info.set_is_login(temp_int);
+	task_info_dic->GetBigInteger(L"is_over", &temp_int);
+	task_info.set_is_over(temp_int);
 	task_info_dic->GetString(L"url", &temp_str);
 	task_info.set_url(temp_str);
 	task_info.set_type(TEMP_SHORT_TASK);

@@ -48,6 +48,7 @@ void HexunTaskManager::CreateAllStockDayHeat(base_logic::TaskInfo& task) {
     stock_url = logic::SomeUtils::StringReplace(stock_url,stcode_symbol,stock.symbol());
     stock_url = logic::SomeUtils::StringReplace(stock_url,time_symbol,time_format);
     LOG_DEBUG2("%s",stock_url.c_str());
+    kafka_producer_.AddKafkaTaskInfo(task.id(),task.attrid(),1,1,task.method(),stock_url);
   }
 }
 }
