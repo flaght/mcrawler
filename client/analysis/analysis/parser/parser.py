@@ -24,7 +24,7 @@ class Parser:
         ftp_manager_t.connect()
 
         if parse_id == 1:
-            result = HeXunParser.market_15(content)
+            result = HeXunParser.market_quater(content)
             path += "heat/hexun/All/market_min/"
         elif parse_id == 2:
             result = HeXunParser.market_total(content)
