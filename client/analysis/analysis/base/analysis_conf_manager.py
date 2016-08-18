@@ -14,7 +14,7 @@ class AnalysisConfManager(object):
     class docs
     """
 
-    __conf_path = os.path.dirname(os.path.dirname(__file__)) + '/analysis.conf'
+    __conf_path = os.path.dirname(os.path.dirname(__file__)) + '/../analysis.conf'
 
     def __init__(self):
         """

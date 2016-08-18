@@ -1,9 +1,13 @@
+beautifulsoup4==4.5.1
 chardet==2.3.0
 happybase==0.9
 hbase-thrift==0.20.4
 lxml==3.6.1
+py==1.4.31
 pyasn1==0.1.9
+pytest==2.9.2
 redis==2.10.5
+requests==2.11.0
 rsa==3.4.2
 thrift==0.9.3
 Twisted==16.3.0
