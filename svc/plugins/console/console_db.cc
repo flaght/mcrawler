@@ -49,6 +49,7 @@ bool ConsoleDB::FectchStCode(std::map<std::string, console_logic::StockInfo>& ma
   return true;
 }
 
+
 bool ConsoleDB::FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
                                    const bool is_new) {
   bool r = false;
@@ -76,6 +77,41 @@ bool ConsoleDB::FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
     task.ValueSerialization(dict_result_value);
     task.set_type(MAIN_LASTING_TASK);
     list->push_back(task);
+    delete dict_result_value;
+    dict_result_value = NULL;
+  }
+
+  return true;
+}
+
+bool ConsoleDB::FetchBatchRuleTask(std::map<int64,base_logic::TaskInfo>* map,
+                                   const bool is_new) {
+  bool r = false;
+  scoped_ptr<base_logic::DictionaryValue> dict(
+      new base_logic::DictionaryValue());
+
+  std::string sql;
+  if (is_new)
+    sql = "call proc_FecthNewTask()";
+  else
+    sql = "call proc_FecthBatchRuleTask()";
+  base_logic::ListValue* listvalue;
+  dict->SetString(L"sql", sql);
+  r = mysql_engine_->ReadData(0, (base_logic::Value*) (dict.get()),
+                              CallBackFetchBatchRuleTask);
+  if (!r)
+    return false;
+  dict->GetList(L"resultvalue", &listvalue);
+  while (listvalue->GetSize()) {
+    base_logic::TaskInfo task;
+    base_logic::Value* result_value;
+    listvalue->Remove(0, &result_value);
+    base_logic::DictionaryValue* dict_result_value =
+        (base_logic::DictionaryValue*) (result_value);
+    task.ValueSerialization(dict_result_value);
+    task.set_type(MAIN_LASTING_TASK);
+    //list->push_back(task);
+    (*map)[task.id()] = task;
     delete dict_result_value;
     dict_result_value = NULL;
   }

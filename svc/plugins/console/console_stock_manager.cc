@@ -20,8 +20,11 @@ void ConsoleStockManager::Init() {
 }
 
 ConsoleStockManager::~ConsoleStockManager() {
-  DeinitThreadrw (lock_);
-  if (stock_cache_) {delete stock_cache_;stock_cache_ = NULL;}
+  DeinitThreadrw(lock_);
+  if (stock_cache_) {
+    delete stock_cache_;
+    stock_cache_ = NULL;
+  }
 }
 
 void ConsoleStockManager::Init(console_logic::ConsoleDB* console_db) {
@@ -29,15 +32,17 @@ void ConsoleStockManager::Init(console_logic::ConsoleDB* console_db) {
   console_db_->FectchStCode(stock_cache_->stock_map_);
 }
 
-void ConsoleStockManager::Test(){
+void ConsoleStockManager::Test() {
   LOG_DEBUG2("stock_map_ %lld", stock_cache_->stock_map_.size());
 }
 
 void ConsoleStockManager::Swap(std::list<console_logic::StockInfo>& list) {
-  for(STOCKINFO_MAP::iterator it = stock_cache_->stock_map_.begin();
+  base_logic::RLockGd lk(lock_);
+  for (STOCKINFO_MAP::iterator it = stock_cache_->stock_map_.begin();
       it != stock_cache_->stock_map_.end(); it++) {
     list.push_back(it->second);
   }
 }
+
 
 }

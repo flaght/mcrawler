@@ -8,6 +8,8 @@
 #include "logic/auto_crawler_infos.h"
 #include "storage/data_engine.h"
 #include "basic/scoped_ptr.h"
+#include <map>
+
 
 namespace console_logic {
 
@@ -16,6 +18,9 @@ class ConsoleDB {
   ConsoleDB(config::FileConfig* config);
   virtual ~ConsoleDB();
  public:
+  bool FetchBatchRuleTask(std::map<int64,base_logic::TaskInfo>* map,
+                          const bool is_new = false);
+
   bool FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
                           const bool is_new = false);
 

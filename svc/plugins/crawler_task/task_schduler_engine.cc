@@ -111,6 +111,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
          return true;
      }
     int32 base_num = 5;
+    time_t current_time = time(NULL);
     struct AssignmentMultiTask  task;
     MAKE_HEAD(task, ASSIGNMENT_MULTI_TASK, 0, 0, 0, 0);
     base_logic::WLockGd lk(lock_);
@@ -120,7 +121,8 @@ bool TaskSchdulerManager::DistributionTempTask() {
         LOG_DEBUG2("url=%s attr_id=%ld", info.url().c_str(), info.attrid());
         task_cache_->task_temp_list_.pop_front();
         task_db_->RecordTaskState(info, 1);
-        if ((info.state() == TASK_WAIT || info.state() == TASK_EXECUED)) {
+        if ((info.state() == TASK_WAIT || info.state() == TASK_EXECUED)||
+            info.last_task_time() + info.polling_time() <= current_time) {
             struct TaskUnit* unit = new struct TaskUnit;
             unit->task_id = info.id();
             unit->attr_id = info.attrid();
