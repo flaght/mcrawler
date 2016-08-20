@@ -5,8 +5,20 @@
 
 #include "config/config.h"
 #include "console_db.h"
+#include "console_stock_manager.h"
+#include "hexun_task_manager.h"
+
+typedef std::map<int64, base_logic::TaskInfo> TASKINFO_MAP;
+
+enum PLTFORM {
+  HEXUN_PLATFORM_ID =  60008
+};
 
 namespace console_logic {
+class ConsoleCache {
+ public:
+  TASKINFO_MAP task_idle_map_;
+};
 
 class ConsoleFactory {
  public:
@@ -25,9 +37,16 @@ class ConsoleFactory {
 
   void Test();
 
-  void TimeEvent(int opcode, int time);
+  void DistributionTask();
+
+  void TimeFetchTask();
+
  private:
-  console_logic::ConsoleDB*             console_db_;
+  ConsoleCache*     console_cache_;
+  struct threadrw_t*                     lock_;
+  console_logic::ConsoleStockManager*  stock_mgr_;
+  console_logic::ConsoleDB* console_db_;
+  console_logic::HexunTaskManager*  hexun_task_mgr_;
 };
 }
 #endif

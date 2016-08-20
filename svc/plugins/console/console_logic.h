@@ -2,6 +2,8 @@
 //  Created on: 2015年9月16日 Author: kerry
 #ifndef KID_CONSOLE_CONSOLE_LOGIC_
 #define KID_CONSOLE_CONSOLE_LOGIC_
+#include "console_logic.h"
+#include "console_time_manager.h"
 #include "core/common.h"
 #include "basic/basictypes.h"
 #include "console/console_factory.h"
@@ -29,6 +31,7 @@ class Consolelogic {
   bool Init();
  private:
   console_logic::ConsoleFactory* factory_;
+  console_logic::ConsoleTimeManager*              console_time_mgr_;
 
 };
 }  // namespace console_logic

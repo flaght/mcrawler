@@ -20,11 +20,41 @@ ConsoleDB::~ConsoleDB(void) {
   }
 }
 
-bool ConsoleDB::FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
-                               const bool is_new) {
+bool ConsoleDB::FectchStCode(std::map<std::string, console_logic::StockInfo>& map) {
   bool r = false;
-  scoped_ptr < base_logic::DictionaryValue
-      > dict(new base_logic::DictionaryValue());
+  scoped_ptr<base_logic::DictionaryValue> dict(
+      new base_logic::DictionaryValue());
+
+  std::string sql;
+  sql = "call proc_GetStcode()";
+  base_logic::ListValue* listvalue;
+  dict->SetString(L"sql", sql);
+  r = mysql_engine_->ReadData(0, (base_logic::Value*) (dict.get()),
+                              CallFectchStCode);
+  if (!r)
+    return false;
+  dict->GetList(L"resultvalue", &listvalue);
+  while (listvalue->GetSize()) {
+    console_logic::StockInfo stock;
+    base_logic::Value* result_value;
+    listvalue->Remove(0, &result_value);
+    base_logic::DictionaryValue* dict_result_value =
+        (base_logic::DictionaryValue*) (result_value);
+    stock.ValueSerialization(dict_result_value);
+    map[stock.symbol()] = stock;
+    delete dict_result_value;
+    dict_result_value = NULL;
+  }
+
+  return true;
+}
+
+
+bool ConsoleDB::FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
+                                   const bool is_new) {
+  bool r = false;
+  scoped_ptr<base_logic::DictionaryValue> dict(
+      new base_logic::DictionaryValue());
 
   std::string sql;
   if (is_new)
@@ -54,7 +84,67 @@ bool ConsoleDB::FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
   return true;
 }
 
-void ConsoleDB::CallBackFetchBatchRuleTask(void* param, base_logic::Value* value) {
+bool ConsoleDB::FetchBatchRuleTask(std::map<int64,base_logic::TaskInfo>* map,
+                                   const bool is_new) {
+  bool r = false;
+  scoped_ptr<base_logic::DictionaryValue> dict(
+      new base_logic::DictionaryValue());
+
+  std::string sql;
+  if (is_new)
+    sql = "call proc_FecthNewTask()";
+  else
+    sql = "call proc_FecthBatchRuleTask()";
+  base_logic::ListValue* listvalue;
+  dict->SetString(L"sql", sql);
+  r = mysql_engine_->ReadData(0, (base_logic::Value*) (dict.get()),
+                              CallBackFetchBatchRuleTask);
+  if (!r)
+    return false;
+  dict->GetList(L"resultvalue", &listvalue);
+  while (listvalue->GetSize()) {
+    base_logic::TaskInfo task;
+    base_logic::Value* result_value;
+    listvalue->Remove(0, &result_value);
+    base_logic::DictionaryValue* dict_result_value =
+        (base_logic::DictionaryValue*) (result_value);
+    task.ValueSerialization(dict_result_value);
+    task.set_type(MAIN_LASTING_TASK);
+    //list->push_back(task);
+    (*map)[task.id()] = task;
+    delete dict_result_value;
+    dict_result_value = NULL;
+  }
+
+  return true;
+}
+
+void ConsoleDB::CallFectchStCode(void* param, base_logic::Value* value) {
+  base_logic::DictionaryValue* dict = (base_logic::DictionaryValue*) (value);
+  base_logic::ListValue* list = new base_logic::ListValue();
+  base_storage::DBStorageEngine* engine =
+      (base_storage::DBStorageEngine*) (param);
+  MYSQL_ROW rows;
+  int32 num = engine->RecordCount();
+  if (num > 0) {
+    while (rows = (*(MYSQL_ROW*) (engine->FetchRows())->proc)) {
+      base_logic::DictionaryValue* info_value =
+          new base_logic::DictionaryValue();
+      if (rows[0] != NULL)
+        info_value->SetString(L"symbol", rows[0]);
+      if (rows[1] != NULL)
+        info_value->SetString(L"sename", rows[1]);
+      if (rows[2] != NULL)
+        info_value->SetString(L"exchange", rows[2]);
+
+      list->Append((base_logic::Value*) (info_value));
+    }
+  }
+  dict->Set(L"resultvalue", (base_logic::Value*) (list));
+}
+
+void ConsoleDB::CallBackFetchBatchRuleTask(void* param,
+                                           base_logic::Value* value) {
   base_logic::DictionaryValue* dict = (base_logic::DictionaryValue*) (value);
   base_logic::ListValue* list = new base_logic::ListValue();
   base_storage::DBStorageEngine* engine =
@@ -99,5 +189,6 @@ void ConsoleDB::CallBackFetchBatchRuleTask(void* param, base_logic::Value* value
   }
   dict->Set(L"resultvalue", (base_logic::Value*) (list));
 }
+
 }
 

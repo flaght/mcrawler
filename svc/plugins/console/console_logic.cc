@@ -19,6 +19,11 @@ Consolelogic::Consolelogic() {
 }
 
 Consolelogic::~Consolelogic() {
+  console_logic::ConsoleFactory::FreeInstance();
+  if (console_time_mgr_){
+    delete console_time_mgr_;
+    console_time_mgr_ = NULL;
+  }
 }
 
 bool Consolelogic::Init() {
@@ -28,12 +33,13 @@ bool Consolelogic::Init() {
     return false;
   bool r = config->LoadConfig(path);
 
+  console_time_mgr_ = new console_logic::ConsoleTimeManager();
+
   factory_ = console_logic::ConsoleFactory::GetInstance();
   factory_->InitParam(config);
-  factory_->Test();
+  //factory_->Test();
   return true;
 }
-
 
 Consolelogic*
 Consolelogic::GetInstance() {
@@ -53,10 +59,7 @@ bool Consolelogic::OnIniTimer(struct server *srv) {
 
 bool Consolelogic::OnTimeout(struct server *srv, char *id, int opcode,
                              int time) {
-  switch (opcode) {
-    default:
-      break;
-  }
+  console_time_mgr_->ConsoleTimeEvent(opcode, time);
   return true;
 }
 

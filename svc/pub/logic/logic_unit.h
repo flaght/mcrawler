@@ -15,45 +15,60 @@
 
 namespace logic {
 
-class SomeUtils{
+class SomeUtils {
  public:
-    static void* GetLibraryFunction(const std::string& library_name,
-            const std::string& func_name);
+  static void* GetLibraryFunction(const std::string& library_name,
+                                  const std::string& func_name);
 
-    static void CreateToken(const int64 uid, const std::string& password,
-            std::string* token);
+  static void CreateToken(const int64 uid, const std::string& password,
+                          std::string* token);
 
-    static bool VerifyToken(const int64 uid, const std::string& password,
-            const std::string& token);
+  static bool VerifyToken(const int64 uid, const std::string& password,
+                          const std::string& token);
 
-    static inline int8   StringToIntChar(const char* str) {
-        int8 intvalue = 0;
-        base::BasicUtil::StringUtil::StringToCharInt(std::string(str),&intvalue);
-        return intvalue;
+  static inline int8 StringToIntChar(const char* str) {
+    int8 intvalue = 0;
+    base::BasicUtil::StringUtil::StringToCharInt(std::string(str), &intvalue);
+    return intvalue;
+  }
+  static inline int16 StringToIntShort(const char* str) {
+    int16 intvalue = 0;
+    base::BasicUtil::StringUtil::StringToShortInt(std::string(str), &intvalue);
+    return intvalue;
+  }
+
+  static inline std::string StringReplace(std::string& str,
+                                          const std::string& old_value,
+                                          const std::string& new_value) {
+    for (std::string::size_type pos(0); pos != std::string::npos; pos +=
+        new_value.length()) {
+
+      if ((pos = str.find(old_value, pos)) != std::string::npos)
+        str.replace(pos, old_value.length(), new_value);
+      else
+        break;
     }
-    static inline int16 StringToIntShort(const char* str) {
-        int16 intvalue = 0;
-        base::BasicUtil::StringUtil::StringToShortInt(std::string(str),&intvalue);
-        return intvalue;
-    }
+    return str;
+  }
 };
 
-class SendUtils{
+class SendUtils {
  public:
-    static int32 SendFull(int socket, const char* buffer, size_t bytes);
-    static bool SendBytes(int socket, const void* bytes, int32 len,
-            const char* file, int32 line);
-    static bool SendMessage(int socket, struct PacketHead* packet,
-            const char* file, int32 line);
-    static bool SendHeadMessage(int socket, int32 operate_code,
-            int32 type, int32 is_zip_encrypt, int64 session,
-            int32 reserved, const char* file, int32 line);
+  static int32 SendFull(int socket, const char* buffer, size_t bytes);
+  static bool SendBytes(int socket, const void* bytes, int32 len,
+                        const char* file, int32 line);
+  static bool SendMessage(int socket, struct PacketHead* packet,
+                          const char* file, int32 line);
+  static bool SendHeadMessage(int socket, int32 operate_code, int32 type,
+                              int32 is_zip_encrypt, int64 session,
+                              int32 reserved, const char* file, int32 line);
 
-    static bool SendErronMessage(int socket, int32 operate_code,
-            int32 type, int32 is_zip_encrypt, int64 session,
-            int32 reserved, int32 error, const char* file, int32 line);
+  static bool SendErronMessage(int socket, int32 operate_code, int32 type,
+                               int32 is_zip_encrypt, int64 session,
+                               int32 reserved, int32 error, const char* file,
+                               int32 line);
 
-	static struct threadrw_t* socket_lock_;
+  static struct threadrw_t* socket_lock_;
 };
 }  //  namespace logic
 
@@ -78,6 +93,5 @@ class SendUtils{
 
 #define closelockconnect(socket) \
     shutdown(socket, SHUT_RDWR);
-
 
 #endif /* LOGIC_UNIT_H_ */
