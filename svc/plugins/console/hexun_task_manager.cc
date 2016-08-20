@@ -3,9 +3,11 @@
 
 #include "hexun_task_manager.h"
 #include "console_stock_manager.h"
+#include "logic/time.h"
 #include "logic/logic_unit.h"
 #include "logic/logic_comm.h"
 #include "logic/time.h"
+#include "basic/radom_in.h"
 
 namespace console_logic {
 
@@ -67,12 +69,17 @@ void HexunTaskManager::CreateAllStockDayHeat(const base_logic::TaskInfo& task) {
     btask.set_storage(task.storage());
     btask.set_type(task.type());
     btask.set_url(stock_url);
-    base_logic::RLockGd lk(lock_);
+    base::Time now_time;
+
+    int64 radom = base::SysRadom::GetInstance()->GetRandomID();
+    btask.set_polling_time(radom % 3600);
+    LOG_DEBUG2("btask polling_time %lld",btask.polling_time());
     //cache_->all_stock_day_heat_task_.PushBack(btask);
     //kafka_producer_.AddKafkaTaskInfo(task.id(), task.attrid(), 1, 1,
       //                               method, stock_url);
     kafka_producer_.AddKafkaTaskInfo(task.id(), task.attrid(),1,1,task.method(),
-                                   task.machine(),task.storage(),0,0,stock_url);
+                                  task.machine(),task.storage(),0,0,
+                                  btask.polling_time(),btask.last_task_time(),stock_url);
   }
 }
 }

@@ -116,13 +116,13 @@ bool TaskSchdulerManager::DistributionTempTask() {
     MAKE_HEAD(task, ASSIGNMENT_MULTI_TASK, 0, 0, 0, 0);
     base_logic::WLockGd lk(lock_);
 
+    task_cache_->task_temp_list_.sort(base_logic::TaskInfo::cmp);
     while (task_cache_->task_temp_list_.size() > 0) {
         base_logic::TaskInfo info = task_cache_->task_temp_list_.front();
         LOG_DEBUG2("url=%s attr_id=%ld", info.url().c_str(), info.attrid());
-        task_cache_->task_temp_list_.pop_front();
-        task_db_->RecordTaskState(info, 1);
-        if ((info.state() == TASK_WAIT || info.state() == TASK_EXECUED)||
-            info.last_task_time() + info.polling_time() <= current_time) {
+        //task_db_->RecordTaskState(info, 1);
+        if ((info.state() == TASK_WAIT || info.state() == TASK_EXECUED)&&
+            (current_time >= info.totoal_polling_time())) {
             struct TaskUnit* unit = new struct TaskUnit;
             unit->task_id = info.id();
             unit->attr_id = info.attrid();
@@ -141,11 +141,14 @@ bool TaskSchdulerManager::DistributionTempTask() {
             task.task_set.push_back(unit);
             info.set_state(TASK_SEND);
             task_cache_->task_exec_map_[info.id()] = info;
+            task_cache_->task_temp_list_.pop_front();
             if (task.task_set.size() % base_num == 0 &&
                     task.task_set.size() != 0) {
                 crawler_schduler_engine_->SendOptimalCrawler((const void*)&task, 0);
                 net::PacketProsess::ClearCrawlerTaskList(&task);
             }
+        }else{
+          break;
         }
     }
 

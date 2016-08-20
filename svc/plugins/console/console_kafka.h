@@ -17,7 +17,9 @@ class ConsoleKafka {
   bool AddKafkaTaskInfo(const int64 task_id, const int64 attr_id,
                         const int32 max_depth, const int32 cur_depth,
                         const int32 method,const int32 machine,const int32 storage,
-                        const int32 is_login, const int32 is_over,const std::string& url);
+                        const int32 is_login, const int32 is_over,
+                        const int64 polling_time, const int64 last_time,
+                        const std::string& url);
  private:
   kafka_producer     kafka_producer_;
 };
