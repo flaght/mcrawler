@@ -33,3 +33,11 @@ class FTPExt(FTP):
         if self.fix_host is not None:
             host = self.fix_host
         return host, port
+
+    def is_connected(self):
+        try:
+            self.dir('./')
+            return 1
+        except Exception, e:
+            print 'ftp error:%s' % e
+            return None
