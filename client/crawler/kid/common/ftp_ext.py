@@ -36,8 +36,8 @@ class FTPExt(FTP):
 
     def is_connected(self):
         try:
-            self.dir('./')
-            return 1
+            self.voidcmd("NOOP")
+            return True
         except Exception, e:
             print 'ftp error:%s' % e
-            return None
+            return False

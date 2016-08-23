@@ -99,7 +99,7 @@ class TextStorage(threading.Thread):
 
     def __upload_data(self, data, path, filename):
         path_list = path.split('/')
-        if self.ftp.is_connected() is None:
+        if not self.ftp.is_connected():
             print 'ftp error'
             self.ftp.close()
             if self.__reconection() is None:
