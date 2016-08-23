@@ -153,6 +153,8 @@ class TaskInfo {
 
     TaskInfo& operator = (const TaskInfo& task);
 
+    TaskInfo& DeepCopy(const TaskInfo& task);
+
     ~TaskInfo() {
         if (data_ != NULL) {
             data_->Release();

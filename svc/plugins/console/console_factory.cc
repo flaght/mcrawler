@@ -93,6 +93,7 @@ void ConsoleFactory::DistributionTask() {
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
     if (info.last_task_time() + info.polling_time() < current_time) {
+      info.update_time(0,base::SysRadom::GetInstance()->GetRandomID());
       switch (info.attrid()) {
         case HEXUN_PLATFORM_ID: {
           hexun_task_mgr_->CreateTask(info);
