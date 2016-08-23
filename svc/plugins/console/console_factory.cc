@@ -4,6 +4,7 @@
 #include "console_factory.h"
 #include "basic/template.h"
 #include "logic/logic_comm.h"
+#include "basic/radom_in.h"
 
 namespace console_logic {
 
@@ -19,6 +20,7 @@ ConsoleFactory::GetInstance() {
 ConsoleFactory::ConsoleFactory() {
   Init();
   InitThreadrw(&lock_);
+  base::SysRadom::GetInstance();
 }
 
 ConsoleFactory::~ConsoleFactory() {
@@ -31,12 +33,17 @@ ConsoleFactory::~ConsoleFactory() {
     delete console_db_;
     console_db_ = NULL;
   }
+  if (console_cache_){
+    delete console_cache_;
+    console_cache_ = NULL;
+  }
   DeinitThreadrw(lock_);
 }
 
 void ConsoleFactory::Init() {
   stock_mgr_ = console_logic::ConsoleStockEngine::GetConsoleStockManager();
   hexun_task_mgr_ = new console_logic::HexunTaskManager();
+  console_cache_ = new ConsoleCache();
 }
 
 void ConsoleFactory::InitParam(config::FileConfig* config) {
@@ -86,6 +93,7 @@ void ConsoleFactory::DistributionTask() {
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
     if (info.last_task_time() + info.polling_time() < current_time) {
+      info.update_time(0,base::SysRadom::GetInstance()->GetRandomID());
       switch (info.attrid()) {
         case HEXUN_PLATFORM_ID: {
           hexun_task_mgr_->CreateTask(info);

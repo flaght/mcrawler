@@ -28,6 +28,12 @@ class TextStorage(threading.Thread):
         super(TextStorage, self).__init__(name='ftp_manager')
         self.charset_list = ['utf-8', 'UTF-8', 'utf8', 'UTF8', 'gbk', 'GBK',
                              'gb2312', 'GB2312', 'gb18030', 'GB18030']
+
+        self.ftp_host = host
+        self.ft_port = port
+        self.ftp_user = user
+        self.ftp_passwd = passwd
+
         self.wait_queue = []
         self.state = 0
         self.__upload_cnt = 0
@@ -44,6 +50,7 @@ class TextStorage(threading.Thread):
         except Exception, e:
             print 'ftp error:%s' % e
             return
+
         self.ftp.cwd('~')
         file_list = self.ftp.nlst()
         if 'text_storage' not in file_list:
@@ -75,8 +82,29 @@ class TextStorage(threading.Thread):
             else:
                 time.sleep(0.5)
 
+    def __reconection(self):
+        self.ftp = FTPExt()
+        self.ftp.set_pasv(True, self.ftp_host)
+        try:
+            if not self.ftp.connect(self.ftp_host, self.ft_port):
+                print 'connect ftp srever failed'
+                return None
+            if not self.ftp.login(self.ftp_user, self.ftp_passwd):
+                print 'login ftp server failed'
+                return None
+            return True
+        except Exception, e:
+            print 'ftp error:%s' % e
+            return None
+
     def __upload_data(self, data, path, filename):
         path_list = path.split('/')
+        if not self.ftp.is_connected():
+            print 'ftp error'
+            self.ftp.close()
+            if self.__reconection() is None:
+                return
+
         self.ftp.cwd('~/text_storage')
         for _path in path_list:
             if _path == '':
@@ -99,11 +127,11 @@ class TextStorage(threading.Thread):
             self.detecotr.setText(data)
             match = self.detecotr.detect()
             charset_name = match.getName()
-            
+
             #data = data.decode(charset_name)
             #zlib
             compressed = zlib.compress(data)
-            obj = {'charset':charset_name, 
+            obj = {'charset':charset_name,
                    'content':base64.b32encode(compressed),
                    'timestamp': time.time()}
             jsons = json.dumps(obj)

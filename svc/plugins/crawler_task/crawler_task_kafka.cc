@@ -64,6 +64,7 @@ bool CrawlerTaskKafka::FectchBatchTempTask(std::list<base_logic::TaskInfo>* list
 
 void CrawlerTaskKafka::SetTaskInfo(base_logic::TaskInfo &task_info, base_logic::DictionaryValue* task_info_dic) {
 	int64 temp_int;
+	bool r = false;
 	std::string temp_str;
 	task_info.set_id(base::SysRadom::GetInstance()->GetRandomIntID());
 	task_info_dic->GetBigInteger(L"depth", &temp_int);
@@ -84,6 +85,12 @@ void CrawlerTaskKafka::SetTaskInfo(base_logic::TaskInfo &task_info, base_logic::
 	task_info.set_is_over(temp_int);
 	task_info_dic->GetString(L"url", &temp_str);
 	task_info.set_url(temp_str);
+	r = task_info_dic->GetBigInteger(L"polling_time", &temp_int);
+	if(r)
+	  task_info.set_polling_time(temp_int);
+	r = task_info_dic->GetBigInteger(L"last_time", &temp_int);
+	if(r)
+	  task_info.set_last_task_time(temp_int);
 	task_info.set_type(TEMP_SHORT_TASK);
         LOG_DEBUG2("url=%s attrid=%ld", temp_str.c_str(), temp_int);
 }

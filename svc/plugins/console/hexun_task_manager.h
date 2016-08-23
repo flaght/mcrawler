@@ -7,8 +7,10 @@
 #include "console_stock_manager.h"
 #include "console_kafka.h"
 
-#define HX_DAY_HEAT   588
-
+#define HX_DAY_STOCK_HEAT   588  //http://focus.stock.hexun.com/service/init_xml.jsp?scode={%stcode}&date={%Y-%M-%D}
+#define HX_SEC_STOCK_HEAT 589 //http://focus.stock.hexun.com/service/init_xml_min.jsp?scode={%stcode}&date={%Y-%M-%D}
+#define HX_DAY_ALL_HEAT   590 //http://focus.stock.hexun.com/service/market_xml.jsp?date={%Y-%M-%D}
+#define HX_SEC_ALL_HEAT   591 //http://focus.stock.hexun.com/service/market_xml_min.jsp?date={%Y-%M-%D}
 
 namespace console_logic {
 
@@ -25,7 +27,17 @@ class HexunTaskManager {
   void CreateTask(base_logic::TaskInfo& task);
  private:
   void CreateAllStockDayHeat(const base_logic::TaskInfo& task);
+  void CreateAllStockQuarterHeat(const base_logic::TaskInfo& task);
 
+  void CreateSecondaryStockDayHeat(const base_logic::TaskInfo& task);
+  void CreateSecondaryStockQuarterHeat(const base_logic::TaskInfo& task);
+
+ private:
+  void CreateAllStockHeat(const base_logic::TaskInfo& task,
+                          const int32 ago_day);
+
+  void CreateSecondaryStockHeat(const base_logic::TaskInfo& task,
+                                const int32 ago_day);
  public:
   void TempAllStockDayHeat();
 

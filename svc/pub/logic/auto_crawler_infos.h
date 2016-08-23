@@ -153,10 +153,17 @@ class TaskInfo {
 
     TaskInfo& operator = (const TaskInfo& task);
 
+    TaskInfo& DeepCopy(const TaskInfo& task);
+
     ~TaskInfo() {
         if (data_ != NULL) {
             data_->Release();
         }
+    }
+
+    static bool cmp(const base_logic::TaskInfo& t_task,
+          const base_logic::TaskInfo& r_task) {
+      return t_task.totoal_polling_time() <= r_task.totoal_polling_time();
     }
 
     void set_id(const int64 id) {data_->id_ = id;}
@@ -227,6 +234,9 @@ class TaskInfo {
     const int64 polling_time() const {return data_->polling_time_;}
     const int64 base_polling_time() const {return data_->base_polling_time_;}
     const int64 last_task_time() const {return data_->last_task_time_;}
+    const int64 totoal_polling_time() const {
+      return data_->last_task_time_ + data_->polling_time_;
+    }
     const int64 attrid() const {return data_->attrid_;}
     const std::string url() const {return data_->url_;}
 
@@ -254,7 +264,8 @@ class TaskInfo {
         , polling_time_(10)
         , base_polling_time_(10)
         , create_time_(time(NULL))
-        , last_task_time_(time(NULL)) {
+        , last_task_time_(time(NULL))
+        , total_polling_time_(total_polling_time_ + last_task_time_){
        }
 
      public:
@@ -276,6 +287,7 @@ class TaskInfo {
         int64        last_task_time_;
         int64        create_time_;
         int64        crawl_num_;
+        int64        total_polling_time_;
         std::string  url_;
         void AddRef() {__sync_fetch_and_add(&refcount_, 1);}
 
