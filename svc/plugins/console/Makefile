@@ -129,5 +129,5 @@ time.o :  $(USER_DIR)/logic/time.cc $(USER_DIR)/logic/time.h
 $(PLUGIN) : console_init.o  console_logic.o console_db.o console_kafka.o packet_processing.o logic_unit.o time.o\
 	auto_crawler_infos.o console_factory.o console_infos.o console_stock_manager.o hexun_task_manager.o console_time_manager.o mcontainer.o\
 	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a $(CUSTOM_THIRD_PATH)/librdkafka/librdkafka.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient -lcurl -lmemcached -lmemcachedutil \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient \
 	$^ -o $@

@@ -26,6 +26,7 @@ Loginlogic::Loginlogic() {
 }
 
 Loginlogic::~Loginlogic() {
+  if (logic::SendUtils::socket_lock_!=NULL)
     DeinitThreadrw(logic::SendUtils::socket_lock_);
 }
 

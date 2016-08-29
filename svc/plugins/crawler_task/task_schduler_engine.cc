@@ -66,6 +66,7 @@ bool TaskSchdulerManager::AlterTaskState(const int64 task_id,
         const int8 state) {
     base_logic::WLockGd lk(lock_);
     task_cache_->task_exec_map_[task_id].set_state(state);
+    task_db_->UpdateTaskLog(task_id,state);
     if (TASK_EXECUED == state)
         task_cache_->task_exec_map_.erase(task_id);
     return true;
@@ -91,7 +92,7 @@ void TaskSchdulerManager::RecyclingTask() {
     time_t current_time = time(NULL);
     for (; it != task_cache_->task_exec_map_.end();) {
         base_logic::TaskInfo& task = it->second;
-        task_db_->RecordTaskState(task, 2);
+        //task_db_->RecordTaskState(task, 2);
         if ((task.last_task_time() + 50)
               <  current_time) {
             task.set_state(TASK_WAIT);
@@ -120,7 +121,6 @@ bool TaskSchdulerManager::DistributionTempTask() {
     while (task_cache_->task_temp_list_.size() > 0) {
         base_logic::TaskInfo info = task_cache_->task_temp_list_.front();
         LOG_DEBUG2("url=%s attr_id=%ld", info.url().c_str(), info.attrid());
-        //task_db_->RecordTaskState(info, 1);
         if ((info.state() == TASK_WAIT || info.state() == TASK_EXECUED)&&
             (current_time >= info.totoal_polling_time())) {
             struct TaskUnit* unit = new struct TaskUnit;
@@ -140,6 +140,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
                     (URL_SIZE - 1) : info.url().length());
             task.task_set.push_back(unit);
             info.set_state(TASK_SEND);
+            task_db_->CreateTaskLog(info);
             task_cache_->task_exec_map_[info.id()] = info;
             task_cache_->task_temp_list_.pop_front();
             if (task.task_set.size() % base_num == 0 &&
@@ -184,7 +185,8 @@ bool TaskSchdulerManager::DistributionTask() {
     TASKINFO_MAP::iterator it = task_cache_->task_idle_map_.begin();
     for (; it != task_cache_->task_idle_map_.end(), index < count; it++, index++) {
         base_logic::TaskInfo& info = it->second;
-        task_db_->RecordTaskState(info, 0);
+        //task_db_->RecordTaskState(info, 0);
+        task_db_->CreateTaskLog(info);
         LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
                 info.id(), current_time, info.last_task_time(),
                 info.polling_time(), info.state());

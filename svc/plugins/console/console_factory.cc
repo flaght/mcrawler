@@ -17,6 +17,12 @@ ConsoleFactory::GetInstance() {
   return instance_;
 }
 
+void ConsoleFactory::FreeInstance(){
+  if (instance_ != NULL){
+    delete instance_;
+    instance_ = NULL;
+  }
+}
 ConsoleFactory::ConsoleFactory() {
   Init();
   InitThreadrw(&lock_);

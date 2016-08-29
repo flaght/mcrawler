@@ -36,6 +36,11 @@ class CrawlerTaskDB {
 
     void BatchUpdateTaskInfo(std::list<base_logic::TaskInfo>* list);
 
+    void CreateTaskLog(base_logic::TaskInfo& task);
+
+    void UpdateTaskLog(const int64 task_id,
+                       const int8 state);
+
  public:
     static void CallBackFectchBatchTask(void* param,
             base_logic::Value* value);
