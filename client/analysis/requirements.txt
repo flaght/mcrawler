@@ -1,3 +1,4 @@
+MySQLdb
 beautifulsoup4==4.5.1
 chardet==2.3.0
 happybase==0.9

@@ -24,12 +24,14 @@ class AnalysisConfManager(object):
         self.redis_info = {}
         self.ftp_info = {}
         self.kafka_info = {}
+        self.mysql_info = {}
         self.conf_file = ConfigParser.ConfigParser()
         self.conf_file.read(self.__conf_path)
         self.__read_hbase_info()
         self.__read_redis_info()
         self.__read_ftp_info()
         self.__read_kafka_info()
+        self.__read_mysql_info()
 
     def __read_hbase_info(self):
         """
@@ -75,5 +77,13 @@ class AnalysisConfManager(object):
         self.kafka_info['host'] = host
         name = self.conf_file.get('kafka_info', 'name')
         self.kafka_info['name'] = name
+
+    def __read_mysql_info(self):
+        host = self.conf_file.get('mysql_info', 'host')
+        self.mysql_info['host'] = host
+        username = self.conf_file.get('mysql_info', 'username')
+        self.mysql_info['username'] = username
+        password = self.conf_file.get('mysql_info', 'password')
+        self.mysql_info['password'] = password
 
 analysis_conf = AnalysisConfManager()
