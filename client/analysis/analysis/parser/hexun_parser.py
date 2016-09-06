@@ -39,17 +39,11 @@ class HeXunParser:
     @staticmethod
     def market_total(content):
         soup = BeautifulSoup(content, 'xml')
-        result = {}
-        stock_list = []
-        for item in soup.find_all("Item"):
-            values = {}
-            time_str = item['d']
-            number = int(item['v'])
-            values['time'] = time_str
-            values['vcount'] = number
-            stock_list.append(values)
-        result['list'] = stock_list
-        return json.dumps(result)
+        result = []
+        item = soup.find_all("Item")[0]
+        result.append(item['d'])
+        result.append(item['v'])
+        return result
 
     @staticmethod
     def stock_15(content):
@@ -74,17 +68,12 @@ class HeXunParser:
     @staticmethod
     def stock_total(content):
         soup = BeautifulSoup(content, 'xml')
-        result = {}
-        stock_list = []
+        result = []
         stock_code = soup.find("Title")['id']
-        for item in soup.find_all("Item"):
-            values = {}
-            time_str = item['d']
-            number = int(item['v'])
-            values['time'] = time_str
-            values['vcount'] = number
-            stock_list.append(values)
-        result['list'] = stock_list
-        return json.dumps(result), stock_code
+        item = soup.find_all("Item")[0]
+        result.append(item['d'])
+        result.append(item['v'])
+        result.append(stock_code)
+        return result
 
 
