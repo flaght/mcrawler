@@ -18,7 +18,7 @@ class HeXunParser:
         pass
 
     @staticmethod
-    def market_quater(content):
+    def market_quarter(content):
         soup = BeautifulSoup(content, 'xml')
         result = {}
         stock_list = []
@@ -46,7 +46,7 @@ class HeXunParser:
         return result
 
     @staticmethod
-    def stock_15(content):
+    def stock_quarter(content):
         soup = BeautifulSoup(content, 'xml')
         result = {}
         stock_list = []
