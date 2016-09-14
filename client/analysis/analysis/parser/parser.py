@@ -31,7 +31,7 @@ class Parser:
         ftp_manager_t.connect()
 
         if parse_id == 1:
-            result = HeXunParser.market_quater(content)
+            result = HeXunParser.market_quarter(content)
             path += "heat/hexun/All/market_min/"
         elif parse_id == 2:
             result = HeXunParser.market_total(content)
@@ -46,7 +46,7 @@ class Parser:
             finally:
                 cursor.close()
         elif parse_id == 3:
-            result, stock_code = HeXunParser.stock_15(content)
+            result, stock_code = HeXunParser.stock_quarter(content)
             Parser.create_stock_code_dir(stock_code, "text_storage/heat/hexun/everyone/market_min")
             path += "heat/hexun/everyone/market_min/" + stock_code + "/"
         elif parse_id == 4:
