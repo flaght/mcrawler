@@ -56,6 +56,8 @@ class TaskSchdulerManager {
  private:
     void Init();
 
+    void Test(void);
+
  private:
     struct threadrw_t*                     lock_;
     TaskSchdulerCache*                     task_cache_;

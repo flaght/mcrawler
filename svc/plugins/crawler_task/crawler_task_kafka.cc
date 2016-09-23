@@ -16,7 +16,11 @@ namespace crawler_task_logic {
 
 CrawlerTaskKafka::CrawlerTaskKafka() {
   if (CONSUMER_INIT_SUCCESS
-      != kafka_consumer_.Init(0, "kafka_newsparser_algo", "192.168.1.85:9092", NULL))
+      != kafka_consumer_.Init(
+          0,
+          "kafka_newsparser_algo",
+          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091,192.168.1.84:9091",
+          NULL))
     LOG_ERROR("kafka consumer kafka_task_algo init failed");
   else
     LOG_MSG("kafka consumer kafka_task_algo init success");
@@ -59,7 +63,7 @@ bool CrawlerTaskKafka::FectchBatchTempTask(
     list->push_back(task_info);
     delete task_info_dic;
     base_logic::ValueSerializer::DeleteSerializer(0, engine);
-  } LOG_DEBUG2("update task info, total task num:%d", list->size());
+  }//LOG_DEBUG2("update task info, total task num:%d", list->size());
   return true;
 }
 
@@ -70,12 +74,11 @@ void CrawlerTaskKafka::SetTaskInfo(base_logic::TaskInfo &task_info,
   std::string temp_str;
   base::Time time = base::Time::NowFromSystemTime();
   base::Time::Exploded exploded;
-  int64 task_id = base::SysRadom::GetInstance()->GetRandomID()+
-      exploded.second +
-      (base::SysRadom::GetInstance()->GetRandomID()%360000);
+  int64 task_id = base::SysRadom::GetInstance()->GetRandomID() + exploded.second
+      + (base::SysRadom::GetInstance()->GetRandomID() % 360000);
   task_info.set_id(task_id);
 
-  LOG_DEBUG2("=========>id %lld || task id %lld",task_id, task_info.id());
+  //LOG_DEBUG2("=========>id %lld || task id %lld",task_id, task_info.id());
 
   task_info_dic->GetBigInteger(L"depth", &temp_int);
   task_info.set_depth((int8) temp_int);
@@ -102,7 +105,7 @@ void CrawlerTaskKafka::SetTaskInfo(base_logic::TaskInfo &task_info,
   if (r)
     task_info.set_last_task_time(temp_int);
   task_info.set_type(TEMP_SHORT_TASK);
-  LOG_DEBUG2("url=%s attrid=%ld", temp_str.c_str(), temp_int);
+  //LOG_DEBUG2("url=%s attrid=%ld", temp_str.c_str(), temp_int);
 }
 
 }  // namespace crawler_task_logic

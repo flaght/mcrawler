@@ -199,6 +199,13 @@ class TaskInfo {
         data_->type_ = type;
     }
 
+    void create_task_time(const int64 create_time = 0) {
+      if (create_time==0)
+        data_->create_time_ = time(NULL);
+      else
+        data_->create_time_ = create_time;
+    }
+
     void update_time(const int64 update_time = 0,
             const int64 radom_num = 0,
             bool is_first = false) {

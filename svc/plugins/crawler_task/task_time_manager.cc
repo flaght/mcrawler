@@ -38,7 +38,7 @@ void TaskTimeManager::TaskTimeEvent(int opcode, int time) {
       default:
         break;
     }
-    LOG_DEBUG("task time event");
+    //LOG_DEBUG("task time event");
 }
 
 void TaskTimeManager::TimeFetchTask() {

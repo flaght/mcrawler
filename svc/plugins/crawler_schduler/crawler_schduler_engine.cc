@@ -139,7 +139,7 @@ bool CrawlerSchdulerManager::SetCrawlerSchduler(const int32 id,
     int socket = schduler->socket();
     SOCKET_MAP::iterator it = schduler_cache_->socket_schduler_map_.find(socket);
     if (schduler_cache_->socket_schduler_map_.end() != it) {
-        LOG_DEBUG2("find old socket reconnected, socket=%d", socket);
+        LOG_ERROR2("find old socket reconnected, socket=%d", socket);
         return false;
     }
     schduler_cache_->crawler_schduler_list_.push_back((*schduler));
@@ -231,10 +231,10 @@ bool CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
     	SCHDULER_LIST::iterator it = schduler_cache_->crawler_schduler_list_.begin();
     	    for (; it != schduler_cache_->crawler_schduler_list_.end(); it++) {
     	        if ((*it).is_effective()) {
-    	            LOG_DEBUG2("it->id() = %d it->taskNum = %d", it->id(), it->task_count());
+    	            LOG_MSG2("it->id() = %d it->taskNum = %d", it->id(), it->task_count());
     	        }
     	    }
-    	LOG_DEBUG2("schduler_cache_->crawler_schduler_list_.size=%d", schduler_cache_->crawler_schduler_list_.size());
+    	//LOG_DEBUG2("schduler_cache_->crawler_schduler_list_.size=%d", schduler_cache_->crawler_schduler_list_.size());
     }
 
     base_logic::CrawlerScheduler schduler;
@@ -245,7 +245,7 @@ bool CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
             break;
         }
     }
-    LOG_DEBUG2("schduler->id()=%d", schduler.id());
+    //LOG_DEBUG2("schduler->id()=%d", schduler.id());
     if (schduler.id() == 0)
         return false;
     struct PacketHead* packet = (struct PacketHead*)data;
@@ -279,8 +279,8 @@ bool CrawlerSchdulerManager::CheckHeartPacket(const int socket) {
     	base_logic::CrawlerScheduler& crawler_schduler = schduler_cache_->socket_schduler_map_[socket];
     	base_logic::CrawlerScheduler& crawler_schduler_from_schduler_map = schduler_cache_->crawler_schduler_map_[crawler_schduler.id()];
     	crawler_schduler_from_schduler_map.set_recv_last_time(current_time);
-		LOG_DEBUG2("location of crawler_schduler = %p set crawler schduler recv_last_time socket=%d current_time=%d recv_last_time=%d",
-				&crawler_schduler_from_schduler_map, socket, (int)current_time, crawler_schduler_from_schduler_map.recv_last_time());
+		//LOG_DEBUG2("location of crawler_schduler = %p set crawler schduler recv_last_time socket=%d current_time=%d recv_last_time=%d",
+			//	&crawler_schduler_from_schduler_map, socket, (int)current_time, crawler_schduler_from_schduler_map.recv_last_time());
     	return true;
     }
     SCHDULER_MAP::iterator it =
@@ -289,12 +289,12 @@ bool CrawlerSchdulerManager::CheckHeartPacket(const int socket) {
         base_logic::CrawlerScheduler& schduler = it->second;
         if((current_time - schduler.recv_last_time() > 300)) {
         	schduler.add_send_error_count();
-             LOG_DEBUG2("location of schduler=%p current_time=%d crawler_schduler out of time %d socket=%d send_error_count=%d",
-             		&schduler, (int)current_time, (int)schduler.recv_last_time(), schduler.socket(), schduler.send_error_count());
+             //LOG_DEBUG2("location of schduler=%p current_time=%d crawler_schduler out of time %d socket=%d send_error_count=%d",
+             		//&schduler, (int)current_time, (int)schduler.recv_last_time(), schduler.socket(), schduler.send_error_count());
                 }
 
         if (schduler.send_error_count() > 3) {
-        LOG_DEBUG("close connection");
+        LOG_MSG("close connection");
             schduler.set_is_effective(false);
             base::MapDel<SOCKET_MAP, SOCKET_MAP::iterator, int>(
                           schduler_cache_->socket_schduler_map_, schduler.socket());

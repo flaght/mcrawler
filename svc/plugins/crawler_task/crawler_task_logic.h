@@ -3,6 +3,10 @@
 
 #ifndef KID_CRAWLER_TASK_TASK_LOGIC_
 #define KID_CRAWLER_TASK_TASK_LOGIC_
+
+
+#define DUMP_PACKET 1
+
 #include "core/common.h"
 #include "crawler_task/task_time_manager.h"
 #include "crawler_task/crawler_task_db.h"
@@ -12,7 +16,6 @@
 #include "basic/basictypes.h"
 #include "net/comm_head.h"
 #include "net/packet_processing.h"
-
 
 
 namespace crawler_task_logic {

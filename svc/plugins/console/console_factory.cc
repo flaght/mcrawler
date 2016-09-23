@@ -83,7 +83,7 @@ void ConsoleFactory::DistributionTask() {
   time_t current_time = time(NULL);
   base_logic::RLockGd lk(lock_);
   if (console_cache_->task_idle_map_.size() <= 0) {
-    LOG_DEBUG2("distrubute task current_time=%d console_cache_->task_idle_map_.size=%d",
+    LOG_MSG2("distrubute task current_time=%d console_cache_->task_idle_map_.size=%d",
                (int)current_time, console_cache_->task_idle_map_.size());
     return;
   }

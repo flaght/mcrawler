@@ -8,7 +8,6 @@
 #include "net/errno.h"
 #include "logic/logic_comm.h"
 #include "logic/logic_unit.h"
-#include "algorithm/tea.h"
 
 #define DEFAULT_CONFIG_PATH     "./plugins/manager/manager_config.xml"
 
@@ -83,7 +82,7 @@ bool Managerlogic::OnManagerMessage(struct server *srv, const int socket,
         return false;
     }
     assert(packet);
-    LOG_MSG2("packet->operate_code=%d", (int)packet->operate_code);
+    //LOG_MSG2("packet->operate_code=%d", (int)packet->operate_code);
     switch (packet->operate_code) {
       case CRAWLER_MGR_REG : {
         OnCrawlerReg(srv, socket, packet);
@@ -227,11 +226,11 @@ bool Managerlogic::OnCrawlerAvailableResourceNum(struct server* srv, int socket,
     if (!r)
         return false;
     else {
-    	LOG_DEBUG2("scheduler.id = %d get scheduler task count for test before set %d", scheduler.id(), scheduler.task_count());
+    	//LOG_DEBUG2("scheduler.id = %d get scheduler task count for test before set %d", scheduler.id(), scheduler.task_count());
     	scheduler.set_new_task_count(resource_num->task_num);
-    	LOG_DEBUG2("resource_num->task_num=%d set scheduler task count %d", resource_num->task_num, scheduler.task_count());
+    	//LOG_DEBUG2("resource_num->task_num=%d set scheduler task count %d", resource_num->task_num, scheduler.task_count());
     	crawler_schduler_engine_->GetCrawlerSchduler(resource_num->manage_id, &scheduler);
-    	LOG_DEBUG2("get scheduler task count for test after set %d", scheduler.task_count());
+    	//LOG_DEBUG2("get scheduler task count for test after set %d", scheduler.task_count());
     }
     return true;
 }
