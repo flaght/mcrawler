@@ -7,11 +7,13 @@
 #include "console_db.h"
 #include "console_stock_manager.h"
 #include "hexun_task_manager.h"
+#include "xueqiu_task_manager.h"
 
 typedef std::map<int64, base_logic::TaskInfo> TASKINFO_MAP;
 
 enum PLTFORM {
-  HEXUN_PLATFORM_ID =  60008
+  HEXUN_PLATFORM_ID =  60008,
+  XUEQIU_PLATFORM_ID = 60006
 };
 
 namespace console_logic {
@@ -47,6 +49,7 @@ class ConsoleFactory {
   console_logic::ConsoleStockManager*  stock_mgr_;
   console_logic::ConsoleDB* console_db_;
   console_logic::HexunTaskManager*  hexun_task_mgr_;
+  console_logic::XueqiuTaskManager*  xueqiu_task_mgr_;
 };
 }
 #endif

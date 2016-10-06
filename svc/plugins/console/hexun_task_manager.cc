@@ -6,7 +6,6 @@
 #include "logic/time.h"
 #include "logic/logic_unit.h"
 #include "logic/logic_comm.h"
-#include "logic/time.h"
 #include "basic/radom_in.h"
 
 namespace console_logic {

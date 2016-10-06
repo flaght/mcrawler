@@ -35,6 +35,10 @@ ConsoleFactory::~ConsoleFactory() {
     delete hexun_task_mgr_;
     hexun_task_mgr_ = NULL;
   }
+  if (xueqiu_task_mgr_) {
+    delete xueqiu_task_mgr_;
+    xueqiu_task_mgr_ = NULL;
+  }
   if (console_db_) {
     delete console_db_;
     console_db_ = NULL;
@@ -49,6 +53,7 @@ ConsoleFactory::~ConsoleFactory() {
 void ConsoleFactory::Init() {
   stock_mgr_ = console_logic::ConsoleStockEngine::GetConsoleStockManager();
   hexun_task_mgr_ = new console_logic::HexunTaskManager();
+  xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager();
   console_cache_ = new ConsoleCache();
 }
 
@@ -103,6 +108,10 @@ void ConsoleFactory::DistributionTask() {
       switch (info.attrid()) {
         case HEXUN_PLATFORM_ID: {
           hexun_task_mgr_->CreateTask(info);
+          break;
+        }
+        case XUEQIU_PLATFORM_ID: {
+          xueqiu_task_mgr_->CreateTask(info);
           break;
         }
         default:
