@@ -63,9 +63,9 @@ class TextStorage(threading.Thread):
         self.start()
 
     def upload_data(self, data, path, filename):
-        self.wait_queue.append({'data':data,
-                                'path':path,
-                                'filename':filename})
+        self.wait_queue.append({'data': data,
+                                'path': path,
+                                'filename': filename})
         self.is_stop = False
         self.run()
 
@@ -128,11 +128,12 @@ class TextStorage(threading.Thread):
             match = self.detecotr.detect()
             charset_name = match.getName()
 
-            #data = data.decode(charset_name)
-            #zlib
+            # data = data.decode(charset_name)
+            # zlib
+
             compressed = zlib.compress(data)
-            obj = {'charset':charset_name,
-                   'content':base64.b32encode(compressed),
+            obj = {'charset': charset_name,
+                   'content': base64.b32encode(compressed),
                    'timestamp': time.time()}
             jsons = json.dumps(obj)
             f.write(jsons)
@@ -151,13 +152,15 @@ class TextStorage(threading.Thread):
         self.ftp.quit()
         self.is_stop = True
 
+
 def main():
     '''test'''
     text_storage = TextStorage('61.147.80.233', 21, 'crawler', '123456x', 5)
     text_storage.upload_data('dsadasdasd', '3/20151116/', 'hello2.html')
-#     text_storage.close()
+    #     text_storage.close()
     while True:
         time.sleep(0.5)
+
 
 if __name__ == '__main__':
     main()
