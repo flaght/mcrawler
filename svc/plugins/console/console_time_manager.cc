@@ -19,7 +19,7 @@ void ConsoleTimeManager::ConsoleTimeEvent(int opcode, int time) {
       factory_->DistributionTask();
       break;
     case TIME_FETCH_TASK:
-      factory_->TimeFetchTask();
+      //factory_->TimeFetchTask();
       break;
     default:
       break;

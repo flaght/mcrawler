@@ -62,6 +62,7 @@ void ConsoleFactory::InitParam(config::FileConfig* config) {
   stock_mgr_->Init(console_db_);
   TimeFetchTask();
   console_db_->FetchBatchRuleTask(&console_cache_->task_idle_map_);
+  console_db_->FetchBatchCountTask(&console_cache_->task_idle_map_);
 
 }
 
@@ -100,10 +101,13 @@ void ConsoleFactory::DistributionTask() {
   for (; it != console_cache_->task_idle_map_.end(), index < count;
       it++, index++) {
     base_logic::TaskInfo& info = it->second;
+    if (info.is_finish()==0)
+      continue;
     LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
     if (info.last_task_time() + info.polling_time() < current_time) {
+      info.release_isfinish();
       info.update_time(0,base::SysRadom::GetInstance()->GetRandomID());
       switch (info.attrid()) {
         case HEXUN_PLATFORM_ID: {

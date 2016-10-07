@@ -3,16 +3,15 @@
 
 #include "console_kafka.h"
 #include "logic/logic_comm.h"
+#include "basic/radom_in.h"
 
 namespace console_logic {
 
 ConsoleKafka::ConsoleKafka() {
   if (PRODUCER_INIT_SUCCESS
       != kafka_producer_.Init(
-          0,
-          "kafka_newsparser_algo",
-          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091",
-          NULL))
+          0, "kafka_newsparser_algo",
+          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091", NULL))
     LOG_ERROR("producer kafka_newsparser_algo init failed");
   else
     LOG_ERROR("producer kafka_newsparser_algo init success");
@@ -20,6 +19,21 @@ ConsoleKafka::ConsoleKafka() {
 
 ConsoleKafka::~ConsoleKafka() {
   kafka_producer_.Close();
+}
+
+void ConsoleKafka::AddTaskInfo(const base_logic::TaskInfo& task,
+                               const int64 base_polling_time,
+                               const std::string& url) {
+  base_logic::TaskInfo btask;
+  btask.DeepCopy(task);
+  btask.set_url(url);
+  btask.set_base_polling_time(task.base_polling_time());
+  btask.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
+  //LOG_DEBUG2("btask polling_time %lld",btask.polling_time());
+  AddKafkaTaskInfo(task.id(), task.attrid(), 1, 1, task.method(),
+                   task.machine(), task.storage(), task.is_login(),
+                   task.is_over(), btask.polling_time(), btask.last_task_time(),
+                   url);
 }
 
 bool ConsoleKafka::AddKafkaTaskInfo(const int64 task_id, const int64 attr_id,

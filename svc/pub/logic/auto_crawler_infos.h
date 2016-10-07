@@ -172,7 +172,7 @@ class TaskInfo {
     void set_storage(const int8 storage) {data_->storage_ = storage;}
     void set_method(const int8 method) {data_->method_ = method;}
     void set_is_login(const int8 is_login) {data_->is_login_ = is_login;}
-    void set_is_finish(const int8 is_finish) {data_->is_finish_ = is_finish;}
+    void set_is_finish(const int64 is_finish) {data_->is_finish_ = is_finish;}
     void set_is_forge(const int8 is_forge) {data_->is_forge_ = is_forge;}
     void set_is_over(const int8 is_over) {data_->is_over_ = is_over;}
     void set_state(const int8 state) {data_->state_ = state;}
@@ -233,10 +233,10 @@ class TaskInfo {
     const int8 method() const {return data_->method_;}
     const int8 state() const {return data_->state_;}
     const int8 is_login() const {return data_->is_login_;}
-    const int8 is_finish() const {return data_->is_finish_;}
     const int8 is_forge() const {return data_->is_forge_;}
     const int8 is_over() const {return data_->is_over_;}
     const int8 type() const {return data_->type_;}
+    const int64 is_finish() const {return data_->is_finish_;}
     const int64 create_time() const {return data_->create_time_;}
     const int64 polling_time() const {return data_->polling_time_;}
     const int64 base_polling_time() const {return data_->base_polling_time_;}
@@ -246,6 +246,10 @@ class TaskInfo {
     }
     const int64 attrid() const {return data_->attrid_;}
     const std::string url() const {return data_->url_;}
+
+    void release_isfinish(){
+        __sync_fetch_and_sub(&data_->is_finish_, 1);
+    }
 
     void ValueSerialization(base_logic::DictionaryValue* dict);
 
@@ -283,11 +287,11 @@ class TaskInfo {
         int8         machine_;
         int8         storage_;
         int8         is_login_;
-        int8         is_finish_;
         int8         is_forge_;
         int8         is_over_;
         int8         state_;
         int8         method_;
+        int64        is_finish_;
         int64        attrid_;
         int64        polling_time_;
         int64        base_polling_time_;

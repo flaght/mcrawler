@@ -86,6 +86,7 @@ void TaskInfo::ValueSerialization(base_logic::DictionaryValue* dict) {
   dict->GetCharInteger(L"isforge", &data_->is_forge_);
   dict->GetCharInteger(L"isover", &data_->is_over_);
   dict->GetCharInteger(L"method", &data_->method_);
+  dict->GetBigInteger(L"isfinish", &data_->is_finish_);
 
   int8 cur_depth = 1;
   if (dict->GetCharInteger(L"cur_depth", &cur_depth))
