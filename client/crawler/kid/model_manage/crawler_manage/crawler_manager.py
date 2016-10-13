@@ -121,11 +121,24 @@ class CrawlerManager(threading.Thread):
             if cnt % 14 == 0:
                 task_cnt = 0
                 mqs = self.spider.crawler.engine.slot.scheduler.mqs.queues.get(0, None)
+
+                """
+                修改成返回当前任务数
+                """
+                if mqs:
+                    task_cnt = len(mqs.q)
+                else:
+                    task_cnt = 0
+
+                """
                 if mqs:
                     if len(mqs.q) < kid_setting.DEVICE_MAX_TASK:
                         task_cnt = kid_setting.DEVICE_MAX_TASK - len(mqs.q)
                 else:
                     task_cnt = kid_setting.DEVICE_MAX_TASK
+
+                """
+
                 signal = KidSignal(sub_model_opcode=SubModelOpcode.sock_send_model,
                                    opcode=KidSockOpcode.c_task_num,
                                    data=task_cnt)
