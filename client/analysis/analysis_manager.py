@@ -70,13 +70,6 @@ class AnalysisManager:
 
 
 def main():
-    """
-    data = "PCOKWVRKZEXUTTCJZYX42K2RWIZDNMJUGXLFCSRLZJGM2SZJK2ZMUK6NZGUQKAGZIAGBY==="
-    data = base64.b32decode(data)
-    data = zlib.decompress(data)
-    data = data.decode("ISO-8859-1")
-    print data
-    """
     # type: () -> object
     analysis = AnalysisManager()
     #analysis.run()
