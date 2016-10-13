@@ -1,12 +1,12 @@
 # -.- coding:utf-8 -.-
 """
 Created on 2016年7月28日
-
 @author: kerry
 """
 import json
 from kafka import KafkaConsumer
 from analysis.base.analysis_conf_manager import analysis_conf
+
 
 class KafkaConsumerManager():
     """
