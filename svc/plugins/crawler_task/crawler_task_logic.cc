@@ -147,9 +147,9 @@ bool CrawlerTasklogic::OnBroadcastClose(struct server *srv, const int socket) {
 }
 
 bool CrawlerTasklogic::OnIniTimer(struct server *srv) {
-    LOG_DEBUG("init crawler_task timer");
+    //LOG_DEBUG("init crawler_task timer");
     if (srv->add_time_task != NULL) {
-	LOG_DEBUG("srv->add_time_task != NULL");
+        //LOG_DEBUG("srv->add_time_task != NULL");
         srv->add_time_task(srv, "crawler_task", TIME_DISTRIBUTION_TASK, 10, -1);
         srv->add_time_task(srv, "crawler_task", TIME_FECTCH_TASK, 30, -1);
         srv->add_time_task(srv, "crawler_task", TIME_RECYCLINGTASK, 20, -1);

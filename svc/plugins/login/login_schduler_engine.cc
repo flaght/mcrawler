@@ -64,7 +64,7 @@ void LoginSchdulerManager::SetBatchCookie(const int64 plat_id, const int64 from)
     std::list<base_logic::LoginCookie> list;
     int64& plat_update_time = login_cache_->update_time_map_[plat_id];
     login_db_->GetCookie(&list, plat_id, from, 3000, plat_update_time);
-    LOG_DEBUG2("mysql data list size %d", list.size());
+    //LOG_DEBUG2("mysql data list size %d", list.size());
     while (list.size() > 0) {
         base_logic::LoginCookie info = list.front();
         list.pop_front();
@@ -114,7 +114,7 @@ void LoginSchdulerManager::FecthAndSortCookies(const int64 count,
         std::list<base_logic::LoginCookie>& src_list,
         std::list<base_logic::LoginCookie>* dst_list, int64 plat_id) {
     time_t current_time = time(NULL);
-    LOG_DEBUG2("location of src_list %p", &src_list);
+    //LOG_DEBUG2("location of src_list %p", &src_list);
     std::list<base_logic::LoginCookie>::iterator it =
             src_list.begin();
     int32 index = 0;

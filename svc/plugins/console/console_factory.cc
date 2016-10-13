@@ -17,6 +17,12 @@ ConsoleFactory::GetInstance() {
   return instance_;
 }
 
+void ConsoleFactory::FreeInstance(){
+  if (instance_ != NULL){
+    delete instance_;
+    instance_ = NULL;
+  }
+}
 ConsoleFactory::ConsoleFactory() {
   Init();
   InitThreadrw(&lock_);
@@ -28,6 +34,10 @@ ConsoleFactory::~ConsoleFactory() {
   if (hexun_task_mgr_) {
     delete hexun_task_mgr_;
     hexun_task_mgr_ = NULL;
+  }
+  if (xueqiu_task_mgr_) {
+    delete xueqiu_task_mgr_;
+    xueqiu_task_mgr_ = NULL;
   }
   if (console_db_) {
     delete console_db_;
@@ -43,6 +53,7 @@ ConsoleFactory::~ConsoleFactory() {
 void ConsoleFactory::Init() {
   stock_mgr_ = console_logic::ConsoleStockEngine::GetConsoleStockManager();
   hexun_task_mgr_ = new console_logic::HexunTaskManager();
+  xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager();
   console_cache_ = new ConsoleCache();
 }
 
@@ -51,6 +62,7 @@ void ConsoleFactory::InitParam(config::FileConfig* config) {
   stock_mgr_->Init(console_db_);
   TimeFetchTask();
   console_db_->FetchBatchRuleTask(&console_cache_->task_idle_map_);
+  console_db_->FetchBatchCountTask(&console_cache_->task_idle_map_);
 
 }
 
@@ -77,7 +89,7 @@ void ConsoleFactory::DistributionTask() {
   time_t current_time = time(NULL);
   base_logic::RLockGd lk(lock_);
   if (console_cache_->task_idle_map_.size() <= 0) {
-    LOG_DEBUG2("distrubute task current_time=%d console_cache_->task_idle_map_.size=%d",
+    LOG_MSG2("distrubute task current_time=%d console_cache_->task_idle_map_.size=%d",
                (int)current_time, console_cache_->task_idle_map_.size());
     return;
   }
@@ -89,14 +101,21 @@ void ConsoleFactory::DistributionTask() {
   for (; it != console_cache_->task_idle_map_.end(), index < count;
       it++, index++) {
     base_logic::TaskInfo& info = it->second;
+    if (info.is_finish()==0)
+      continue;
     LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
     if (info.last_task_time() + info.polling_time() < current_time) {
+      info.release_isfinish();
       info.update_time(0,base::SysRadom::GetInstance()->GetRandomID());
       switch (info.attrid()) {
         case HEXUN_PLATFORM_ID: {
           hexun_task_mgr_->CreateTask(info);
+          break;
+        }
+        case XUEQIU_PLATFORM_ID: {
+          xueqiu_task_mgr_->CreateTask(info);
           break;
         }
         default:

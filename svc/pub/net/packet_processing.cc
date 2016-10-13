@@ -731,7 +731,7 @@ bool PacketProsess::UnpackStream(const void* packet_stream, int32 len,
         int32 i = 0;
         int32 num = set_size / CRAWLSTORAGEINFO_SIZE;
         int32 len = 0;
-        LOG_DEBUG2("set_size = %d num = %d", set_size, num);
+        //LOG_DEBUG2("set_size = %d num = %d", set_size, num);
         for (; i< num; i++) {
             struct StorageUnit* unit = new struct StorageUnit;
             temp = 0;
@@ -746,7 +746,7 @@ bool PacketProsess::UnpackStream(const void* packet_stream, int32 len,
             int32 name_len = (temp) < (STORAGE_INFO_SIZE - 1) ?
                     (temp) : (STORAGE_INFO_SIZE - 1);
             unit->key_name[name_len] = '\0';
-            LOG_DEBUG2("task_id=%ld, attr_id=%ld, max_depth=%d, cur_depth=%d, key_name=%s temp=%d", unit->task_id, unit->attr_id, unit->max_depth, unit->cur_depth, unit->key_name, temp);
+            //LOG_DEBUG2("task_id=%ld, attr_id=%ld, max_depth=%d, cur_depth=%d, key_name=%s temp=%d", unit->task_id, unit->attr_id, unit->max_depth, unit->cur_depth, unit->key_name, temp);
 
 
             temp = 0;
@@ -755,7 +755,7 @@ bool PacketProsess::UnpackStream(const void* packet_stream, int32 len,
             int32 pos_len = (temp) < (URL_SIZE - 1) ?
                     (temp) : (URL_SIZE - 1);
             unit->pos_name[pos_len] = '\0';
-            LOG_DEBUG2("pos_name=%s temp=%d", unit->pos_name, temp);
+            //LOG_DEBUG2("pos_name=%s temp=%d", unit->pos_name, temp);
 
             vCrawlStorageInfo->storage_set.push_back(unit);
         }
@@ -959,7 +959,7 @@ bool PacketProsess::UnpackStream(const void* packet_stream, int32 len,
 		  FILLHEAD();
 		  vCrawlerAvailableResource->manage_id = in.Read32();
 		  vCrawlerAvailableResource->task_num = in.Read16();
-		  LOG_DEBUG2("vCrawlerAvailableResource->task_num = %d", (int)vCrawlerAvailableResource->task_num);
+		  //LOG_DEBUG2("vCrawlerAvailableResource->task_num = %d", (int)vCrawlerAvailableResource->task_num);
 		  break;
       }
 
@@ -1040,6 +1040,7 @@ void PacketProsess::DeletePacket(const void* packet_stream, int32 len,
       case ASSIGNMENT_SINGLE_TASK: {
         struct AssignmentSingleTask* vAssignmentSingleTask = (struct AssignmentSingleTask*)packet_head;
         delete vAssignmentSingleTask;
+        break;
       }
 
       case ASSIGNMENT_MULTI_TASK : {
@@ -1148,8 +1149,7 @@ void PacketProsess::DeletePacket(const void* packet_stream, int32 len,
 
 
 void PacketProsess::DumpPacket(const struct PacketHead* packet_head) {
-//#if defined DEBUG || defined _DEBUG
-#if 1
+#if defined DUMP_PACKET
     int16 packet_length = packet_head->packet_length;
     int8 is_zip_encrypt = packet_head->is_zip_encrypt;
     int8 type = packet_head->type;
@@ -1454,7 +1454,7 @@ void PacketProsess::DumpPacket(const struct PacketHead* packet_head) {
 }
 
 void PacketProsess::HexEncode(const void *bytes, size_t size) {
-//  #if defined HEXDUMP
+#if defined HEXDUMP
     struct PacketHead* head = (struct PacketHead*)bytes;
     static const char kHexChars[] = "0123456789ABCDEF";
     std::string sret(size*3, '\0');
@@ -1469,7 +1469,7 @@ void PacketProsess::HexEncode(const void *bytes, size_t size) {
     }
     LOG_DEBUG2("===start====\nopcode[%d]:\n%s\n====end====\n",
                 head->operate_code, sret.c_str());
-//  #endif
+#endif
 
 }
 

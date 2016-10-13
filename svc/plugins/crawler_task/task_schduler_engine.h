@@ -53,8 +53,12 @@ class TaskSchdulerManager {
 
     void CheckIsEffective();
 
+    void DumpTask();
+
  private:
     void Init();
+
+    void Test(void);
 
  private:
     struct threadrw_t*                     lock_;

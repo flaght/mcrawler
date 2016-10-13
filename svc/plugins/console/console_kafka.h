@@ -5,6 +5,7 @@
 #define KID_CONSOLE_KAFKA_H__
 
 #include <list>
+#include "logic/auto_crawler_infos.h"
 #include "queue/kafka_producer.h"
 
 namespace console_logic {
@@ -14,6 +15,10 @@ class ConsoleKafka {
   ConsoleKafka();
   virtual ~ConsoleKafka();
  public:
+  void AddTaskInfo(const base_logic::TaskInfo& task,
+                   const int64 base_polling_time,
+                   const std::string& url);
+
   bool AddKafkaTaskInfo(const int64 task_id, const int64 attr_id,
                         const int32 max_depth, const int32 cur_depth,
                         const int32 method,const int32 machine,const int32 storage,

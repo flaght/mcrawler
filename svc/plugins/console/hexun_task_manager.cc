@@ -6,7 +6,6 @@
 #include "logic/time.h"
 #include "logic/logic_unit.h"
 #include "logic/logic_comm.h"
-#include "logic/time.h"
 #include "basic/radom_in.h"
 
 namespace console_logic {
@@ -70,7 +69,7 @@ void HexunTaskManager::CreateAllStockHeat(const base_logic::TaskInfo& task,
     btask.set_base_polling_time(task.base_polling_time());
     btask.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
 
-    LOG_DEBUG2("%s",btask.url().c_str());
+    //LOG_DEBUG2("%s",btask.url().c_str());
     kafka_producer_.AddKafkaTaskInfo(task.id(), task.attrid(), 1, 1,
                                      task.method(), task.machine(),
                                      task.storage(), 0, 0, btask.polling_time(),
@@ -174,13 +173,13 @@ void HexunTaskManager::CreateSecondaryStockHeat(
                                                   stock.symbol());
       stock_url = logic::SomeUtils::StringReplace(stock_url, time_symbol,
                                                   time_format);
-      LOG_DEBUG2("%s",stock_url.c_str());
+      //LOG_DEBUG2("%s",stock_url.c_str());
 
       btask.DeepCopy(task);
       btask.set_url(stock_url);
       btask.set_base_polling_time(task.base_polling_time());
       btask.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
-      LOG_DEBUG2("btask polling_time %lld",btask.polling_time());
+      //LOG_DEBUG2("btask polling_time %lld",btask.polling_time());
       kafka_producer_.AddKafkaTaskInfo(btask.id(), btask.attrid(), 1, 1,
                                        btask.method(), btask.machine(),
                                        btask.storage(), 0, 0,

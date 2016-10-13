@@ -33,7 +33,7 @@ void ConsoleStockManager::Init(console_logic::ConsoleDB* console_db) {
 }
 
 void ConsoleStockManager::Test() {
-  LOG_DEBUG2("stock_map_ %lld", stock_cache_->stock_map_.size());
+  //LOG_DEBUG2("stock_map_ %lld", stock_cache_->stock_map_.size());
 }
 
 void ConsoleStockManager::Swap(std::list<console_logic::StockInfo>& list) {

@@ -2,6 +2,10 @@
 //  Created on: 2015年9月16日 Author: kerry
 #ifndef KID_MANAGER_MANAGER_LOGIC_
 #define KID_MANAGER_MANAGER_LOGIC_
+
+#define DUMP_PACKET 1
+
+
 #include "core/common.h"
 #include "manager/manager_db.h"
 #include "crawler_schduler/crawler_schduler_engine.h"

@@ -26,6 +26,7 @@ Loginlogic::Loginlogic() {
 }
 
 Loginlogic::~Loginlogic() {
+  if (logic::SendUtils::socket_lock_!=NULL)
     DeinitThreadrw(logic::SendUtils::socket_lock_);
 }
 
@@ -80,7 +81,7 @@ bool Loginlogic::OnLoginMessage(struct server *srv, const int socket,
     }
 
     assert(packet);
-    LOG_DEBUG("dump packet packet");
+    //LOG_DEBUG("dump packet packet");
     net::PacketProsess::DumpPacket(packet);
     switch (packet->operate_code) {
         case LOGIN_REQUIRE_COOKIES: {
@@ -147,7 +148,7 @@ bool Loginlogic::OnDeliverCookies(struct server* srv, int socket,
     delivered_login_cookie_set.attr_id = attr_id;
 
     std::list<base_logic::LoginCookie> list;
-    LOG_DEBUG2("before FectchBacthCookies attr_id=%ld", attr_id);
+    //LOG_DEBUG2("before FectchBacthCookies attr_id=%ld", attr_id);
     schduler_mgr->PrintInfo();
     bool r = schduler_mgr->FectchBacthCookies(attr_id, amount, &list);
     if (!r) {
@@ -158,7 +159,7 @@ bool Loginlogic::OnDeliverCookies(struct server* srv, int socket,
     schduler_mgr->PrintInfo();
     int32 base_num = 5;
     int32 count = list.size();
-    LOG_DEBUG2("list.size=%d", list.size());
+    //LOG_DEBUG2("list.size=%d", list.size());
     int32 index = 0;
 
     while (list.size() > 0) {

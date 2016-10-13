@@ -21,10 +21,23 @@ class ConsoleDB {
   bool FetchBatchRuleTask(std::map<int64,base_logic::TaskInfo>* map,
                           const bool is_new = false);
 
+  bool FetchBatchCountTask(std::map<int64,base_logic::TaskInfo>* map,
+                           const bool is_new = false);
+
+
   bool FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
                           const bool is_new = false);
 
+
   bool FectchStCode(std::map<std::string, console_logic::StockInfo>& map);
+
+ private:
+  bool FetchBatchListTask(const std::string& sql,
+                          std::list<int64,base_logic::TaskInfo>* list);
+
+  template<typename ContainerTrains>
+  bool FetchBatchTaskT(const std::string& sql,
+                    typename ContainerTrains::container_type* container);
 
  public:
   static void CallBackFetchBatchRuleTask(void* param, base_logic::Value* value);

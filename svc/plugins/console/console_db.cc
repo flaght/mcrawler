@@ -8,6 +8,24 @@
 
 namespace console_logic {
 
+class TaskContainerMap {
+ public:
+  typedef std::map<int64,base_logic::TaskInfo> container_type;
+  static inline void c_func(container_type* container,
+                            base_logic::TaskInfo& task) {
+    (*container)[task.id()] = task;
+  }
+};
+
+class TaskContainerList {
+ public:
+  typedef std::list<base_logic::TaskInfo> container_type;
+  static inline void c_func(container_type* container,
+                            base_logic::TaskInfo& task) {
+    (*container).push_back(task);
+  }
+};
+
 ConsoleDB::ConsoleDB(config::FileConfig* config) {
   mysql_engine_ = base_logic::DataEngine::Create(MYSQL_TYPE);
   mysql_engine_->InitParam(config->mysql_db_list_);
@@ -20,7 +38,8 @@ ConsoleDB::~ConsoleDB(void) {
   }
 }
 
-bool ConsoleDB::FectchStCode(std::map<std::string, console_logic::StockInfo>& map) {
+bool ConsoleDB::FectchStCode(
+    std::map<std::string, console_logic::StockInfo>& map) {
   bool r = false;
   scoped_ptr<base_logic::DictionaryValue> dict(
       new base_logic::DictionaryValue());
@@ -49,52 +68,48 @@ bool ConsoleDB::FectchStCode(std::map<std::string, console_logic::StockInfo>& ma
   return true;
 }
 
+bool ConsoleDB::FetchBatchCountTask(std::map<int64,base_logic::TaskInfo>* map,
+                           const bool is_new) {
+  std::string sql;
+  if (is_new)
+    sql = "call proc_FecthNewTask()";
+  else
+    sql = "call proc_FecthCountTask()";
+
+  return FetchBatchTaskT<TaskContainerMap>(sql,map);
+}
+
+bool ConsoleDB::FetchBatchRuleTask(std::map<int64, base_logic::TaskInfo>* map,
+                                   const bool is_new) {
+  std::string sql;
+  if (is_new)
+    sql = "call proc_FecthNewTask()";
+  else
+    sql = "call proc_FecthBatchRuleTask()";
+
+  return FetchBatchTaskT<TaskContainerMap>(sql,map);
+
+}
 
 bool ConsoleDB::FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
                                    const bool is_new) {
-  bool r = false;
-  scoped_ptr<base_logic::DictionaryValue> dict(
-      new base_logic::DictionaryValue());
-
   std::string sql;
   if (is_new)
     sql = "call proc_FecthNewTask()";
   else
     sql = "call proc_FecthBatchRuleTask()";
-  base_logic::ListValue* listvalue;
-  dict->SetString(L"sql", sql);
-  r = mysql_engine_->ReadData(0, (base_logic::Value*) (dict.get()),
-                              CallBackFetchBatchRuleTask);
-  if (!r)
-    return false;
-  dict->GetList(L"resultvalue", &listvalue);
-  while (listvalue->GetSize()) {
-    base_logic::TaskInfo task;
-    base_logic::Value* result_value;
-    listvalue->Remove(0, &result_value);
-    base_logic::DictionaryValue* dict_result_value =
-        (base_logic::DictionaryValue*) (result_value);
-    task.ValueSerialization(dict_result_value);
-    task.set_type(MAIN_LASTING_TASK);
-    list->push_back(task);
-    delete dict_result_value;
-    dict_result_value = NULL;
-  }
-
-  return true;
+  return FetchBatchTaskT<TaskContainerList>(sql,list);
 }
 
-bool ConsoleDB::FetchBatchRuleTask(std::map<int64,base_logic::TaskInfo>* map,
-                                   const bool is_new) {
+template<typename ContainerTrains>
+bool ConsoleDB::FetchBatchTaskT(
+    const std::string& sql,
+    typename ContainerTrains::container_type* container) {
   bool r = false;
+  typedef ContainerTrains traits;
   scoped_ptr<base_logic::DictionaryValue> dict(
       new base_logic::DictionaryValue());
 
-  std::string sql;
-  if (is_new)
-    sql = "call proc_FecthNewTask()";
-  else
-    sql = "call proc_FecthBatchRuleTask()";
   base_logic::ListValue* listvalue;
   dict->SetString(L"sql", sql);
   r = mysql_engine_->ReadData(0, (base_logic::Value*) (dict.get()),
@@ -110,8 +125,7 @@ bool ConsoleDB::FetchBatchRuleTask(std::map<int64,base_logic::TaskInfo>* map,
         (base_logic::DictionaryValue*) (result_value);
     task.ValueSerialization(dict_result_value);
     task.set_type(MAIN_LASTING_TASK);
-    //list->push_back(task);
-    (*map)[task.id()] = task;
+    traits::c_func(container,task);
     delete dict_result_value;
     dict_result_value = NULL;
   }
@@ -182,8 +196,12 @@ void ConsoleDB::CallBackFetchBatchRuleTask(void* param,
                                    logic::SomeUtils::StringToIntChar(rows[8]));
       if (rows[9] != NULL)
         info_value->SetBigInteger(L"polling_time", atoll(rows[9]) / 2);
+
       if (rows[10] != NULL)
-        info_value->SetString(L"url", rows[10]);
+        info_value->SetBigInteger(L"isfinish",
+                                   atoll(rows[0]));
+      if (rows[11] != NULL)
+        info_value->SetString(L"url", rows[11]);
       list->Append((base_logic::Value*) (info_value));
     }
   }

@@ -5,6 +5,7 @@
 #define KID_LOGIC_UNIT_H_
 
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <string>
 #include "basic/basictypes.h"
 #include "basic/native_library.h"
@@ -49,6 +50,34 @@ class SomeUtils {
         break;
     }
     return str;
+  }
+
+  static inline std::string StringReplaceUnit(std::string& str,
+                                              const std::string& old_value,
+                                              const std::string& new_value) {
+    for (std::string::size_type pos(0); pos != std::string::npos; pos +=
+        new_value.length()) {
+
+      if ((pos = str.find(old_value, pos)) != std::string::npos) {
+        str.replace(pos, old_value.length(), new_value);
+        break;
+      } else
+        break;
+    }
+    return str;
+  }
+
+  static inline bool GetIPAddress(const int socket, std::string& ip,
+                                  int& port) {
+    struct sockaddr_in sa;
+    socklen_t len;
+    len = sizeof(sa);
+    if (!getpeername(socket, (struct sockaddr *) &sa, &len)) {
+      ip = inet_ntoa(sa.sin_addr);
+      port = ntohs(sa.sin_port);
+      return true;
+    }
+    return false;
   }
 };
 

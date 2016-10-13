@@ -21,10 +21,12 @@ CUSTOM_THIRD_PATH = $(LIB_DIR)/mylib/third_party
 LINK_PATHS = -L./ -L/usr/local/libmemcached-1.0.7/lib/  -L/usr/lib64/mysql
 
 # Flags passed to the preprocessor.
-CPPFLAGS += -isystem -shared -fPIC -D_DB_POOL_ -D_DEBUG -DUSR_LOG_MSG -D_DIC_POOL_ -D_REENTRANT -D_GNU_SOURCE -DUSR_LOG_ERROR -DUSR_LOG_MSG -DNET_WORK -DHEAD_SHORT
+#CPPFLAGS += -isystem -shared -fPIC -D_DB_POOL_ -D_DEBUG -DUSR_LOG_MSG -D_DIC_POOL_ -D_REENTRANT -D_GNU_SOURCE -DUSR_LOG_ERROR -DUSR_LOG_MSG -DNET_WORK -DHEAD_SHORT
+CPPFLAGS += -isystem -shared -fPIC -D_DB_POOL_ -D_DIC_POOL_ -D_REENTRANT -D_GNU_SOURCE -DUSR_LOG_ERROR -DUSR_LOG_MSG -DNET_WORK -DHEAD_SHORT
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g  -Wextra -pthread -shared -fPIC
+#CXXFLAGS += -g  -Wextra -pthread -shared -fPIC
+CXXFLAGS += -Wextra -pthread -shared -fPIC
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -104,5 +106,5 @@ error_comm.o :  $(USER_DIR)/net/error_comm.cc $(USER_DIR)/net/error_comm.h
 $(PLUGIN) : crawler_schduler_engine.o  auto_crawler_infos.o packet_processing.o logic_unit.o\
 	auto_crawler_infos.o\
 	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -lpthread -ldl -liconv -lmysqlclient -lcurl -lmemcached -lmemcachedutil \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient \
 	$^ -o $@
