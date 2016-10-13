@@ -2,6 +2,7 @@
 //  Created on: 2015年9月23日 Author: kerry
 #include "crawler_task/task_schduler_engine.h"
 #include <string>
+#include "logic/time.h"
 #include "logic/logic_comm.h"
 #include "logic/logic_unit.h"
 #include "basic/template.h"
@@ -25,10 +26,32 @@ TaskSchdulerManager::~TaskSchdulerManager() {
 
 void TaskSchdulerManager::Init() {
   InitThreadrw(&lock_);
+  //Test();
 }
 
 void TaskSchdulerManager::Test() {
-  base_logic::TaskInfo info;
+  std::list<base_logic::TaskInfo> list;
+  int32 count = 100;
+  while (count > 0){
+    base_logic::TaskInfo info;
+    info.set_id(count);
+    info.set_is_finish(0);
+    info.set_attrid(60008);
+    info.set_is_login(0);
+    info.set_method(2);
+    info.create_task_time(base::SysRadom::GetInstance()->GetRandomID()/10000);
+    list.push_back(info);
+    count--;
+  }
+  list.sort(base_logic::TaskInfo::create_time_sort);
+
+  while (list.size() > 0){
+    base_logic::TaskInfo info = list.front();
+    list.pop_front();
+    LOG_DEBUG2("count %lld create_time %lld", info.id(),
+               info.create_time());
+  }
+ /* base_logic::TaskInfo info;
   info.set_id(base::SysRadom::GetInstance()->GetRandomID());
   info.set_url(
       "http://focus.stock.hexun.com/service/init_xml.jsp?scode=600149&date=2016-08-08");
@@ -37,7 +60,7 @@ void TaskSchdulerManager::Test() {
   info.set_is_login(0);
   info.set_method(2);
   info.set_base_polling_time(30);
-  task_cache_->task_temp_list_.push_back(info);
+  task_cache_->task_temp_list_.push_back(info);*/
 
 }
 void TaskSchdulerManager::InitDB(crawler_task_logic::CrawlerTaskDB* task_db) {
@@ -114,6 +137,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
   LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
   if (task_cache_->task_temp_list_.size() <= 0)
     return true;
+
   if (!crawler_schduler_engine_->CheckOptimalCrawler()) {
     LOG_MSG("no have OptimalCrawler");
     return true;
@@ -125,6 +149,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
   base_logic::WLockGd lk(lock_);
 
   task_cache_->task_temp_list_.sort(base_logic::TaskInfo::cmp);
+  //DumpTask();
   while (task_cache_->task_temp_list_.size() > 0) {
     base_logic::TaskInfo info = task_cache_->task_temp_list_.front();
     //LOG_DEBUG2("url=%s attr_id=%ld", info.url().c_str(), info.attrid());
@@ -243,6 +268,32 @@ bool TaskSchdulerManager::DistributionTask() {
 
 void TaskSchdulerManager::CheckIsEffective() {
   crawler_schduler_engine_->CheckIsEffective();
+}
+
+void TaskSchdulerManager::DumpTask(){
+  task_cache_->task_temp_list_.sort(base_logic::TaskInfo::cmp);
+  TASKINFO_LIST::iterator it = task_cache_->task_temp_list_.begin();
+  for (; it != task_cache_->task_temp_list_.end();it++){
+    base_logic::TaskInfo task = (*it);
+    time_t polling_time = task.totoal_polling_time();
+    time_t create_time = task.create_time();
+    struct tm* polling_local = localtime(&polling_time);
+    struct tm* create_local = localtime(&create_time);
+
+    LOG_DEBUG2("==> id-->%lld  polling_time-->%lld(%d-%d %d:%d:%d) create_time-->%lld(%d-%d %d:%d:%d)",
+               task.id(), task.totoal_polling_time(),
+               polling_local->tm_mon+1,
+               polling_local->tm_mday,
+               polling_local->tm_hour,
+               polling_local->tm_min,
+               polling_local->tm_sec,
+               task.create_time(),
+               create_local->tm_mon+1,
+               create_local->tm_mday,
+               create_local->tm_hour,
+               create_local->tm_min,
+               create_local->tm_sec);
+  }
 }
 
 }  // namespace crawler_task_logic

@@ -53,6 +53,8 @@ class TaskSchdulerManager {
 
     void CheckIsEffective();
 
+    void DumpTask();
+
  private:
     void Init();
 

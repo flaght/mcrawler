@@ -142,5 +142,60 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
   exploded->millisecond  = milliseconds % kMillisecondsPerSecond;
 }
 
+// Time -----------------------------------------------------------------------
+
+// static
+Time Time::FromTimeT(time_t tt) {
+  if (tt == 0)
+    return Time();  // Preserve 0 so we can tell it doesn't exist.
+  return Time((tt * kMicrosecondsPerSecond) + kTimeTToMicrosecondsOffset);
+}
+
+time_t Time::ToTimeT() const {
+  if (us_ == 0)
+    return 0;  // Preserve 0 so we can tell it doesn't exist.
+  return (us_ - kTimeTToMicrosecondsOffset) / kMicrosecondsPerSecond;
+}
+
+// static
+Time Time::FromDoubleT(double dt) {
+  return Time(static_cast<int64>((dt *
+                                  static_cast<double>(kMicrosecondsPerSecond)) +
+                                 kTimeTToMicrosecondsOffset));
+}
+
+double Time::ToDoubleT() const {
+  if (us_ == 0)
+    return 0;  // Preserve 0 so we can tell it doesn't exist.
+  return (static_cast<double>(us_ - kTimeTToMicrosecondsOffset) /
+          static_cast<double>(kMicrosecondsPerSecond));
+}
+
+Time Time::LocalMidnight() const {
+  Exploded exploded;
+  LocalExplode(&exploded);
+  exploded.hour = 0;
+  exploded.minute = 0;
+  exploded.second = 0;
+  exploded.millisecond = 0;
+  return FromLocalExploded(exploded);
+}
+
+// static
+bool Time::FromString(const wchar_t* time_string, Time* parsed_time) {
+  //DCHECK((time_string != NULL) && (parsed_time != NULL));
+  /*std::string ascii_time_string = SysWideToUTF8(time_string);
+  if (ascii_time_string.length() == 0)
+    return false;
+  PRTime result_time = 0;
+  PRStatus result = PR_ParseTimeString(ascii_time_string.c_str(), PR_FALSE,
+                                       &result_time);
+  if (PR_SUCCESS != result)
+    return false;
+  result_time += kTimeTToMicrosecondsOffset;
+  *parsed_time = Time(result_time);*/
+  return true;
+}
+
 
 }  // namespace base

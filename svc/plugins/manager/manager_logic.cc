@@ -152,9 +152,16 @@ bool Managerlogic::OnTemplateReg(const char* mac, const char* password,
         const int socket, const int32 type, const int64 session_id) {
     SCHDULERTYPE scheduler;
     std::string token;
+    std::string ip;
+    int port;
+    logic::SomeUtils::GetIPAddress(socket,ip, port);
+
     scheduler.set_mac(std::string(mac));
     scheduler.set_password(std::string(password));
     scheduler.set_socket(socket);
+    scheduler.set_port(port);
+    scheduler.set_ip(ip);
+
     if (type == 0)
         manager_db_->CrawlerManagerLogin(
                 reinterpret_cast<void*>(&scheduler));
@@ -227,7 +234,7 @@ bool Managerlogic::OnCrawlerAvailableResourceNum(struct server* srv, int socket,
         return false;
     else {
     	//LOG_DEBUG2("scheduler.id = %d get scheduler task count for test before set %d", scheduler.id(), scheduler.task_count());
-    	scheduler.set_new_task_count(resource_num->task_num);
+    	scheduler.set_available_resource(resource_num->task_num);
     	//LOG_DEBUG2("resource_num->task_num=%d set scheduler task count %d", resource_num->task_num, scheduler.task_count());
     	crawler_schduler_engine_->GetCrawlerSchduler(resource_num->manage_id, &scheduler);
     	//LOG_DEBUG2("get scheduler task count for test after set %d", scheduler.task_count());
