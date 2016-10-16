@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Created on 20160812
 
@@ -5,23 +6,24 @@ Created on 20160812
 """
 import datetime
 
-from common import ftp_manager
 from hexun_parser import HeXunParser
-
+from xueqiu_parser import xq_parser
+from schduler.storage.text_storage_model import TextStorage
+from base.analysis_conf_manager import analysis_conf
 
 class Parser:
-    prefix = "~/text_storage/"
+    prefix = "result_storage/"
 
     def __init__(self):
-        pass
+        self.text_storage = TextStorage(analysis_conf.ftp_info['host'],
+                           analysis_conf.ftp_info['port'],
+                           analysis_conf.ftp_info['user'],
+                           analysis_conf.ftp_info['passwd'])
 
-    @staticmethod
-    def parse(parse_id, content):
+    def parse(self, parse_id, content):
         path = Parser.prefix
         result = ""
         today_str = datetime.datetime.now().strftime("%Y-%m-%d")
-        ftp_manager_t = ftp_manager.ftp_manager_t
-        ftp_manager_t.connect()
 
         if parse_id == 1:
             result = HeXunParser.parse_xml(content)
@@ -34,6 +36,8 @@ class Parser:
             path += "60005/stock15/"
         elif parse_id == 4:
             path += "60005/stocktotal/"
-
-        ftp_manager_t.write(path + today_str, result)
-        ftp_manager_t.close()
+        elif parse_id == 60006:
+            [subpath, name, result] = xq_parser.parser_search(content)
+            if result is not None and len(result) > 0:
+                self.text_storage.upload_data(result,
+                                              subpath,name)

@@ -6,8 +6,8 @@ Created on 2016年7月28日
 """
 import json
 from kafka import KafkaConsumer
-from analysis.base.analysis_conf_manager import analysis_conf
-
+from kafka import SimpleClient, SimpleProducer, SimpleConsumer
+from base.analysis_conf_manager import analysis_conf
 
 class KafkaConsumerManager():
     """
@@ -19,6 +19,7 @@ class KafkaConsumerManager():
         self.client = client
         self.host = host
         self.coname = coname
+        print self.host
         # self.setDaemon(True)
         # self.start()
 
@@ -44,15 +45,22 @@ class KafkaConsumerManager():
                 try:
                     json_info = json.loads(message[6])
                     self.callback(json_info)
-                    # self.process_data(json_info)
+                    self.process_data(json_info)
                 except Exception, e:
                     print e
 
 
+
 def main():
-    t = KafkaConsumerManager(None, analysis_conf.kafka_info['host'],
-                             analysis_conf.kafka_info['name'])
-    t.run()
+    #t = KafkaConsumerManager(None, analysis_conf.kafka_info['host'],
+    #                        analysis_conf.kafka_info['name'])
+
+    #t.run()
+
+    #t = KafkaConsumerManager(None, "61.147.114.85:9092,61.147.114.80:9092,61.147.114.81:9092",
+    #                       "newsparser_task_algo")
+
+    #t.run()
     # threads = [
     #    KafkaConsumer(None,'61.147.80.85:9092','algo_cralwer_kafka')
     #          ]
@@ -75,4 +83,4 @@ if __name__ == '__main__':
     main()
 
 kafka_consumer_t = KafkaConsumerManager(None, analysis_conf.kafka_info['host'],
-                                        analysis_conf.kafka_info['name'])
+                                       analysis_conf.kafka_info['name'])
