@@ -19,7 +19,7 @@ CrawlerTaskKafka::CrawlerTaskKafka() {
       != kafka_consumer_.Init(
           0,
           "kafka_newsparser_algo",
-          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091,192.168.1.84:9091",
+          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091",
           NULL))
     LOG_ERROR("kafka consumer kafka_task_algo init failed");
   else

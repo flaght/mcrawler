@@ -15,7 +15,7 @@ StroagerKafka::StroagerKafka() {
       != kafka_producer_.Init(
           0,
           "newsparser_task_algo",
-          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091,192.168.1.84:9091",
+          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091",
           NULL))
     LOG_ERROR("producer newsparser_task_test init failed");
   else

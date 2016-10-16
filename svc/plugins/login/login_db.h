@@ -1,5 +1,5 @@
 //  Copyright (c) 2015-2016 The kid Authors. All rights reserved.
-//    2 //  Created on: 2016Äê1ÔÂ5ÈÕ Author: kerry
+//    2 //  Created on: 2015.1.5 Author: kerry
 
 
 #ifndef _LOGIN_DB_H_
@@ -7,10 +7,11 @@
 
 #include <string>
 #include <list>
+#include "storage/data_engine.h"
+#include "config/config.h"
 #include "basic/basictypes.h"
 #include "logic/base_values.h"
 #include "basic/scoped_ptr.h"
-#include "storage/storage_controller_engine.h"
 #include "logic/auto_crawler_infos.h"
 
 
@@ -23,7 +24,7 @@ enum attr_id {
 
 class LoginDB {
  public:
-    LoginDB();
+    LoginDB(config::FileConfig* config);
     virtual ~LoginDB();
 
  public:
@@ -40,7 +41,8 @@ class LoginDB {
             base_logic::Value* value);
 
  private:
-    scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
+    //scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
+    base_logic::DataEngine*      mysql_engine_;
 };
 
 }  //  namespace login_logic

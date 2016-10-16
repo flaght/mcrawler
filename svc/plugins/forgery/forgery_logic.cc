@@ -31,14 +31,14 @@ Forgerylogic::~Forgerylogic() {
 bool Forgerylogic::Init() {
     bool r = false;
     crawler_schduler::SchdulerEngine* (*engine) (void);
-    forgery_db_.reset(new forgery_logic::ForgeryDB());
     std::string path = DEFAULT_CONFIG_PATH;
     config::FileConfig* config = config::FileConfig::GetFileConfig();
     if (config == NULL)
         return false;
     r = config->LoadConfig(path);
-    base_logic::DataControllerEngine::Init(config);
 
+    forgery_db_.reset(new forgery_logic::ForgeryDB(config));
+    //base_logic::DataControllerEngine::Init(config);
     basic::libhandle handle_lancher = NULL;
     handle_lancher = basic::load_native_library(
             "./crawler_schduler/crawler_schduler.so");

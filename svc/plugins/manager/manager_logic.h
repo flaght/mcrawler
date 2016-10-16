@@ -71,7 +71,7 @@ class Managerlogic {
     bool Init();
     scoped_ptr<manager_logic::ManagerDB>    manager_db_;
     crawler_schduler::SchdulerEngine*       crawler_schduler_engine_;
-    scoped_ptr<base_logic::DataControllerEngine>          redis_engine_;
+    //scoped_ptr<base_logic::DataControllerEngine>          redis_engine_;
 };
 }  // namespace manager_logic
 

@@ -105,17 +105,14 @@ task_schduler_engine.o : ./task_schduler_engine.cc ./task_schduler_engine.h
 task_time_manager.o : ./task_time_manager.cc ./task_time_manager.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./task_time_manager.cc $(INCLUDE_PATHS)
 
-mem_controller.o :  $(USER_DIR)/storage/mem_controller.cc $(USER_DIR)/storage/mem_controller.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/mem_controller.cc $(INCLUDE_PATHS)
+data_engine.o :  $(USER_DIR)/storage/data_engine.cc $(USER_DIR)/storage/data_engine.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/data_engine.cc $(INCLUDE_PATHS)
 
-mysql_controller.o :  $(USER_DIR)/storage/mysql_controller.cc $(USER_DIR)/storage/mysql_controller.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/mysql_controller.cc $(INCLUDE_PATHS)
+data_mysql_engine.o :  $(USER_DIR)/storage/data_mysql_engine.cc $(USER_DIR)/storage/data_mysql_engine.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/data_mysql_engine.cc $(INCLUDE_PATHS)
 	
-redis_controller.o :  $(USER_DIR)/storage/redis_controller.cc $(USER_DIR)/storage/redis_controller.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/redis_controller.cc $(INCLUDE_PATHS)
-	
-storage_controller_engine.o :  $(USER_DIR)/storage/storage_controller_engine.cc $(USER_DIR)/storage/storage_controller_engine.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/storage_controller_engine.cc $(INCLUDE_PATHS)
+mysql_pool.o :  $(USER_DIR)/storage/mysql_pool.cc $(USER_DIR)/storage/mysql_pool.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/mysql_pool.cc $(INCLUDE_PATHS)
 	
 auto_crawler_infos.o :  $(USER_DIR)/logic/auto_crawler_infos.cc $(USER_DIR)/logic/auto_crawler_infos.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/auto_crawler_infos.cc $(INCLUDE_PATHS)
@@ -130,8 +127,8 @@ time.o :  $(USER_DIR)/logic/time.cc $(USER_DIR)/logic/time.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/time.cc $(INCLUDE_PATHS)
 
 $(PLUGIN) : crawler_task_init.o  crawler_task_logic.o crawler_task_db.o crawler_task_kafka.o task_schduler_engine.o task_time_manager.o\
-	packet_processing.o logic_unit.o auto_crawler_infos.o mem_controller.o mysql_controller.o\
-	redis_controller.o storage_controller_engine.o time.o\
+	packet_processing.o logic_unit.o auto_crawler_infos.o\
+	mysql_pool.o data_mysql_engine.o data_engine.o time.o\
 	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a  $(CUSTOM_THIRD_PATH)/librdkafka/librdkafka.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient -lcurl  \
 	$^ -o $@
