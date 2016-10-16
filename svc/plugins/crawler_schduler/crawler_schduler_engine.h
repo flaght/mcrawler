@@ -41,7 +41,7 @@ class SchdulerEngine {
 
     virtual bool CheckHeartPacket(const int socket) = 0;
 
-    virtual bool SendOptimalCrawler(const void* data, const int32 len) = 0;
+    virtual int32 SendOptimalCrawler(const void* data, const int32 len) = 0;
 
     virtual bool CheckOptimalCrawler() = 0;
 
@@ -75,7 +75,7 @@ class SchdulerEngineImpl : public SchdulerEngine {
 
     bool CheckHeartPacket(const int socket);
 
-    bool SendOptimalCrawler(const void* data, const int32 len);
+    int32 SendOptimalCrawler(const void* data, const int32 len);
 
     bool CheckOptimalCrawler();
 
@@ -119,7 +119,7 @@ class CrawlerSchdulerManager {
 
     bool CheckHeartPacket(const int socket);
 
-    bool SendOptimalCrawler(const void* data, const int32 len);
+    int32 SendOptimalCrawler(const void* data, const int32 len);
 
     bool CheckOptimalCrawler();
 

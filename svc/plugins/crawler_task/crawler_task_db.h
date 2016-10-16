@@ -7,8 +7,9 @@
 #include <string>
 #include <list>
 #include <map>
-#include "storage/storage_controller_engine.h"
+#include "storage/data_engine.h"
 #include "logic/auto_crawler_infos.h"
+#include "config/config.h"
 #include "basic/basictypes.h"
 #include "logic/base_values.h"
 #include "basic/scoped_ptr.h"
@@ -19,7 +20,7 @@ typedef std::map<int32, base_logic::TaskPlatDescription> TASKPLAT_MAP;
 
 class CrawlerTaskDB {
  public:
-    CrawlerTaskDB();
+    CrawlerTaskDB(config::FileConfig* config);
     virtual ~CrawlerTaskDB();
 
  public:
@@ -36,7 +37,9 @@ class CrawlerTaskDB {
 
     void BatchUpdateTaskInfo(std::list<base_logic::TaskInfo>* list);
 
-    void CreateTaskLog(base_logic::TaskInfo& task);
+    void CreateTaskLog(const int32 id, base_logic::TaskInfo& task);
+
+    void CreateTaskLog(const int32 id, std::list<base_logic::TaskInfo>* list);
 
     void UpdateTaskLog(const int64 task_id,
                        const int8 state);
@@ -52,7 +55,8 @@ class CrawlerTaskDB {
                 base_logic::Value* value);
 
  private:
-    scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
+    //scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
+    base_logic::DataEngine* mysql_engine_;
     TASKPLAT_MAP   task_platform_;
     bool task_platform_inited_;
 };

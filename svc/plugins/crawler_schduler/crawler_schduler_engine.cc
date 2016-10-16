@@ -74,7 +74,7 @@ bool SchdulerEngineImpl::CheckHeartPacket(const int socket) {
   return schduler_mgr->CheckHeartPacket(socket);
 }
 
-bool SchdulerEngineImpl::SendOptimalCrawler(const void* data, const int32 len) {
+int32 SchdulerEngineImpl::SendOptimalCrawler(const void* data, const int32 len) {
   CrawlerSchdulerManager* schduler_mgr =
       CrawlerSchdulerEngine::GetCrawlerSchdulerManager();
   return schduler_mgr->SendOptimalCrawler(data, len);
@@ -218,11 +218,11 @@ bool CrawlerSchdulerManager::SetRecvErrorCount(int socket) {
   return true;
 }
 
-bool CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
+int32 CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
                                                 const int32 len) {
   base_logic::WLockGd lk(lock_);
   if (schduler_cache_->crawler_schduler_list_.size() <= 0)
-    return false;
+    return 0;
 
   {
     SCHDULER_LIST::iterator it =
@@ -245,7 +245,7 @@ bool CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
   }
   //LOG_DEBUG2("schduler->id()=%d", schduler.id());
   if (schduler.id() == 0)
-    return false;
+    return 0;
   struct PacketHead* packet = (struct PacketHead*) data;
   struct AssignmentMultiTask* multi_task = (struct AssignmentMultiTask*) packet;
   multi_task->id = schduler.id();
@@ -254,12 +254,13 @@ bool CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
     schduler.set_is_effective(false);
     LOG_MSG2("schduler.socket()=%d,error msg=%s", (int) schduler.socket(),
              strerror(errno));
+    return -1;
   } else {
     schduler.add_task_num_count();
     schduler_cache_->crawler_schduler_list_.sort(
         base_logic::CrawlerScheduler::cmp);
+    return schduler.id();
   }
-  return true;
 }
 
 bool CrawlerSchdulerManager::CheckOptimalCrawler() {
