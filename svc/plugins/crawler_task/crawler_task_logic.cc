@@ -30,15 +30,15 @@ CrawlerTasklogic::~CrawlerTasklogic() {
 bool CrawlerTasklogic::Init() {
     bool r = false;
     crawler_schduler::SchdulerEngine* (*crawler_engine) (void);
-    task_db_.reset(new crawler_task_logic::CrawlerTaskDB());
-    task_time_mgr_.reset(
-        new crawler_task_logic::TaskTimeManager(task_db_.get()));
     std::string path = DEFAULT_CONFIG_PATH;
     config::FileConfig* config = config::FileConfig::GetFileConfig();
     if (config == NULL)
         return false;
     r = config->LoadConfig(path);
-    base_logic::DataControllerEngine::Init(config);
+    //base_logic::DataControllerEngine::Init(config);
+    task_db_.reset(new crawler_task_logic::CrawlerTaskDB(config));
+    task_time_mgr_.reset(
+           new crawler_task_logic::TaskTimeManager(task_db_.get()));
 
     std::string cralwer_library = "./crawler_schduler/crawler_schduler.so";
     std::string cralwer_func = "GetCrawlerSchdulerEngine";

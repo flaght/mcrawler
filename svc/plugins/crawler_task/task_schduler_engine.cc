@@ -32,35 +32,34 @@ void TaskSchdulerManager::Init() {
 void TaskSchdulerManager::Test() {
   std::list<base_logic::TaskInfo> list;
   int32 count = 100;
-  while (count > 0){
+  while (count > 0) {
     base_logic::TaskInfo info;
     info.set_id(count);
     info.set_is_finish(0);
     info.set_attrid(60008);
     info.set_is_login(0);
     info.set_method(2);
-    info.create_task_time(base::SysRadom::GetInstance()->GetRandomID()/10000);
+    info.create_task_time(base::SysRadom::GetInstance()->GetRandomID() / 10000);
     list.push_back(info);
     count--;
   }
   list.sort(base_logic::TaskInfo::create_time_sort);
 
-  while (list.size() > 0){
+  while (list.size() > 0) {
     base_logic::TaskInfo info = list.front();
     list.pop_front();
-    LOG_DEBUG2("count %lld create_time %lld", info.id(),
-               info.create_time());
+    LOG_DEBUG2("count %lld create_time %lld", info.id(), info.create_time());
   }
- /* base_logic::TaskInfo info;
-  info.set_id(base::SysRadom::GetInstance()->GetRandomID());
-  info.set_url(
-      "http://focus.stock.hexun.com/service/init_xml.jsp?scode=600149&date=2016-08-08");
-  info.set_is_finish(0);
-  info.set_attrid(60008);
-  info.set_is_login(0);
-  info.set_method(2);
-  info.set_base_polling_time(30);
-  task_cache_->task_temp_list_.push_back(info);*/
+  /* base_logic::TaskInfo info;
+   info.set_id(base::SysRadom::GetInstance()->GetRandomID());
+   info.set_url(
+   "http://focus.stock.hexun.com/service/init_xml.jsp?scode=600149&date=2016-08-08");
+   info.set_is_finish(0);
+   info.set_attrid(60008);
+   info.set_is_login(0);
+   info.set_method(2);
+   info.set_base_polling_time(30);
+   task_cache_->task_temp_list_.push_back(info);*/
 
 }
 void TaskSchdulerManager::InitDB(crawler_task_logic::CrawlerTaskDB* task_db) {
@@ -116,7 +115,7 @@ bool TaskSchdulerManager::AlterCrawlNum(const int64 task_id, const int64 num) {
   return r;
 }
 
-void TaskSchdulerManager::RecyclingTask() { //只回收临时任务
+void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
   base_logic::WLockGd lk(lock_);
   TASKINFO_MAP::iterator it = task_cache_->task_exec_map_.begin();
   time_t current_time = time(NULL);
@@ -144,6 +143,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
   }
   int32 base_num = 5;
   time_t current_time = time(NULL);
+  std::list<base_logic::TaskInfo> log_list;
   struct AssignmentMultiTask task;
   MAKE_HEAD(task, ASSIGNMENT_MULTI_TASK, 0, 0, 0, 0);
   base_logic::WLockGd lk(lock_);
@@ -176,11 +176,16 @@ bool TaskSchdulerManager::DistributionTempTask() {
       task.task_set.push_back(unit);
       info.set_state(TASK_SEND);
       info.create_task_time();
-      task_db_->CreateTaskLog(info);
+      log_list.push_back(info);
       task_cache_->task_exec_map_[info.id()] = info;
       task_cache_->task_temp_list_.pop_front();
       if (task.task_set.size() % base_num == 0 && task.task_set.size() != 0) {
-        crawler_schduler_engine_->SendOptimalCrawler((const void*) &task, 0);
+        int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
+            (const void*) &task, 0);
+        if (crawler_id > 0) {
+          //新增日志
+          task_db_->CreateTaskLog(crawler_id, &log_list);
+        }
         net::PacketProsess::ClearCrawlerTaskList(&task);
       }
     } else {
@@ -202,7 +207,9 @@ bool TaskSchdulerManager::DistributionTask() {
   int32 base_num = 5;
   time_t current_time = time(NULL);
   if (task_cache_->task_idle_map_.size() <= 0) {
-    LOG_MSG2("distrubute task current_time=%d task_cache_->task_idle_map_.size=%d", (int)current_time, task_cache_->task_idle_map_.size());
+    LOG_MSG2(
+        "distrubute task current_time=%d task_cache_->task_idle_map_.size=%d",
+        (int) current_time, task_cache_->task_idle_map_.size());
     return true;
   }
   if (!crawler_schduler_engine_->CheckOptimalCrawler()) {
@@ -210,7 +217,9 @@ bool TaskSchdulerManager::DistributionTask() {
     return true;
   }
 
-  LOG_MSG2("distrubute task current_time=%d task_cache_->task_idle_map_.size=%d", (int)current_time, task_cache_->task_idle_map_.size());
+  LOG_MSG2(
+      "distrubute task current_time=%d task_cache_->task_idle_map_.size=%d",
+      (int) current_time, task_cache_->task_idle_map_.size());
   struct AssignmentMultiTask task;
   MAKE_HEAD(task, ASSIGNMENT_MULTI_TASK, 0, 0, 0, 0);
   base_logic::WLockGd lk(lock_);
@@ -223,8 +232,8 @@ bool TaskSchdulerManager::DistributionTask() {
     //task_db_->RecordTaskState(info, 0);
     //task_db_->CreateTaskLog(info);
     LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
-        info.id(), current_time, info.last_task_time(),
-        info.polling_time(), info.state());
+             info.id(), current_time, info.last_task_time(),
+             info.polling_time(), info.state());
     if ((info.state() == TASK_WAIT
         || info.last_task_time() + info.polling_time() < current_time)) {
       LOG_MSG2("DistributionTask task_id=%d", info.id());
@@ -270,29 +279,23 @@ void TaskSchdulerManager::CheckIsEffective() {
   crawler_schduler_engine_->CheckIsEffective();
 }
 
-void TaskSchdulerManager::DumpTask(){
+void TaskSchdulerManager::DumpTask() {
   task_cache_->task_temp_list_.sort(base_logic::TaskInfo::cmp);
   TASKINFO_LIST::iterator it = task_cache_->task_temp_list_.begin();
-  for (; it != task_cache_->task_temp_list_.end();it++){
+  for (; it != task_cache_->task_temp_list_.end(); it++) {
     base_logic::TaskInfo task = (*it);
     time_t polling_time = task.totoal_polling_time();
     time_t create_time = task.create_time();
     struct tm* polling_local = localtime(&polling_time);
     struct tm* create_local = localtime(&create_time);
 
-    LOG_DEBUG2("==> id-->%lld  polling_time-->%lld(%d-%d %d:%d:%d) create_time-->%lld(%d-%d %d:%d:%d)",
-               task.id(), task.totoal_polling_time(),
-               polling_local->tm_mon+1,
-               polling_local->tm_mday,
-               polling_local->tm_hour,
-               polling_local->tm_min,
-               polling_local->tm_sec,
-               task.create_time(),
-               create_local->tm_mon+1,
-               create_local->tm_mday,
-               create_local->tm_hour,
-               create_local->tm_min,
-               create_local->tm_sec);
+    LOG_DEBUG2(
+        "==> id-->%lld  polling_time-->%lld(%d-%d %d:%d:%d) create_time-->%lld(%d-%d %d:%d:%d)",
+        task.id(), task.totoal_polling_time(), polling_local->tm_mon + 1,
+        polling_local->tm_mday, polling_local->tm_hour, polling_local->tm_min,
+        polling_local->tm_sec, task.create_time(), create_local->tm_mon + 1,
+        create_local->tm_mday, create_local->tm_hour, create_local->tm_min,
+        create_local->tm_sec);
   }
 }
 

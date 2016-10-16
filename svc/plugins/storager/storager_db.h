@@ -7,8 +7,9 @@
 #include <string>
 #include <list>
 #include "net/comm_head.h"
-#include "storage/storage_controller_engine.h"
+#include "storage/data_engine.h"
 #include "logic/auto_crawler_infos.h"
+#include "config/config.h"
 #include "basic/basictypes.h"
 #include "logic/base_values.h"
 #include "basic/scoped_ptr.h"
@@ -18,7 +19,7 @@ namespace storager_logic {
 
 class StroagerDB {
  public:
-    StroagerDB();
+    StroagerDB(config::FileConfig* config);
     virtual ~StroagerDB();
 
  public:
@@ -40,7 +41,8 @@ class StroagerDB {
                 base_logic::Value* value);
 
  private:
-    scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
+    base_logic::DataEngine*      mysql_engine_;
+    //scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
 };
 }  // namespace storager_logic
 

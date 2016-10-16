@@ -3,16 +3,20 @@
 #include <mysql.h>
 #include "manager/manager_db.h"
 #include "basic/basic_util.h"
-#include "storage/storage.h"
-#include "storage/storage_controller_engine.h"
 
 namespace manager_logic {
 
-ManagerDB::ManagerDB() {
-  mysql_engine_.reset(base_logic::DataControllerEngine::Create(MYSQL_TYPE));
+ManagerDB::ManagerDB(config::FileConfig* config) {
+  //mysql_engine_.reset(base_logic::DataControllerEngine::Create(MYSQL_TYPE));
+  mysql_engine_ = base_logic::DataEngine::Create(MYSQL_TYPE);
+  mysql_engine_->InitParam(config->mysql_db_list_);
 }
 
 ManagerDB::~ManagerDB() {
+  if (mysql_engine_) {
+    delete mysql_engine_;
+    mysql_engine_ = NULL;
+  }
 }
 
 bool ManagerDB::CrawlerManagerLogin(void* data) {

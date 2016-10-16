@@ -29,13 +29,13 @@ Managerlogic::~Managerlogic() {
 bool Managerlogic::Init() {
     bool r = false;
     crawler_schduler::SchdulerEngine* (*crawler_engine) (void);
-    manager_db_.reset(new manager_logic::ManagerDB());
     std::string path = DEFAULT_CONFIG_PATH;
     config::FileConfig* config = config::FileConfig::GetFileConfig();
     if (config == NULL)
         return false;
     r = config->LoadConfig(path);
-    base_logic::DataControllerEngine::Init(config);
+    manager_db_.reset(new manager_logic::ManagerDB(config));
+    //base_logic::DataControllerEngine::Init(config);
     std::string cralwer_library = "./crawler_schduler/crawler_schduler.so";
     std::string cralwer_func = "GetCrawlerSchdulerEngine";
     crawler_engine = (crawler_schduler::SchdulerEngine* (*) (void))
@@ -44,7 +44,7 @@ bool Managerlogic::Init() {
     crawler_schduler_engine_ = (*crawler_engine) ();
     if (crawler_schduler_engine_ == NULL)
         assert(0);
-    redis_engine_.reset(base_logic::DataControllerEngine::Create(REIDS_TYPE));
+    //redis_engine_.reset(base_logic::DataControllerEngine::Create(REIDS_TYPE));
     return true;
 }
 

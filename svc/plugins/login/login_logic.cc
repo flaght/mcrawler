@@ -37,8 +37,8 @@ bool Loginlogic::Init() {
     if (config == NULL)
         return false;
     r = config->LoadConfig(path);
-    base_logic::DataControllerEngine::Init(config);
-    login_db_.reset(new login_logic::LoginDB());
+    //base_logic::DataControllerEngine::Init(config);
+    login_db_.reset(new login_logic::LoginDB(config));
 
     login_logic::LoginSchdulerManager* schduler_mgr =
             login_logic::LoginSchdulerEngine::GetLoginSchdulerManager();

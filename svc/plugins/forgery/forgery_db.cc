@@ -5,16 +5,20 @@
 #include <mysql.h>
 #include "forgery/forgery_db.h"
 #include "logic/logic_unit.h"
-#include "storage/storage.h"
-#include "storage/storage_controller_engine.h"
 
 namespace forgery_logic {
 
-ForgeryDB::ForgeryDB() {
-    mysql_engine_.reset(base_logic::DataControllerEngine::Create(MYSQL_TYPE));
+ForgeryDB::ForgeryDB(config::FileConfig* config) {
+    //mysql_engine_.reset(base_logic::DataControllerEngine::Create(MYSQL_TYPE));
+  mysql_engine_ = base_logic::DataEngine::Create(MYSQL_TYPE);
+  mysql_engine_->InitParam(config->mysql_db_list_);
 }
 
 ForgeryDB::~ForgeryDB() {
+  if (mysql_engine_) {
+    delete mysql_engine_;
+    mysql_engine_ = NULL;
+  }
 }
 
 bool ForgeryDB::FectchBatchForgeryIP(std::list<base_logic::ForgeryIP>* list) {

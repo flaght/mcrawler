@@ -6,8 +6,9 @@
 
 #include <string>
 #include <list>
-#include "storage/storage_controller_engine.h"
+#include "storage/data_engine.h"
 #include "logic/auto_crawler_infos.h"
+#include "config/config.h"
 #include "basic/basictypes.h"
 #include "logic/base_values.h"
 #include "basic/scoped_ptr.h"
@@ -16,7 +17,7 @@ namespace forgery_logic {
 
 class ForgeryDB {
  public:
-    ForgeryDB();
+    ForgeryDB(config::FileConfig* config);
     virtual ~ForgeryDB();
  public:
     bool FectchBatchForgeryIP(std::list<base_logic::ForgeryIP>* list);
@@ -30,7 +31,7 @@ class ForgeryDB {
                 base_logic::Value* value);
 
  private:
-     scoped_ptr<base_logic::DataControllerEngine> mysql_engine_;
+    base_logic::DataEngine*      mysql_engine_;
 };
 }  // namespace forgery_logic
 
