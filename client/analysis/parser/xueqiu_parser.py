@@ -11,14 +11,11 @@ Created on 201601015
 """
 
 
-
-
 class XueQiuParser:
-
     def __init__(self):
         pass
 
-    def parser_search(self,content):
+    def parser_search(self, content):
         """
 
         Returns:
@@ -28,21 +25,31 @@ class XueQiuParser:
         data = ""
         jobj = json.loads(content)
         if (jobj.has_key("error_code")):
-            return None,None
-        symbol = jobj.get("symbol","")
-        count = jobj.get("page","")
-        dlist = jobj.get("list","")
+            return None, None
+        symbol = jobj.get("symbol", "")
+        count = jobj.get("page", "")
+        dlist = jobj.get("list", "")
         for d in dlist:
             data += self.__parser_search_list_unit(d)
         return prefix + '/' + str(symbol) + '/', str(count), data
 
-    def __parser_search_list_unit(self,unit):
-        id = unit.get("id","")
+    def __parser_search_text_unit(self, unit):
+        id = unit.get("id", "")
         user_id = unit.get("user_id","")
-        create_time = unit.get("created_at","")
+        create_time = unit.get("created_at", "")
+        title = unit.get("title", "")
         text = unit.get("text", "")
-        return "{0},{1},{2},{3}\r\n".format(str(id), str(user_id), str(create_time), str(text))
+        return "{0},{1},{2},{3},{4}".format(str(id),
+                                                str(user_id), str(create_time), str(title), str(text))
 
+    def __parser_search_list_unit(self, unit):
+        data = ""
+        data += self.__parser_search_text_unit(unit)
+        if unit.get("retweeted_status", "") <> None:
+            data += ","
+            data += self.__parser_search_text_unit(unit.get("retweeted_status", ""))
+        data += "\r\n"
+        return data
 
 
 def main():
@@ -63,6 +70,5 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 
 xq_parser = XueQiuParser()
