@@ -6,6 +6,7 @@ Created on 2016年8月6日
 """
 from base.ftp_ext import FTPExt
 from base.analysis_conf_manager import analysis_conf
+from base.mlog import mlog
 import io
 
 
@@ -19,10 +20,31 @@ class FTPManager:
         self.ftp = FTPExt()
         self.is_connected = False
 
+
+
+    def __u_connect(self):
+        self.ftp.set_pasv(True, self.host)
+        try:
+            if not self.ftp.connect(self.host, self.port):
+                mlog.log().error("connect ftp server failed")
+                return False
+            if not self.ftp.login(self.name, self.pwd):
+                mlog.log().error("login ftp server failed")
+                return False
+            return  True
+        except Exception, e:
+            mlog.log().error("ftp error %s", e)
+            return False
+
+        self.is_connected = True
+
+
     def connect(self):
         if self.is_connected:
             return
 
+        self.__u_connect()
+        """
         self.ftp.set_pasv(True, self.host)
         try:
             if not self.ftp.connect(self.host, self.port):
@@ -41,6 +63,7 @@ class FTPManager:
         self.ftp.connect(self.host, self.port)
         self.ftp.login(self.name, self.pwd)
         '''
+        """
 
     def log(self):
         print self.host
@@ -59,31 +82,44 @@ class FTPManager:
         print msg
         print '===============>'
 
+
+
     def get(self, ftp_path, callback=None):
-        file_size = self.ftp.size(ftp_path)
-        if callback is None:
-            self.ftp.retrbinary('RETR ' + ftp_path, self.callback, file_size)
-        else:
-            self.ftp.retrbinary('RETR ' + ftp_path, callback, file_size)
+        if not self.ping():
+            return False
+        try:
+            file_size = self.ftp.size(ftp_path)
+            if callback is None:
+                self.ftp.retrbinary('RETR ' + ftp_path, self.callback, file_size)
+            else:
+                self.ftp.retrbinary('RETR ' + ftp_path, callback, file_size)
+            return True
+        except Exception,e:
+            mlog.log().error("ftp error %s url %s", e, ftp_path)
+            return False
+
+    def ping(self):
+        if not self.ftp.is_connected():
+            self.ftp.close()
+            self.is_connected = False
+            if self.__u_connect() is True:
+                return True
+            else:
+                return False
+        return True
+
 
     def download(self, local_path, ftp_path):
+        if not self.ping():
+            return
         with open(self.local + '/' + local_path, 'wb') as f:
             self.ftp.retrbinary('RETR ' + ftp_path, f.write)
             f.close()
 
     def write(self, path, content):
+        if not self.ping():
+            return
         self.ftp.storbinary("STOR " + path, io.BytesIO(content))
-
-    def exist_dir(self, path, folder_name):
-        filelist = []
-        self.ftp.retrlines('LIST ' + path, filelist.append)
-        for f in filelist:
-            if f.split()[-1] == folder_name:
-                return True
-        return False
-
-    def mkd(self, path):
-        return self.ftp.mkd(path)
 
     def close(self):
         self.ftp.close()
@@ -98,7 +134,7 @@ def main():
                              analysis_conf.ftp_info['local'])
     ftp_manager.connect()
     ftp_manager.run()
-    # ftp_manager.get('~/text_storage/60005/ffc926edd312d4e1dd1c2d4fc22314f4', None)
+    ftp_manager.get('~/text_storage/60005/ffc926edd312d4e1dd1c2d4fc22314f4', None)
     # ftp_manager.download('./3.txt', '~/text_storage/60005/fd0c096acbf091ff81f1f7f925044187')
     ftp_manager.close()
 
