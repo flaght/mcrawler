@@ -67,8 +67,8 @@ class AnalysisManager:
             name = "60006" + t
             ftp_url = '~/text_storage/' + "60006/" + t
             ftp_string = MString(name)
-            ftp_manager_t.get(ftp_url, ftp_string.write)
-            self.text_parser(ftp_string.string, "60006")
+            if ftp_manager_t.get(ftp_url, ftp_string.write):
+                self.text_parser(ftp_string.string, "60006")
 
     def kafka_callback(self, data):
         name = data['key_name'] + data['pos_name']
@@ -76,8 +76,8 @@ class AnalysisManager:
         print  ftp_url
         # 采用多进程方式进行拉取
         ftp_string = MString(name)
-        ftp_manager_t.get(ftp_url, ftp_string.write)
-        self.text_parser(ftp_string.string, data['key_name'])
+        if ftp_manager_t.get(ftp_url, ftp_string.write):
+            self.text_parser(ftp_string.string, data['key_name'])
 
     def text_parser(self, ftp_string, name):
         charset_name = ''
@@ -110,8 +110,8 @@ class AnalysisManager:
         ftp_manager_t.download(name, ftp_url)
 
     def run(self):
-        self.test_kafka()
-        #kafka_consumer_t.run()
+        #self.test_kafka()
+        kafka_consumer_t.run()
 
 
 def main():

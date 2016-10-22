@@ -10,6 +10,7 @@ from hexun_parser import HeXunParser
 from xueqiu_parser import xq_parser
 from schduler.storage.text_storage_model import TextStorage
 from base.analysis_conf_manager import analysis_conf
+from base.mlog import mlog
 
 class Parser:
     prefix = "result_storage/"
@@ -39,5 +40,6 @@ class Parser:
         elif parse_id == 60006:
             [subpath, name, result] = xq_parser.parser_search(content)
             if result is not None and len(result) > 0:
+                mlog.log().info(subpath+name)
                 self.text_storage.upload_data(result,
                                               subpath,name)
