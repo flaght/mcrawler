@@ -26,6 +26,8 @@ signal_storage = object()
 
 signal_response_url_not_request_url = object()
 
+signal_requst_error = object()
+
 class SingleSpider(scrapy.Spider):
     '''
     single spider
@@ -73,12 +75,19 @@ class SingleSpider(scrapy.Spider):
 
     def req_err(self, response):
         # self.add_task(response.request.meta['item'])
-        pass
+        task = response.request.meta['item']['task_info']
+        self.signals_callback(self,
+                              signal_requst_error,
+                              {'task':task,
+                               'item':None})
 
     def parse(self, response):
-        if response.status == 404:
-            return
         task = response.request.meta['item']['task_info']
+        if response.status != 200:
+            self.signals_callback(self,
+                                  signal_storage,
+                                  {'task': task,
+                                   'item': None})
         if task.url.split('://')[1] != response.url.split('://')[1]:
             self.signals_callback(self,
                                   signal_response_url_not_request_url,
