@@ -14,13 +14,15 @@
 
 namespace crawler_task_logic {
 
-CrawlerTaskKafka::CrawlerTaskKafka() {
+CrawlerTaskKafka::CrawlerTaskKafka(config::FileConfig* config) {
+  /* if (CONSUMER_INIT_SUCCESS
+   != kafka_consumer_.Init(
+   0,
+   "kafka_newsparser_algo",
+   "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091",
+   NULL))*/
   if (CONSUMER_INIT_SUCCESS
-      != kafka_consumer_.Init(
-          0,
-          "kafka_newsparser_algo",
-          "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091",
-          NULL))
+      != kafka_consumer_.Init(config->kafka_list_.front()))
     LOG_ERROR("kafka consumer kafka_task_algo init failed");
   else
     LOG_MSG("kafka consumer kafka_task_algo init success");
@@ -35,10 +37,13 @@ bool CrawlerTaskKafka::FectchBatchTempTask(
   std::set < std::string > data_list;
   std::string data;
   // todo 换成性能更高的回调函数模式，需爬虫流量控制功能配合
-  for (int i = 0; i < 80; i++) {
+  for (int i = 0; i < 1000; i++) {
     int pull_re = kafka_consumer_.PullData(data);
     if (CONSUMER_CONFIG_ERROR == pull_re) {
       LOG_MSG2("CONSUMER_CONFIG_ERROR,pull_re=%d", pull_re);
+    }
+    if (PULL_DATA_DATA_NULL == pull_re){
+      break;
     }
     if (PULL_DATA_TIMEOUT == pull_re) {
       LOG_MSG2("consumer get url timeout,pull_re=%d", pull_re);
@@ -63,7 +68,7 @@ bool CrawlerTaskKafka::FectchBatchTempTask(
     list->push_back(task_info);
     delete task_info_dic;
     base_logic::ValueSerializer::DeleteSerializer(0, engine);
-  }//LOG_DEBUG2("update task info, total task num:%d", list->size());
+  }  //LOG_DEBUG2("update task info, total task num:%d", list->size());
   return true;
 }
 

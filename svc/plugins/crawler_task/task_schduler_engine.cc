@@ -90,18 +90,32 @@ void TaskSchdulerManager::FetchBatchTemp(
   base_logic::WLockGd lk(lock_);
   while ((*list).size() > 0) {
     base_logic::TaskInfo info = (*list).front();
+    task_cache_->task_check_map_[info.id()] = info;
     (*list).pop_front();
-    task_cache_->task_temp_list_.push_back(info);
+    if (task_cache_->task_temp_map_.find(info.id())
+        == task_cache_->task_temp_map_.end()) {
+      task_cache_->task_temp_list_.push_back(info);
+      task_cache_->task_temp_map_[info.id()] = info;
+    }
   }
 }
 
 bool TaskSchdulerManager::AlterTaskState(const int64 task_id,
                                          const int8 state) {
   base_logic::WLockGd lk(lock_);
-  task_cache_->task_exec_map_[task_id].set_state(state);
+  base_logic::TaskInfo info = task_cache_->task_exec_map_[task_id];
+  info.set_state(state);
   task_db_->UpdateTaskLog(task_id, state);
-  if (TASK_EXECUED == state)
+  if (TASK_EXECUED == state) {
     task_cache_->task_exec_map_.erase(task_id);
+    task_cache_->task_complete_map_[task_id] = info;
+  }else if (TASK_ERROR == state) {//直接回收
+    task_cache_->task_exec_map_.erase(task_id);
+    info.set_state(TASK_WAIT);  //回收任务调整状态
+    task_cache_->task_temp_list_.push_back(info);
+    task_cache_->task_temp_map_[info.id()] = info;
+
+  }
   return true;
 }
 
@@ -121,10 +135,15 @@ void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
   time_t current_time = time(NULL);
   for (; it != task_cache_->task_exec_map_.end();) {
     base_logic::TaskInfo& task = it->second;
-    if ((current_time >= task.create_time() + 60)
-        && task.state() == TASK_EXECUING) {
-      task.set_state(TASK_WAIT);  //回收任务调整状态
-      task_cache_->task_temp_list_.push_back(task);
+    if (((current_time >= task.create_time() + 600)
+        && task.state() == TASK_EXECUING)||(task.state() == TASK_ERROR)) {
+      //如果已经存储 则保留上次状态
+      if (task_cache_->task_temp_map_.find(task.id())
+          == task_cache_->task_temp_map_.end()) {
+        task.set_state(TASK_WAIT);  //回收任务调整状态
+        task_cache_->task_temp_list_.push_back(task);
+        task_cache_->task_temp_map_[task.id()] = task;
+      }
       task_cache_->task_exec_map_.erase(it++);
     } else {
       it++;
@@ -133,7 +152,15 @@ void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
 }
 
 bool TaskSchdulerManager::DistributionTempTask() {
-  LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
+
+  {
+    base_logic::RLockGd lk(lock_);
+    LOG_MSG2("task_check_map_ size %d", task_cache_->task_check_map_.size());
+    LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
+    LOG_MSG2("task_temp_map_ size %d", task_cache_->task_temp_map_.size());
+    LOG_MSG2("task_exec_map_ size %d", task_cache_->task_exec_map_.size());
+    LOG_MSG2("task_complete_map_ size %d", task_cache_->task_complete_map_.size());
+  }
   if (task_cache_->task_temp_list_.size() <= 0)
     return true;
 
@@ -179,6 +206,8 @@ bool TaskSchdulerManager::DistributionTempTask() {
       log_list.push_back(info);
       task_cache_->task_exec_map_[info.id()] = info;
       task_cache_->task_temp_list_.pop_front();
+      base::MapDel<TASKINFO_MAP, TASKINFO_MAP::iterator, const int64>(
+          task_cache_->task_temp_map_, info.id());
       if (task.task_set.size() % base_num == 0 && task.task_set.size() != 0) {
         int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
             (const void*) &task, 0);
@@ -195,11 +224,18 @@ bool TaskSchdulerManager::DistributionTempTask() {
 
   //解决余数
   if (task.task_set.size() > 0) {
-    crawler_schduler_engine_->SendOptimalCrawler((const void*) &task, 0);
+    LOG_MSG2("task_set size %d  log_list size %d", task.task_set.size(),
+        log_list.size());
+    int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
+        (const void*) &task, 0);
+    if (crawler_id > 0) {
+      //新增日志
+      task_db_->CreateTaskLog(crawler_id, &log_list);
+    }
     net::PacketProsess::ClearCrawlerTaskList(&task);
   }
 
-  LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
+  //LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
   return true;
 }
 
@@ -232,8 +268,8 @@ bool TaskSchdulerManager::DistributionTask() {
     //task_db_->RecordTaskState(info, 0);
     //task_db_->CreateTaskLog(info);
     LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
-             info.id(), current_time, info.last_task_time(),
-             info.polling_time(), info.state());
+        info.id(), current_time, info.last_task_time(),
+        info.polling_time(), info.state());
     if ((info.state() == TASK_WAIT
         || info.last_task_time() + info.polling_time() < current_time)) {
       LOG_MSG2("DistributionTask task_id=%d", info.id());

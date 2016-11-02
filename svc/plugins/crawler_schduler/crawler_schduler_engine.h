@@ -129,6 +129,8 @@ class CrawlerSchdulerManager {
 
     void CheckIsEffective();
 
+ private:
+    void DelSchdulerList(const int socket);
 
  private:
     void Init();

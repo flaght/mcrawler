@@ -19,7 +19,8 @@ namespace crawler_task_logic {
 
 class TaskTimeManager {
  public:
-    explicit TaskTimeManager(crawler_task_logic::CrawlerTaskDB* task_db);
+    explicit TaskTimeManager(crawler_task_logic::CrawlerTaskDB* task_db,
+                             crawler_task_logic::CrawlerTaskKafka* task_kafka);
     virtual ~TaskTimeManager();
  public:
     void TaskTimeEvent(int opcode, int time);
@@ -35,7 +36,7 @@ class TaskTimeManager {
  private:
     crawler_task_logic::TaskSchdulerManager*               schduler_mgr_;
     scoped_ptr<crawler_task_logic::CrawlerTaskDB>          task_db_;
-    CrawlerTaskKafka									   task_kafka_;
+    CrawlerTaskKafka*									                     task_kafka_;
 };
 
 }  //  namespace crawler_task_logic

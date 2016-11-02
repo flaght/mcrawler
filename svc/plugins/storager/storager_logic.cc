@@ -24,6 +24,13 @@ Storagerlogic::Storagerlogic() {
 }
 
 Storagerlogic::~Storagerlogic() {
+  if (stroager_kafka_) {
+    delete stroager_kafka_;
+    stroager_kafka_ = NULL;
+  }
+
+  storage_logic::ShareDataEngine::FreeShareDataManager();
+  storage_logic::ShareDataEngine::FreeShareDataEngine();
 }
 
 bool Storagerlogic::Init() {
@@ -36,6 +43,9 @@ bool Storagerlogic::Init() {
     r = config->LoadConfig(path);
 
     stroager_db_.reset(new storager_logic::StroagerDB(config));
+
+    stroager_kafka_ = new storager_logic::StroagerKafka(config);
+
     //base_logic::DataControllerEngine::Init(config);
 
     basic::libhandle handle_lancher = NULL;
@@ -62,7 +72,7 @@ bool Storagerlogic::Init() {
     storage_logic::ShareDataEngine::GetShareDataEngine();
     InitStorager(manager);
 
-    stroager_kafka_.Test();
+    stroager_kafka_->Test();
     return true;
 }
 
@@ -167,7 +177,7 @@ void Storagerlogic::StorageMethod(struct server* srv, int socket,
         int32 len) {
     struct CrawlStorageInfo* storage =
                 (struct CrawlStorageInfo*)packet;
-    stroager_kafka_.AddStorageInfo(storage->storage_set, type);
+    stroager_kafka_->AddStorageInfo(storage->storage_set, type);
 }
 
 

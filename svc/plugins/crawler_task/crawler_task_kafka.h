@@ -17,19 +17,19 @@ namespace crawler_task_logic {
 
 class CrawlerTaskKafka {
  public:
-	CrawlerTaskKafka();
-    virtual ~CrawlerTaskKafka();
+  CrawlerTaskKafka(config::FileConfig* config);
+  virtual ~CrawlerTaskKafka();
 
  public:
 
-    bool FectchBatchTempTask(std::list<base_logic::TaskInfo>* list);
+  bool FectchBatchTempTask(std::list<base_logic::TaskInfo>* list);
 
-    void SetTaskInfo(base_logic::TaskInfo &task_info, base_logic::DictionaryValue* task_info_dic);
+  void SetTaskInfo(base_logic::TaskInfo &task_info,
+                   base_logic::DictionaryValue* task_info_dic);
 
  private:
-    kafka_consumer kafka_consumer_;
+  kafka_consumer kafka_consumer_;
 };
 }  // namespace crawler_task_logic
-
 
 #endif /* TASK_DB_H_ */

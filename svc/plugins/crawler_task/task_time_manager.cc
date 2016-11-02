@@ -7,9 +7,11 @@
 
 namespace crawler_task_logic {
 
-TaskTimeManager::TaskTimeManager(crawler_task_logic::CrawlerTaskDB* task_db) {
+TaskTimeManager::TaskTimeManager(crawler_task_logic::CrawlerTaskDB* task_db,
+                                 crawler_task_logic::CrawlerTaskKafka* task_kafka) {
     schduler_mgr_ =  crawler_task_logic::TaskSchdulerEngine::GetTaskSchdulerManager();
     task_db_.reset(task_db);
+    task_kafka_ = task_kafka;
 }
 
 TaskTimeManager::~TaskTimeManager() {
@@ -50,7 +52,7 @@ void TaskTimeManager::TimeFetchTask() {
 
 void TaskTimeManager::TimeFechTempTask() {
     std::list<base_logic::TaskInfo> list;
-    task_kafka_.FectchBatchTempTask(&list);
+    task_kafka_->FectchBatchTempTask(&list);
     task_db_->BatchUpdateTaskInfo(&list);
     schduler_mgr_->FetchBatchTemp(&list);
 }
