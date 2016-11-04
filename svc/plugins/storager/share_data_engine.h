@@ -58,6 +58,16 @@ class ShareDataEngine {
             engine_ = new ShareDataEngine();
         return engine_;
     }
+
+    static void FreeShareDataManager(){
+      delete manager_;
+      manager_ = NULL;
+    }
+
+    static void FreeShareDataEngine() {
+      delete engine_;
+      engine_ = NULL;
+    }
 };
 
 }   // namespace storage_logic

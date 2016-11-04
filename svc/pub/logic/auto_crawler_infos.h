@@ -18,7 +18,8 @@ enum TASKSTAE {
   TASK_EXECUING = 4,
   TASK_STORAGE = 5,
   TASK_STORAGED = 6,
-  TASK_EXECUED = 7
+  TASK_EXECUED = 7,
+  TASK_ERROR = 10
 };
 
 enum TASKTYPE {
@@ -45,6 +46,9 @@ enum CRAWLERTYPE {
 };
 
 namespace base_logic {
+
+class TaskInfo;
+typedef std::map<int64, TaskInfo> TASKINFO_MAP;
 
 class CrawlerScheduler {
  public:

@@ -24,6 +24,9 @@ class TaskSchdulerCache {
     TASKINFO_MAP          task_idle_map_;
     TASKINFO_MAP          task_exec_map_;
     TASKINFO_LIST         task_temp_list_;
+    TASKINFO_MAP          task_temp_map_;
+    TASKINFO_MAP          task_check_map_;
+    TASKINFO_MAP          task_complete_map_;
 };
 
 class TaskSchdulerManager {

@@ -74,9 +74,9 @@ class Storagerlogic {
     void RecordTempCrawlerTask(const std::list<base_logic::TaskInfo>& list);
 
  private:
-    scoped_ptr<storager_logic::StroagerDB>     stroager_db_;
-    crawler_schduler::SchdulerEngine*          schduler_engine_;
-    storager_logic::StroagerKafka              stroager_kafka_;
+    scoped_ptr<storager_logic::StroagerDB>      stroager_db_;
+    crawler_schduler::SchdulerEngine*           schduler_engine_;
+    storager_logic::StroagerKafka*              stroager_kafka_;
 };
 }   // namespace storager_logic
 

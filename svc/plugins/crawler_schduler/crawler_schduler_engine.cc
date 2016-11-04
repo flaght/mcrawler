@@ -159,6 +159,8 @@ bool CrawlerSchdulerManager::DelCrawlerSchduler(const int32 id) {
       base_logic::CrawlerScheduler>(schduler_cache_->crawler_schduler_map_, id,
                                     schduler);
   schduler.set_is_effective(false);
+  //删除list
+
   base::MapDel<SOCKET_MAP, SOCKET_MAP::iterator, int>(
       schduler_cache_->socket_schduler_map_, schduler.socket());
   return base::MapDel<SCHDULER_MAP, SCHDULER_MAP::iterator, int32>(
@@ -180,6 +182,7 @@ bool CrawlerSchdulerManager::CloseCrawlerSchduler(int socket) {
       base_logic::CrawlerScheduler>(schduler_cache_->socket_schduler_map_,
                                     socket, schduler);
   schduler.set_is_effective(false);
+  DelSchdulerList(socket);
   base::MapDel<SOCKET_MAP, SOCKET_MAP::iterator, int>(
       schduler_cache_->socket_schduler_map_, socket);
   return base::MapDel<SCHDULER_MAP, SCHDULER_MAP::iterator, int32>(
@@ -224,7 +227,7 @@ int32 CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
   if (schduler_cache_->crawler_schduler_list_.size() <= 0)
     return 0;
 
-  {
+  /*{
     SCHDULER_LIST::iterator it =
         schduler_cache_->crawler_schduler_list_.begin();
     for (; it != schduler_cache_->crawler_schduler_list_.end(); it++) {
@@ -233,7 +236,7 @@ int32 CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
       }
     }
     //LOG_DEBUG2("schduler_cache_->crawler_schduler_list_.size=%d", schduler_cache_->crawler_schduler_list_.size());
-  }
+  }*/
 
   base_logic::CrawlerScheduler schduler;
   SCHDULER_LIST::iterator it = schduler_cache_->crawler_schduler_list_.begin();
@@ -320,6 +323,17 @@ void CrawlerSchdulerManager::CheckIsEffective() {
       schduler_cache_->crawler_schduler_list_.erase(it++);
     } else
       it++;
+  }
+}
+
+void CrawlerSchdulerManager::DelSchdulerList(const int socket) {
+  SCHDULER_LIST::iterator it = schduler_cache_->crawler_schduler_list_.begin();
+  for (; it != schduler_cache_->crawler_schduler_list_.end();it++) {
+    base_logic::CrawlerScheduler schduler = (*it);
+    if(schduler.socket()==socket){
+      schduler_cache_->crawler_schduler_list_.erase(it);
+      break;
+    }
   }
 }
 

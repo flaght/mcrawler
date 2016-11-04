@@ -11,7 +11,7 @@ import time
 from scrapy import signals
 from scrapy.conf import settings
 from Scrapy.spiders.single_spider import SingleSpider
-from Scrapy.spiders.single_spider import signal_storage, signal_response_url_not_request_url
+from Scrapy.spiders.single_spider import signal_storage, signal_response_url_not_request_url,signal_requst_error
 from kid.common import kid_setting
 from kid.common.common_method import print_plus
 from kid.common.crawler_opcode import CrawlerOpcode
@@ -50,6 +50,7 @@ class CrawlerManager(threading.Thread):
                                         CrawlerOpcode.cookies: self.__setting_cookies}
         self.signals_list = {signals.spider_opened: self.__spider_opened,
                              signal_storage: self.__storage,
+                             signal_requst_error: self.__request_error,
                              signal_response_url_not_request_url: self.__task_is_over_but_error}
         self.start()
         self.process = self.caller.crawler_process
@@ -79,10 +80,17 @@ class CrawlerManager(threading.Thread):
         if msg:
             self.msg_list.append(msg)
 
+
+    def __request_error(self,dic):
+        task = dic['task']
+        self.__task_state_feedback(task, 10)
+
     def __storage(self, dic):
         task = dic['task']
         item = dic['item']
         key = item['basic']['key']
+        if item is None:
+            self.__task_state_feedback(task, 10)
         self.__task_state_feedback(task, 5)
         table_name = str(task.attr_id)
         if kid_setting.CRAWLER_TYPE == 2:
@@ -248,7 +256,7 @@ class CrawlerManager(threading.Thread):
         '''
         task state feedback to server
         '''
-        if state != 4 and state != 7:
+        if state != 4 and state != 7 and state != 10:
             return
         if kid_setting.CRAWLER_TYPE == 3:
             return

@@ -4,19 +4,22 @@
 #include <sstream>
 #include "storager/storager_kafka.h"
 #include "storage/storage.h"
+#include "config/config.h"
 #include "logic/logic_unit.h"
 #include "basic/basic_util.h"
 #include "basic/radom_in.h"
 
 namespace storager_logic {
 
-StroagerKafka::StroagerKafka() {
-  if (PRODUCER_INIT_SUCCESS
+StroagerKafka::StroagerKafka(config::FileConfig* config) {
+/*  if (PRODUCER_INIT_SUCCESS
       != kafka_producer_.Init(
           0,
           "newsparser_task_algo",
           "61.147.114.85:9092,61.147.114.80:9092,61.147.114.81:9092",
-          NULL))
+          NULL))*/
+  if (PRODUCER_INIT_SUCCESS
+      != kafka_producer_.Init(config->kafka_list_.front()))
     LOG_ERROR("producer newsparser_task_test init failed");
   else
     LOG_ERROR("producer newsparser_task_test init success");
