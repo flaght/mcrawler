@@ -135,8 +135,8 @@ void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
   time_t current_time = time(NULL);
   for (; it != task_cache_->task_exec_map_.end();) {
     base_logic::TaskInfo& task = it->second;
-    if (((current_time >= task.create_time() + 600)
-        && task.state() == TASK_EXECUING)||(task.state() == TASK_ERROR)) {
+    if (/*((current_time >= task.create_time() + 600)
+        && task.state() == TASK_EXECUING)||*/(task.state() == TASK_ERROR)) {
       //如果已经存储 则保留上次状态
       if (task_cache_->task_temp_map_.find(task.id())
           == task_cache_->task_temp_map_.end()) {
@@ -163,6 +163,8 @@ bool TaskSchdulerManager::DistributionTempTask() {
   }
   if (task_cache_->task_temp_list_.size() <= 0)
     return true;
+
+  //分配任务控制
 
   if (!crawler_schduler_engine_->CheckOptimalCrawler()) {
     LOG_MSG("no have OptimalCrawler");
