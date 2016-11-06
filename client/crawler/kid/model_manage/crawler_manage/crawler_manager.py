@@ -256,7 +256,7 @@ class CrawlerManager(threading.Thread):
         '''
         task state feedback to server
         '''
-        if state != 4 and state != 7 and state != 10:
+        if state != 4 and state != 7 and state != 10 and state != 2:
             return
         if kid_setting.CRAWLER_TYPE == 3:
             return
