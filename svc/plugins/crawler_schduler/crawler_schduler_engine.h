@@ -50,6 +50,8 @@ class SchdulerEngine {
     virtual bool SetRecvErrorCount(int socket) = 0;
 
     virtual void CheckIsEffective() = 0;
+
+    virtual void GetAllCrawler(SCHDULER_MAP& crawler_map) = 0;
 };
 
 class SchdulerEngineImpl : public SchdulerEngine {
@@ -84,6 +86,8 @@ class SchdulerEngineImpl : public SchdulerEngine {
     bool SetRecvErrorCount(int socket);
 
     void CheckIsEffective();
+
+    void GetAllCrawler(SCHDULER_MAP& crawler_map);
 };
 
 class CrawlerSchdulerCache {
@@ -128,6 +132,8 @@ class CrawlerSchdulerManager {
     bool SetRecvErrorCount(int socket);
 
     void CheckIsEffective();
+
+    void GetAllCrawler(SCHDULER_MAP& crawler_map);
 
  private:
     void DelSchdulerList(const int socket);

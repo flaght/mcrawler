@@ -104,6 +104,12 @@ void SchdulerEngineImpl::CheckIsEffective() {
   schduler_mgr->CheckIsEffective();
 }
 
+void SchdulerEngineImpl::GetAllCrawler(SCHDULER_MAP& crawler_map) {
+  CrawlerSchdulerManager* schduler_mgr =
+      CrawlerSchdulerEngine::GetCrawlerSchdulerManager();
+  schduler_mgr->GetAllCrawler(crawler_map);
+}
+
 CrawlerSchdulerManager* CrawlerSchdulerEngine::schduler_mgr_ = NULL;
 CrawlerSchdulerEngine* CrawlerSchdulerEngine::schduler_engine_ = NULL;
 
@@ -114,6 +120,10 @@ CrawlerSchdulerManager::CrawlerSchdulerManager() {
 
 CrawlerSchdulerManager::~CrawlerSchdulerManager() {
   DeinitThreadrw(lock_);
+  schduler_cache_->crawler_schduler_map_.clear();
+  schduler_cache_->socket_schduler_map_.clear();
+  schduler_cache_->crawler_schduler_list_.clear();
+  if (schduler_cache_) {delete schduler_cache_; schduler_cache_ = NULL;}
 }
 
 void CrawlerSchdulerManager::Init() {
@@ -269,6 +279,11 @@ int32 CrawlerSchdulerManager::SendOptimalCrawler(const void* data,
 bool CrawlerSchdulerManager::CheckOptimalCrawler() {
   base_logic::RLockGd lk(lock_);
   return schduler_cache_->crawler_schduler_map_.size() > 0 ? true : false;
+}
+
+void CrawlerSchdulerManager::GetAllCrawler(SCHDULER_MAP& crawler_map) {
+  base_logic::RLockGd lk(lock_);
+  crawler_map = schduler_cache_->crawler_schduler_map_;
 }
 
 bool CrawlerSchdulerManager::CheckHeartPacket(const int socket) {
