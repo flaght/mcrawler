@@ -25,42 +25,48 @@ def func(msg):
 
 
 class AnalysisManager:
+
     def __init__(self):
-        ftp_manager_t.connect()
+        #ftp_manager_t.connect()
         self.mparser = MParser()
         kafka_consumer_t.set_callback(self.kafka_callback)
 
 
+    def ftp_fle(self,path):
+        ftp_manager_t.set_path(path)
+        count = ftp_manager_t.file_count()
+        i = 0
+        while (i < count):
+            tlist = ftp_manager_t.get_file(i,i+10)
+            #print tlist
+            i += 10
+            for t in tlist:
+                name = "60006" + t
+                ftp_url = path + "/" + t
+                print ftp_url
+                ftp_string = MString(name)
+                if ftp_manager_t.get(ftp_url, ftp_string.write):
+                    self.text_parser(ftp_string.string, "60006")
+
+        #print ftp_manager_t.get_file(0,10)
+
     def test_kafka(self):
         m = [
-            "d9be6e67b6086781c3280473cddc998c",
-            "d9be908302b049223e3571db1b8e14da",
-            "d9bf99393ef11ad65d3eeac3140dad40",
-            "d9c02435ddd5dc976bce9b084c1ad013",
-            "d9c089e0a6f5fe519bb9d3f07daea7d6",
-            "d9c1565d79963843edd998c6f79febe7",
-            "d9c1d6db1a98e6ed71d7041e995bcf6a",
-            "d9c1ee7509f1ec60265a5c2d5f2f53d6",
-            "d9c1f733c64c9d688f2fe1fad535c374",
-            "d9c283e4ef7c8241394a96fb299473a7",
-            "d9c2ca4189df042903fd8d740b793772",
-            "d9c33ad2ffdb8531db150b6f1befc031",
-            "d9c3c4921f49e9464d9fb22958530b60",
-            "d9c541cd02a2f44d2e8ae5a9eccac373",
-            "d9c54daf7c3ebb11a89a5095044edd52",
-            "d9c58f16618077a481c42347e626a2b6",
-            "d9c657cbc47e4866b001354e67560424",
-            "d9c6d6bc48aed589ea59384bae4cab97",
-            "d9c71b71e654abe261abe18b97864086",
-            "d9c7269f8a072d5f1f46c09d8deba8dc",
-            "d9c8869e0e44e61e0ac38bb19977874f",
-            "d9c887da3986e99cb177d024ef213041",
-            "d9c8f40f60c228f7cdb8d6dd6a83b075",
-            "d9c91495a0d137495a0f334b0194cd76",
-            "d9c91751e15276a4bf9e7773aeb28c17",
-            "d9c948d51c7590c001f4953df77c3de4",
-            "d9c9ded35c21f59d485d28ed32ea38c2",
-            "d9ca38d278b7378d66d65415fee7234f"
+            "329872b3ee3a79701f8ab0d0a0d51fdd",
+            "661b7c0f6f7ee2956d248161ba151af7",
+            "99578860e856335429853afe4f4681a0",
+            "cc7262698ad804f39bee1a89749dbb57",
+            "32989cb653f01bcffabe15460fccab59",
+            "661bc8de8f2acefb212ea690f8a4e53e",
+            "99587d57cd1a5bb31138c859367028c4",
+            "cc7322d2732dcc345262fbfd7b78b7ed",
+            "3299407ed0386a5c73d2ab9aca015181",
+            "661c92ef0e5d121b6731db38f0e19696",
+            "9959bd6ae99423a96c50209cf18b5866",
+            "cc732618825c5acb4d422fac26a5a43f",
+            "3299b739eaf660c9383a1389af1ed404",
+            "661d15fdfedc0f85548918ad0c235cdb",
+            "995aba94f4816ce455985998a1ecfee5"
         ]
 
         for t in m:
@@ -110,8 +116,9 @@ class AnalysisManager:
         ftp_manager_t.download(name, ftp_url)
 
     def run(self):
+        self.ftp_fle("~/text_storage/60006bak")
         #self.test_kafka()
-        kafka_consumer_t.run()
+        #kafka_consumer_t.run()
 
 
 def main():
