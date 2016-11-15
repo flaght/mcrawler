@@ -6,6 +6,7 @@
 
 #include <map>
 #include <list>
+#include "net/packet_processing.h"
 #include "crawler_task/crawler_task_db.h"
 #include "crawler_schduler/crawler_schduler_engine.h"
 #include "thread/base_thread_handler.h"
@@ -50,7 +51,7 @@ class TaskSchdulerManager {
 
     void RecyclingTask();
 
-    bool AlterTaskState(const int64 task_id, const int8 state);
+    bool AlterTaskState(const int socket, const int64 task_id, const int8 state);
 
     bool AlterCrawlNum(const int64 task_id, const int64 num);
 
@@ -62,6 +63,14 @@ class TaskSchdulerManager {
     void Init();
 
     void Test(void);
+
+    void SetTaskInfosCrawlerId(const PacketHead* packet,
+                               const int32 crawler_id);
+
+    void SetTaskInfoCrawlerId(const int64 task_id,
+                              const int32 crawler_id);
+
+    int32 GetSurplusTaskCount();
 
  private:
     struct threadrw_t*                     lock_;

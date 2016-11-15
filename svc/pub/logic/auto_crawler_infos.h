@@ -6,6 +6,7 @@
 
 #include <string>
 #include <map>
+#include <list>
 
 #include "basic/basictypes.h"
 #include "logic/base_values.h"
@@ -52,7 +53,7 @@ typedef std::map<int64, TaskInfo> TASKINFO_MAP;
 
 class CrawlerScheduler {
  public:
-  CrawlerScheduler();
+  CrawlerScheduler(bool is_inlock = false);
 
   CrawlerScheduler(const CrawlerScheduler& crawler_scheduler);
 
@@ -67,6 +68,15 @@ class CrawlerScheduler {
   void set_id(const int32 id) {
     data_->id_ = id;
   }
+
+  void set_task(TaskInfo& task);
+
+  void del_task(TaskInfo& task);
+
+  void sync_task_count(){
+    data_->task_count_ = data_->task_infos_.size();
+  }
+
   void set_socket(const int socket) {
     data_->socket_ = socket;
   }
@@ -154,10 +164,17 @@ class CrawlerScheduler {
     return t_scheduler.task_count() < r_scheduler.task_count();
   }
 
+  int32 exec_task_count(){
+    return data_->task_infos_.size();
+  }
+
+
+  void GetTaskSetId(std::list<int64>& list);
+
  private:
   class Data {
    public:
-    Data()
+    Data(bool is_inlock)
         : refcount_(1),
           id_(0),
           is_effective_(true),
@@ -167,7 +184,14 @@ class CrawlerScheduler {
           recv_error_count_(0),
           send_last_time_(0),
           recv_last_time_(0),
-          port_(0){
+          port_(0),
+          is_inlock_(false){
+    }
+
+    ~Data(){
+      task_infos_.clear();
+      //if (is_inlock_)
+        //DeinitThreadrw(lock_);
     }
 
    public:
@@ -183,6 +207,9 @@ class CrawlerScheduler {
     std::string ip_;
     std::string password_;
     std::string mac_;
+    std::map<int64,TaskInfo>  task_infos_;
+    bool is_inlock_;
+
     void AddRef() {
       __sync_fetch_and_add(&refcount_, 1);
     }
@@ -283,6 +310,10 @@ class TaskInfo {
     data_->type_ = type;
   }
 
+  void set_cralwer_id(const int32 crawler_id) {
+    data_->crawler_id_ = crawler_id;
+  }
+
   void create_task_time(const int64 create_time = 0) {
     if (create_time == 0)
       data_->create_time_ = time(NULL);
@@ -363,6 +394,11 @@ class TaskInfo {
   const int64 attrid() const {
     return data_->attrid_;
   }
+
+  const int32 crawler_id() const {
+    return data_->crawler_id_;
+  }
+
   const std::string url() const {
     return data_->url_;
   }
@@ -392,6 +428,7 @@ class TaskInfo {
           is_forge_(0),
           crawl_num_(0),
           attrid_(0),
+          crawler_id_(0),
           polling_time_(10),
           base_polling_time_(10),
           create_time_(time(NULL)),
@@ -417,7 +454,8 @@ class TaskInfo {
     int64 base_polling_time_;
     int64 last_task_time_;
     int64 create_time_;
-    int64 crawl_num_;
+    int64 crawl_num_; //Invalid
+    int64 crawler_id_;
     int64 total_polling_time_;
     std::string url_;
     void AddRef() {

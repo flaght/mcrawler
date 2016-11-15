@@ -4,9 +4,9 @@ Created on 2016年8月6日
 
 @author: kerry
 """
-from base.ftp_ext import FTPExt
-from base.analysis_conf_manager import analysis_conf
-from base.mlog import mlog
+from analysis.base.ftp_ext import FTPExt
+from analysis.base.analysis_conf_manager import analysis_conf
+from analysis.base.mlog import mlog
 import io
 
 
@@ -22,6 +22,16 @@ class FTPManager:
 
 
 
+    def file_count(self):
+        return len(self.ftp.nlst())
+
+    def set_path(self,path):
+        self.ftp.cwd(path)
+
+    def get_file(self,start,end):
+        file_list = self.ftp.nlst()
+        return file_list[start:end]
+
     def __u_connect(self):
         self.ftp.set_pasv(True, self.host)
         try:
@@ -31,12 +41,12 @@ class FTPManager:
             if not self.ftp.login(self.name, self.pwd):
                 mlog.log().error("login ftp server failed")
                 return False
-            return  True
+            self.is_connected = True
+            mlog.log().info("ftp login success")
+            return True
         except Exception, e:
             mlog.log().error("ftp error %s", e)
             return False
-
-        self.is_connected = True
 
 
     def connect(self):
@@ -44,26 +54,6 @@ class FTPManager:
             return
 
         self.__u_connect()
-        """
-        self.ftp.set_pasv(True, self.host)
-        try:
-            if not self.ftp.connect(self.host, self.port):
-                print 'connect ftp server failed'
-                return
-            if not self.ftp.login(self.name, self.pwd):
-                print 'login ftp server failed'
-                return
-        except Exception, e:
-            print 'ftp error:%s' % e
-            return
-
-        self.is_connected = True
-        # print "connect succeeded"
-        '''
-        self.ftp.connect(self.host, self.port)
-        self.ftp.login(self.name, self.pwd)
-        '''
-        """
 
     def log(self):
         print self.host
@@ -95,7 +85,7 @@ class FTPManager:
                 self.ftp.retrbinary('RETR ' + ftp_path, callback, file_size)
             return True
         except Exception,e:
-            mlog.log().error("ftp error %s url %s", e, ftp_path)
+            mlog.log().error("ftp error:%s url:%s", e, ftp_path)
             return False
 
     def ping(self):
@@ -123,6 +113,7 @@ class FTPManager:
 
     def close(self):
         self.ftp.close()
+        mlog.log().info("close ftp ip %s",self.host)
 
 
 def main():

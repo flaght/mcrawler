@@ -175,7 +175,7 @@ void CrawlerTasklogic::ReplyTaskState(struct server* srv, int socket,
                 (struct ReplyTaskState*)packet;
     crawler_task_logic::TaskSchdulerManager* schduler_mgr =
             crawler_task_logic::TaskSchdulerEngine::GetTaskSchdulerManager();
-    schduler_mgr->AlterTaskState(task_state->jobid, task_state->state);
+    schduler_mgr->AlterTaskState(socket,task_state->jobid, task_state->state);
 }
 
 

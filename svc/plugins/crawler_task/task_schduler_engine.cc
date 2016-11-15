@@ -22,6 +22,17 @@ TaskSchdulerManager::TaskSchdulerManager()
 
 TaskSchdulerManager::~TaskSchdulerManager() {
   DeinitThreadrw(lock_);
+  LOG_MSG("clear task_cache_ cache");
+  task_cache_->task_check_map_.clear();
+  task_cache_->task_complete_map_.clear();
+  task_cache_->task_exec_map_.clear();
+  task_cache_->task_idle_map_.clear();
+  task_cache_->task_temp_list_.clear();
+  task_cache_->task_temp_map_.clear();
+  if (task_cache_) {
+    delete task_cache_;
+    task_cache_ = NULL;
+  }
 }
 
 void TaskSchdulerManager::Init() {
@@ -100,22 +111,39 @@ void TaskSchdulerManager::FetchBatchTemp(
   }
 }
 
-bool TaskSchdulerManager::AlterTaskState(const int64 task_id,
+bool TaskSchdulerManager::AlterTaskState(const int socket, const int64 task_id,
                                          const int8 state) {
   base_logic::WLockGd lk(lock_);
   base_logic::TaskInfo info = task_cache_->task_exec_map_[task_id];
   info.set_state(state);
-  task_db_->UpdateTaskLog(task_id, state);
-  if (TASK_EXECUED == state) {
-    task_cache_->task_exec_map_.erase(task_id);
-    task_cache_->task_complete_map_[task_id] = info;
-  }else if (TASK_ERROR == state) {//直接回收
-    task_cache_->task_exec_map_.erase(task_id);
-    info.set_state(TASK_WAIT);  //回收任务调整状态
-    task_cache_->task_temp_list_.push_back(info);
-    task_cache_->task_temp_map_[info.id()] = info;
 
+  base_logic::CrawlerScheduler scheduler;
+  bool r = crawler_schduler_engine_->FindCrawlerSchduler(socket, &scheduler);
+  if (r && scheduler.id() == info.crawler_id()) {
+    r = true;
+  } else {
+    r = false;
+    //LOG_ERROR2("socket find no scheduler %d task crawler id %d",socket,info.crawler_id());
   }
+
+  if (TASK_EXECUED == state || TASK_ERROR == state) {  //已经不在执行状态
+    task_cache_->task_exec_map_.erase(task_id);
+    if (r)
+      scheduler.del_task(info);
+    if (TASK_EXECUED == state)
+      task_cache_->task_complete_map_[task_id] = info;
+    else if (TASK_ERROR == state) {  //直接回收
+      info.set_state(TASK_WAIT);  //回收任务调整状态
+      task_cache_->task_temp_list_.push_back(info);
+      task_cache_->task_temp_map_[info.id()] = info;
+    }
+  } else {  //在执行状态
+    scheduler.set_task(info);
+  }
+  scheduler.sync_task_count();
+
+  // LOG_DEBUG2("crawler id(%d), task count(%d) task id(%lld) task state(%d)",scheduler.id(),
+  //   scheduler.exec_task_count(),info.id(),info.state());
   return true;
 }
 
@@ -135,8 +163,8 @@ void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
   time_t current_time = time(NULL);
   for (; it != task_cache_->task_exec_map_.end();) {
     base_logic::TaskInfo& task = it->second;
-    if (((current_time >= task.create_time() + 600)
-        && task.state() == TASK_EXECUING)||(task.state() == TASK_ERROR)) {
+    if (((current_time >= task.create_time() + 600) && task.state() == TASK_SEND)
+        || (task.state() == TASK_ERROR)) {
       //如果已经存储 则保留上次状态
       if (task_cache_->task_temp_map_.find(task.id())
           == task_cache_->task_temp_map_.end()) {
@@ -155,14 +183,14 @@ bool TaskSchdulerManager::DistributionTempTask() {
 
   {
     base_logic::RLockGd lk(lock_);
-    LOG_MSG2("task_check_map_ size %d", task_cache_->task_check_map_.size());
-    LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
-    LOG_MSG2("task_temp_map_ size %d", task_cache_->task_temp_map_.size());
-    LOG_MSG2("task_exec_map_ size %d", task_cache_->task_exec_map_.size());
-    LOG_MSG2("task_complete_map_ size %d", task_cache_->task_complete_map_.size());
+    LOG_MSG2("task_check_map_ size %d", task_cache_->task_check_map_.size());LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());LOG_MSG2("task_temp_map_ size %d", task_cache_->task_temp_map_.size());LOG_MSG2("task_exec_map_ size %d", task_cache_->task_exec_map_.size());LOG_MSG2("task_complete_map_ size %d", task_cache_->task_complete_map_.size());
   }
   if (task_cache_->task_temp_list_.size() <= 0)
     return true;
+
+  //分配任务控制 每个爬虫数不超过500个  故 500 * 爬虫个数
+
+  int32 surplus = GetSurplusTaskCount();
 
   if (!crawler_schduler_engine_->CheckOptimalCrawler()) {
     LOG_MSG("no have OptimalCrawler");
@@ -177,7 +205,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
 
   task_cache_->task_temp_list_.sort(base_logic::TaskInfo::cmp);
   //DumpTask();
-  while (task_cache_->task_temp_list_.size() > 0) {
+  while (task_cache_->task_temp_list_.size() > 0 && surplus > 0) {
     base_logic::TaskInfo info = task_cache_->task_temp_list_.front();
     //LOG_DEBUG2("url=%s attr_id=%ld", info.url().c_str(), info.attrid());
     if ((info.state() == TASK_WAIT || info.state() == TASK_EXECUED)
@@ -208,12 +236,13 @@ bool TaskSchdulerManager::DistributionTempTask() {
       task_cache_->task_temp_list_.pop_front();
       base::MapDel<TASKINFO_MAP, TASKINFO_MAP::iterator, const int64>(
           task_cache_->task_temp_map_, info.id());
+      surplus--;
       if (task.task_set.size() % base_num == 0 && task.task_set.size() != 0) {
         int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
             (const void*) &task, 0);
         if (crawler_id > 0) {
-          //新增日志
-          task_db_->CreateTaskLog(crawler_id, &log_list);
+          SetTaskInfosCrawlerId(&task, crawler_id);
+          //task_db_->CreateTaskLog(crawler_id, &log_list);
         }
         net::PacketProsess::ClearCrawlerTaskList(&task);
       }
@@ -229,8 +258,9 @@ bool TaskSchdulerManager::DistributionTempTask() {
     int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
         (const void*) &task, 0);
     if (crawler_id > 0) {
+      SetTaskInfosCrawlerId(&task, crawler_id);
       //新增日志
-      task_db_->CreateTaskLog(crawler_id, &log_list);
+      //task_db_->CreateTaskLog(crawler_id, &log_list);
     }
     net::PacketProsess::ClearCrawlerTaskList(&task);
   }
@@ -311,6 +341,27 @@ bool TaskSchdulerManager::DistributionTask() {
   return true;
 }
 
+void TaskSchdulerManager::SetTaskInfosCrawlerId(const PacketHead* packet,
+                                                const int32 crawler_id) {
+  struct AssignmentMultiTask* multi = (struct AssignmentMultiTask*) packet;
+  std::list<struct TaskUnit*>::iterator it = multi->task_set.begin();
+  for (; it != multi->task_set.end(); it++) {
+    struct TaskUnit* unit = (*it);
+    SetTaskInfoCrawlerId(unit->task_id, crawler_id);
+  }
+}
+
+void TaskSchdulerManager::SetTaskInfoCrawlerId(const int64 task_id,
+                                               const int32 crawler_id) {
+  bool r = false;
+  base_logic::TaskInfo task;
+  r = base::MapGet<TASKINFO_MAP, TASKINFO_MAP::iterator, int64,
+      base_logic::TaskInfo>(task_cache_->task_exec_map_, task_id, task);
+  if (!r)
+    return;
+  task.set_cralwer_id(crawler_id);
+}
+
 void TaskSchdulerManager::CheckIsEffective() {
   crawler_schduler_engine_->CheckIsEffective();
 }
@@ -333,6 +384,33 @@ void TaskSchdulerManager::DumpTask() {
         create_local->tm_mday, create_local->tm_hour, create_local->tm_min,
         create_local->tm_sec);
   }
+}
+
+int32 TaskSchdulerManager::GetSurplusTaskCount() {
+  std::map<int32, base_logic::CrawlerScheduler> crawler_map;
+  crawler_schduler_engine_->GetAllCrawler(crawler_map);
+  int32 crawler_count = crawler_map.size();
+  int32 task_count = 0;
+  std::map<int32, base_logic::CrawlerScheduler>::iterator it =
+      crawler_map.begin();
+
+  for (; it != crawler_map.end(); it++) {
+    base_logic::CrawlerScheduler crawler = it->second;
+    task_count += crawler.exec_task_count();
+    LOG_DEBUG2("crawler id %d  exec_task_count %d",crawler.id(),crawler.exec_task_count()
+    );
+  }
+
+  int32 exec_count =
+      task_count > task_cache_->task_exec_map_.size() ?
+          task_count : task_cache_->task_exec_map_.size();
+
+  int32 surplus = crawler_count * 500 - exec_count;
+
+  LOG_DEBUG2("surplus [%d] exec_count[%d] crawler_count[%d][%d]",
+      surplus, exec_count,crawler_count,crawler_count*500);
+
+  return surplus > 0 ? surplus : 0;
 }
 
 }  // namespace crawler_task_logic

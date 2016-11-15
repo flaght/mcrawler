@@ -95,12 +95,11 @@ void LoginSchdulerManager::SetCookie(
     for (COOKIE_LIST::iterator it = list.begin(); it != list.end(); it++) {
         if (info.get_username() == it->get_username() &&
             info.get_passwd() == it->get_passwd()) {
-            LOG_MSG2("erase old cookie username=%s passwd=%s",
-                    info.get_username().c_str(), info.get_passwd());
             list.erase(it);
             break;
         }
     }
+
     platform.list.push_back(info);
     platform.current_pos_ = 0;
     int64 info_update_time = info.get_update_time();

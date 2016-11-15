@@ -1,11 +1,12 @@
 //  Copyright (c) 2015-2015 The KID Authors. All rights reserved.
 //  Created on: 2015年9月14日 Author: kerry
 #include "logic/auto_crawler_infos.h"
+#include "basic/template.h"
 
 namespace base_logic {
 
-CrawlerScheduler::CrawlerScheduler() {
-  data_ = new Data();
+CrawlerScheduler::CrawlerScheduler(bool is_inlock) {
+  data_ = new Data(is_inlock);
 }
 
 CrawlerScheduler::CrawlerScheduler(const CrawlerScheduler& crawler_scheduler)
@@ -27,6 +28,22 @@ CrawlerScheduler& CrawlerScheduler::operator =(
 
   data_ = crawler_scheduler.data_;
   return (*this);
+}
+
+void CrawlerScheduler::GetTaskSetId(std::list<int64>& list) {
+  std::map<int64, TaskInfo>::iterator it = data_->task_infos_.begin();
+  for (; it != data_->task_infos_.end(); it++) {
+    list.push_back(it->first);
+  }
+}
+
+void CrawlerScheduler::set_task(TaskInfo& task) {
+  data_->task_infos_[task.id()] = task;
+}
+
+void CrawlerScheduler::del_task(TaskInfo& task) {
+  base::MapDel<std::map<int64, TaskInfo>, std::map<int64, TaskInfo>::iterator,
+      int64>(data_->task_infos_, task.id());
 }
 
 TaskInfo::TaskInfo() {
@@ -53,7 +70,7 @@ TaskInfo& TaskInfo::operator =(const TaskInfo& task) {
 }
 
 TaskInfo& TaskInfo::DeepCopy(const TaskInfo& task) {
-  if (task.data_ != NULL){
+  if (task.data_ != NULL) {
     this->set_attrid(task.attrid());
     this->set_base_polling_time(task.base_polling_time());
     this->set_crawl_num(task.crawl_num());
