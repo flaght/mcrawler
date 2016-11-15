@@ -25,6 +25,8 @@ class StorageOpcode(object):
 
     memcache = 4
 
+    sqlite = 5
+
 
 storage_opcode = StorageOpcode()
 
@@ -50,7 +52,7 @@ class StorageManager(object):
                                  storage_opcode.hbase: self.__storage_to_hbase,
                                  storage_opcode.mysql: self.__storage_to_mysql,
                                  storage_opcode.text: self.__storage_to_text,
-                                 storage_opcode.memcache: self.__storage_to_text}
+                                 storage_opcode.memcache: self.__storage_to_memcache}
 
     def storage(self, storage_type, cmd_list):
         storage_method = self.storage_selector[storage_type]
