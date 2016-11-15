@@ -31,7 +31,7 @@ def main():
     daemon proc start
     """
     while True:
-        proc_info = os.popen('ps ax | grep ' + 'analysis_client.py' + '|grep -v grep',
+        proc_info = os.popen('ps ax | grep ' + 'analysis_client|discard.py' + '|grep -v grep',
                              'r').read()
         if len(proc_info) > 0:
             pid = proc_info.split(' ')[1]
@@ -44,7 +44,7 @@ def main():
                 print 'server unusual'
                 time.sleep(30)
                 continue
-            os.system('python ./analysis_client.py')
+            os.system('python ./analysis_client|discard.py')
             sms = SendSms('15157109258,15158114927,18668169052',
                           '【KID解析程序】程序已停止，正在重启。')
         #             sms.main()
