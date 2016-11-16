@@ -3,8 +3,8 @@
 import json
 import icu
 
-from analysis.parser.xueqiu_models.search import xq_search
-from analysis.db.xueqiu import XueQiu as  xqdb
+from parser.xueqiu_models.search import xq_search
+from db.xueqiu import XueQiu as  xqdb
 """
 Created on 201601015
 

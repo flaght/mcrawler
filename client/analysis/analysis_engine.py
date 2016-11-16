@@ -10,11 +10,11 @@ import json
 import zlib
 import base64
 from parser.parser import Parser as MParser
-from analysis.common.mstring import MString
-from analysis.pool.ftp_pool_manage import FtpPoolManager
-from analysis.pool.thread_pool_manage import ThreadPoolManager
-from analysis.schduler.storage.sqlite_manage_model import SQLLiteStorage
-from analysis.base.mlog import mlog
+from common.mstring import MString
+from pool.ftp_pool_manage import FtpPoolManager
+from pool.thread_pool_manage import ThreadPoolManager
+from schduler.storage.sqlite_manage_model import SQLLiteStorage
+from base.mlog import mlog
 
 
 """
@@ -24,11 +24,12 @@ ftp kafka hbase sqlite等采用预先建立连接数(和线程数相同),以参�
 class AnalysisEngine:
 
     def __init__(self,num):
-        self.ftp_pool = FtpPoolManager(num*10)
+        self.ftp_pool = FtpPoolManager(num*4)
         self.mparser = MParser()
         self.thread_pool = ThreadPoolManager(num)
         self.queue = []
         self.sqlite_manager = SQLLiteStorage("xueqiu.db", 0)
+        self.error_file = []
 
     def __del__(self):
         pass
@@ -73,9 +74,12 @@ class AnalysisEngine:
     def parser(self, ftp_mgr, basic_path, plt_id, file_name):
         ftp_string = MString(str(plt_id)+file_name)
         ftp_url = basic_path + "/" +file_name
-        if ftp_mgr.get(ftp_url, ftp_string.write):
-            mlog.log().info(ftp_url)
-            return self.text_parser(ftp_string.string, plt_id)
+        try:
+            if ftp_mgr.get(ftp_url, ftp_string.write):
+                mlog.log().info(ftp_url)
+                return self.text_parser(ftp_string.string, plt_id)
+        except Exception, e:
+            mlog.log().info(e)
         return None
 
     def parser_stop(self, content, result):
@@ -84,15 +88,20 @@ class AnalysisEngine:
             ftp_mgr = unit['ftp']
             self.ftp_pool.push(ftp_mgr)
 
-
         if result is not None:
             name_table = result['name_table']
             result_list = result['result']
             sql_formate = result['sql_formate']
-            self.sqlite_manager.create_table(name_table,1)
-            #mlog.log().info(name_table)
-            if result_list is not None:
-                self.sqlite_manager.save_data(sql_formate, result_list)
+            try:
+                self.sqlite_manager.create_table(name_table,1)
+                #mlog.log().info(name_table)
+                if result_list is not None:
+                    self.sqlite_manager.save_data(sql_formate, result_list)
+            except Exception, e:
+                mlog.log().info(e)
+        else: #处理爬取失败
+
+
 
 
     def parser_run(self,content):
@@ -109,8 +118,8 @@ class AnalysisEngine:
 
 
 
-from analysis.common.ftp_manager import FTPManager
-from analysis.base.analysis_conf_manager import analysis_conf
+from common.ftp_manager import FTPManager
+from base.analysis_conf_manager import analysis_conf
 
 
 def main():

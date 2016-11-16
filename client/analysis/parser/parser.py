@@ -10,8 +10,8 @@ from base.analysis_conf_manager import analysis_conf
 from base.mlog import mlog
 from schduler.storage.text_storage_model import TextStorage
 
-from analysis.parser.hexun_models.hexun_parser import HeXunParser
-from analysis.parser.xueqiu_models.parser_manager import XQ_parser
+from hexun_models.hexun_parser import HeXunParser
+from xueqiu_models.parser_manager import XQ_parser
 
 class Parser:
     prefix = "result_storage/"

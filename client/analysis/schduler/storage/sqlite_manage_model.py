@@ -5,11 +5,11 @@ Created on 2016年11月6日
 @author: kerry
 """
 
-from analysis.base.sqlite_ext import SQLiteExt
+from base.sqlite_ext import SQLiteExt
 import threading
 import icu
 import os
-from analysis.base.mlog import mlog
+from base.mlog import mlog
 
 
 class SQLLiteStorage():

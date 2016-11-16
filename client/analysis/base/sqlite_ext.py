@@ -8,7 +8,7 @@ Created on 2016年11月6日
 
 import sqlite3
 import os
-from analysis.base.mlog import mlog
+from base.mlog import mlog
 
 
 class SQLiteExt():
