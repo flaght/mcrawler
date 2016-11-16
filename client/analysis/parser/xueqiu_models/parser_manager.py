@@ -25,7 +25,7 @@ class XueQiuParser:
         if symbol is None or result_list is None:
             return None
 
-        return {"dbname":self.dbname ,"name_table":xqdb.crate_search_sql(symbol),"sql_formate":xqdb.save_search_format(symbol),"result":result_list}
+        return {"code":1,"dbname":self.dbname ,"name_table":xqdb.crate_search_sql(symbol),"sql_formate":xqdb.save_search_format(symbol),"result":result_list}
 
         #name_table = xqdb.crate_search_sql(symbol)
         #self.sqlite_manager.create_table(name_table,1)

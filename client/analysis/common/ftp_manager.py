@@ -89,7 +89,7 @@ class FTPManager:
                 self.ftp.retrbinary('RETR ' + ftp_path, callback, file_size)
             return True
         except Exception,e:
-            mlog.log().error("ftp error:%s url:%s", e, ftp_path)
+            #mlog.log().error("ftp error:%s url:%s", e, ftp_path)
             return False
 
     def ping(self):

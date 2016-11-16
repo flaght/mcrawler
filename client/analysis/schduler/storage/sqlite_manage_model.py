@@ -37,7 +37,8 @@ class SQLLiteStorage():
         try:
             self.engine.create_table(crate_table_sql)
         except Exception, e:
-            mlog.log().error('create_table error:%s' % e)
+            pass
+            #mlog.log().error('create_table error:%s' % e)
 
 
     def save_data(self,sql,data):
@@ -52,6 +53,7 @@ class SQLLiteStorage():
                 self.engine.save(item['db'],
                                  item['data'])
         except Exception, e:
-            mlog.log().error('save error:%s' % e)
+            pass
+            #mlog.log().error('save error:%s' % e)
 
 
