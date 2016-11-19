@@ -4,14 +4,14 @@ Created on 2016年8月6日
 
 @author: kerry
 """
-from analysis.base.ftp_ext import FTPExt
-from analysis.base.analysis_conf_manager import analysis_conf
-from analysis.base.mlog import mlog
+from base.ftp_ext import FTPExt
+from base.analysis_conf_manager import analysis_conf
+from base.mlog import mlog
 import io
 
 
 class FTPManager:
-    def __init__(self, host, port, name, pwd, local='./'):
+    def __init__(self, host, port, name, pwd, timeout=7, local='./'):
         self.host = host
         self.port = port
         self.name = name
@@ -19,6 +19,7 @@ class FTPManager:
         self.local = local
         self.ftp = FTPExt()
         self.is_connected = False
+        self.timeout = 5
 
 
 
@@ -32,10 +33,13 @@ class FTPManager:
         file_list = self.ftp.nlst()
         return file_list[start:end]
 
+    def get_file_list(self):
+        return self.ftp.nlst()
+
     def __u_connect(self):
         self.ftp.set_pasv(True, self.host)
         try:
-            if not self.ftp.connect(self.host, self.port):
+            if not self.ftp.connect(self.host, self.port, self.timeout):
                 mlog.log().error("connect ftp server failed")
                 return False
             if not self.ftp.login(self.name, self.pwd):
@@ -45,7 +49,7 @@ class FTPManager:
             mlog.log().info("ftp login success")
             return True
         except Exception, e:
-            mlog.log().error("ftp error %s", e)
+            mlog.log().error("ftp error[%s]", e)
             return False
 
 

@@ -10,7 +10,11 @@ class XueQiu:
     database = "xueqiu.db"
 
     @classmethod
-    def crate_search_sql(cls,table):
+    def build_table_name(cls, dict):
+        return dict['content']['key']
+
+    @classmethod
+    def create_search_sql(cls,table):
         sql = '''CREATE TABLE `''' + table + '''`(
                     `id` BIGINT NOT NULL,
                     `uid` BIGINT NULL,
@@ -35,6 +39,7 @@ class XueQiu:
     def save_search_format(cls,table):
         sql = '''INSERT INTO `''' + table + '''` values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
         return sql
+
 
 
 

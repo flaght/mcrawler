@@ -6,16 +6,14 @@ Created on 2016年11月13日
 @author: kerry
 """
 
+import base64
 import json
 import zlib
-import base64
+from base.mlog import mlog
+from parser.cleaning import CleaningCrawler
 from parser.parser import Parser as MParser
-from analysis.common.mstring import MString
-from analysis.pool.ftp_pool_manage import FtpPoolManager
-from analysis.pool.thread_pool_manage import ThreadPoolManager
-from analysis.schduler.storage.sqlite_manage_model import SQLLiteStorage
-from analysis.base.mlog import mlog
-
+from scheduler.fetch.fetch_manage import FetchFileManager
+from scheduler.logic.schedule_engine import ScheduleEngne
 
 """
 采用多线程方式来获取数据,解析,存储数据。
@@ -23,12 +21,90 @@ ftp kafka hbase sqlite等采用预先建立连接数(和线程数相同),以参�
 """
 class AnalysisEngine:
 
+    def __init__(self):
+        """
+
+        Returns:
+            object:
+        """
+        self.parser = MParser()
+        self.task_queue = []
+        self.recovery_file = {}
+        self.fetch_mgr = FetchFileManager()
+        self.scheduler = ScheduleEngne()
+
+    def __del__(self):
+        pass
+
+
+    """
+    解析数据
+    """
+    def __data_parser(self, content, pid):
+        data = CleaningCrawler.clean_data(content)
+        return self.parser.parse(pid, data)
+
+    """
+    拉取文件转化为数据
+    """
+    def __process_fetch_file(self, pid, ftype, basic_path, file_name):
+        return self.fetch_mgr.process_data(ftype, basic_path, file_name)
+
+
+
+    def __process_file(self, pid, ftype, basic_path, file_name):
+        data = self.__process_fetch_file(pid, ftype, basic_path,  file_name)
+        parser_dict = self.__data_parser(data, pid)
+
+        """
+        根据平台id,传递给管理类
+        """
+        print parser_dict
+        self.scheduler.process_data(pid, parser_dict)
+
+
+
+
+    """
+    单进程处理文件
+    """
+    def process_file_data(self, pid, basic_path, file_name, ftype):
+        self.__process_file(pid, ftype, basic_path, file_name)
+
+    """
+    多线程处理文件
+    """
+
+
+
+
+
+
+
+
+
+
+class AnalysisEngineV1:
+
     def __init__(self,num):
-        self.ftp_pool = FtpPoolManager(num*10)
+        self.ftp_pool = FtpPoolManager(num*4)
         self.mparser = MParser()
-        self.thread_pool = ThreadPoolManager(num)
-        self.queue = []
+        if num == 0:
+            self.thread_pool = ThreadPoolManager(num)
+            self.ftp_mgr = None
+        else:
+            self.thread_pool = None
+            self.ftp_mgr = FTPManager(analysis_conf.ftp_info['host'],
+                                      analysis_conf.ftp_info['port'],
+                                      analysis_conf.ftp_info['user'],
+                                      analysis_conf.ftp_info['passwd'],
+                                      analysis_conf.ftp_info['local'])
+            self.ftp_mgr.connect()
+
+
+        self.task_queue = []
         self.sqlite_manager = SQLLiteStorage("xueqiu.db", 0)
+        self.failed_file_dict = {}
 
     def __del__(self):
         pass
@@ -60,42 +136,90 @@ class AnalysisEngine:
         t = self.mparser.parse(int(name), data)
         return t
 
-    def set_task(self, basic_path,plt_id,file_name):
-        ftp_mgr = self.ftp_pool.pop()
-
-        dict = {"ftp":ftp_mgr,"basic":basic_path,"plt_id":plt_id,"file_name":file_name}
-        self.queue.append(dict)
-
-    def run(self):
-        self.thread_pool.create_task(self.queue, self.parser_run, self.parser_stop, None)
-        self.thread_pool.run()
 
     def parser(self, ftp_mgr, basic_path, plt_id, file_name):
+        if ftp_mgr is None:
+            ftp_mgr_unit = self.ftp_mgr
+        else:
+            ftp_mgr_unit = ftp_mgr
+
+
         ftp_string = MString(str(plt_id)+file_name)
         ftp_url = basic_path + "/" +file_name
-        if ftp_mgr.get(ftp_url, ftp_string.write):
-            mlog.log().info(ftp_url)
-            return self.text_parser(ftp_string.string, plt_id)
-        return None
+        if ftp_mgr_unit.get(ftp_url, ftp_string.write):
+            parser_result = self.text_parser(ftp_string.string, plt_id)
+            if parser_result is not None:
+                parser_result['file_name'] = file_name
+            return parser_result
+        else:
+            return {"code": -1, "file_name": file_name, "basic_path": basic_path, "plt_id": plt_id}
 
-    def parser_stop(self, content, result):
+
+    def set_task(self, basic_path,plt_id,file_name):
+        if self.ftp_pool is  not None:
+            ftp_mgr = self.ftp_pool.pop()
+        else:
+            ftp_mgr = None
+        dict = {"ftp":ftp_mgr,"basic":basic_path,"plt_id":plt_id,"file_name":file_name}
+        self.task_queue.append(dict)
+
+
+    """
+    单线程操作
+    """
+    def nexec(self):
+        for unit in self.task_queue:
+            ftp_basic_path = unit['basic']
+            ftp_plt_id = unit['plt_id']
+            ftp_file_name = unit['file_name']
+            result = self.parser(None, ftp_basic_path, ftp_plt_id, ftp_file_name)
+            if result is None:
+                return
+            code = result['code']
+            if code == 1:
+                name_table = result['name_table']
+                result_list = result['result']
+                sql_formate = result['sql_formate']
+                try:
+                    self.sqlite_manager.create_table(name_table, 1)
+                    if result_list is not None:
+                        self.sqlite_manager.save_data(sql_formate, result_list)
+                except Exception, e:
+                    mlog.log().info(e)
+            elif code == -1:
+                self.failed_file_dict[result['file_name']] = result
+
+    """
+    线程池操作
+    """
+
+    def run(self):
+        self.thread_pool.create_task(self.task_queue, self.parser_run_callback, self.parser_stop_callback, None)
+        self.thread_pool.run()
+
+    def parser_stop_callback(self, content, result):
         c_agrs = content.args
         for unit in c_agrs:
             ftp_mgr = unit['ftp']
             self.ftp_pool.push(ftp_mgr)
 
-
-        if result is not None:
+        if result is None:
+            return
+        code = result['code']
+        if code == 1:
             name_table = result['name_table']
             result_list = result['result']
             sql_formate = result['sql_formate']
-            self.sqlite_manager.create_table(name_table,1)
-            #mlog.log().info(name_table)
-            if result_list is not None:
-                self.sqlite_manager.save_data(sql_formate, result_list)
+            try:
+                self.sqlite_manager.create_table(name_table,1)
+                if result_list is not None:
+                    self.sqlite_manager.save_data(sql_formate, result_list)
+            except Exception, e:
+                mlog.log().info(e)
+        elif code == -1:
+            self.failed_file_dict[result['file_name']] = result
 
-
-    def parser_run(self,content):
+    def parser_run_callback(self,content):
         ftp_mgr = content['ftp']
         ftp_basic_path = content['basic']
         ftp_plt_id = content['plt_id']
@@ -103,21 +227,28 @@ class AnalysisEngine:
         return self.parser(ftp_mgr, ftp_basic_path, ftp_plt_id, ftp_file_name)
 
 
+
     def test(self):
         pass
 
+    def get_failed_list(self):
+        failed_list = []
+        for (k, v) in self.failed_file_dict.items():
+            failed_list.append(v['file_name'])
+        return failed_list
 
 
 
-from analysis.common.ftp_manager import FTPManager
-from analysis.base.analysis_conf_manager import analysis_conf
+
+from common.ftp_manager import FTPManager
+from base.analysis_conf_manager import analysis_conf
 
 
 def main():
     """
     test
     """
-    engine  = AnalysisEngine(3)
+    engine = AnalysisEngine(3)
 
 
     ftp_manager_t = FTPManager(analysis_conf.ftp_info['host'],
