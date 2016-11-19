@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import json
-import zlib
 import base64
+import json
 import sys
-from schduler.storage.kafka_manage_model import kafka_consumer_t
+import zlib
+
+from analysis.scheduler.storage.enclosure.kafka_manage_model import kafka_consumer_t
 from common.ftp_manager import ftp_manager_t
 from common.mstring import MString
 from parser.parser import Parser as MParser
-
 
 """
 Created on 2015年9月29日

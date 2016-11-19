@@ -16,7 +16,7 @@ from twisted.internet import threads
 from base.log import kid_log
 from netsvc.packet_processing import PacketHead
 from netsvc.resolve import NetData
-from schduler.analysis_manage_model.analytical_manager import AnalyticalManager
+from scheduler.analysis_manage_model.analytical_manager import AnalyticalManager
 
 
 class KIDBaseSchedulerClient(protocol.Protocol):

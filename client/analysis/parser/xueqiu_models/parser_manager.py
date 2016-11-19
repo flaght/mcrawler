@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import json
-import icu
-
-from parser.xueqiu_models.search import xq_search
-from db.xueqiu import XueQiu as  xqdb
 """
 Created on 201601015
 
 @author kerry
 """
 
+import json
+import icu
+
+from parser.xueqiu_models.search import xq_search
+from db.xueqiu import XueQiu as  xqdb
+
 
 class XueQiuParser:
     def __init__(self):
-        #self.sqlite_manager = SQLLiteStorage("xueqiu.db",0)
         self.dbname = "xueqiu.db"
 
     def parse(self, parse_id, content):
@@ -24,8 +24,8 @@ class XueQiuParser:
         result_list,symbol = xq_search.parser(content)
         if symbol is None or result_list is None:
             return None
-
-        return {"code":1,"dbname":self.dbname ,"name_table":xqdb.crate_search_sql(symbol),"sql_formate":xqdb.save_search_format(symbol),"result":result_list}
+        #return {"code":1,"dbname":self.dbname ,"name_table":xqdb.crate_search_sql(symbol),"sql_formate":xqdb.save_search_format(symbol),"result":result_list}
+        return {'key':symbol, 'result':result_list}
 
         #name_table = xqdb.crate_search_sql(symbol)
         #self.sqlite_manager.create_table(name_table,1)
