@@ -4,7 +4,7 @@ Created on 2015年10月9日
 
 @author: chenyitao
 """
-from netsvc.packet_processing import AnalyticalState
+from analysis.netsvc.packet_processing import AnalyticalState
 
 
 class StateManager(object):

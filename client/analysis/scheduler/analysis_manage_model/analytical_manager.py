@@ -6,12 +6,12 @@ Created on 2015年10月6日
 """
 
 import time
-from netsvc.package_manage.login_manager import login_manager
-from netsvc.package_manage.state_manager import state_manager
-from netsvc.packet_processing import AnalyzedURLInfo, AnalyzedURLs
-import netsvc.packet_processing as packet
-from scheduler.analysis_manage_model.analyzer import Analyst
-from scheduler.storage.storage_manage import StorageManager
+from analysis.netsvc.package_manage.login_manager import login_manager
+from analysis.netsvc.package_manage.state_manager import state_manager
+from analysis.netsvc.packet_processing import AnalyzedURLInfo, AnalyzedURLs
+import analysis.netsvc.packet_processing as packet
+from analysis.scheduler.analysis_manage_model.analyzer import Analyst
+from analysis.scheduler.storage.storage_manage import StorageManager
 
 
 class AnalyticalManager(object):

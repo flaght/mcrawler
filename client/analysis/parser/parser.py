@@ -6,9 +6,9 @@ Created on 20160812
 """
 import datetime
 
-from base.analysis_conf_manager import analysis_conf
-from base.mlog import mlog
-from scheduler.storage.enclosure.text_storage_model import TextStorage
+from analysis.base.analysis_conf_manager import analysis_conf
+from analysis.base.mlog import mlog
+from analysis.scheduler.storage.enclosure.text_storage_model import TextStorage
 
 from hexun_models.hexun_parser import HeXunParser
 from xueqiu_models.parser_manager import XQ_parser

@@ -7,7 +7,7 @@ Created on 2016年7月28日
 import json
 from kafka import KafkaConsumer
 from kafka import SimpleClient, SimpleProducer, SimpleConsumer
-from base.analysis_conf_manager import analysis_conf
+from analysis.base.analysis_conf_manager import analysis_conf
 
 class KafkaConsumerManager():
     """

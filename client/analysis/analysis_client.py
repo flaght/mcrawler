@@ -5,12 +5,17 @@ Created on 2015年9月29日
 
 @author: kerry
 """
+
 import platform
 import sys
 import os
+import datetime
 import time
-from analysis_engine import AnalysisEngine
-from scheduler.fetch.fetch_manage import FetchFileOpcode
+
+sys.path.append('./../')
+
+from analysis.analysis_engine import AnalysisEngine
+from analysis.base.mlog import mlog
 
 
 """
@@ -37,15 +42,38 @@ def analysis_file(analysis_file, path, plt_id):
             engine.set_task(path, plt_id, t)
         engine.nexec()
 """
+def main():
+    #os.chdir(os.path.dirname(sys.argv[0]))
 
-if __name__ == '__main__':
+    print('Python %s on %s' % (sys.version, sys.platform))
+    #sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])
     sys_str = platform.system()
     print sys_str
     if platform.system() == "Darwin" or platform.system() == "Linux":
         reload(sys)
         sys.setdefaultencoding('utf-8')  # @UndefinedVariable
+    #sys.path.extend('/Users/kerry/work/pj/gitfork/mcrawler/client/analysis')
+    os.chdir(os.getcwd())
     analysis_engine = AnalysisEngine()
-    data = analysis_engine.process_file_data(60006, '~/text_storage/60006bak', 'c35064c32ce3b2da746b8dc9c45c5d77', FetchFileOpcode.ftp)
+    file_list = analysis_engine.input_data('~/text_storage/60006bak')
+    i = 0
+    count = len(file_list)
+    while i < count:
+        tlist = file_list[i:i + 4]
+        i += 5
+        start_time = time.time()
+        for t in tlist:
+            analysis_engine.process_file_data(60006, '~/text_storage/60006bak', t, 0)
+        end_time = time.time()
+        mlog.log().info("analysis file count %d  expend %d", i, end_time - start_time)
+
+
+if __name__ == '__main__':
+    main()
+
+
+    #print len(file_list)
+    #data = analysis_engine.process_file_data(60006, '~/text_storage/60006bak', 'c35064c32ce3b2da746b8dc9c45c5d77', FetchFileOpcode.ftp)
 
     """
     engine = AnalysisEngine(0)

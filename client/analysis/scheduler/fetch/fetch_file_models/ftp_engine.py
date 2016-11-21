@@ -4,10 +4,10 @@ Created on 2016年11月18日
 
 @author: kerry
 """
-from common.ftp_manager import FTPManager
-from pool.ftp_pool_manage import FtpPoolManager
-from base.analysis_conf_manager import analysis_conf
-from common.mstring import MString
+from analysis.common.ftp_manager import FTPManager
+from analysis.pool.ftp_pool_manage import FtpPoolManager
+from analysis.base.analysis_conf_manager import analysis_conf
+from analysis.common.mstring import MString
 
 
 """
@@ -28,6 +28,10 @@ class FtpEngine:
 
         self.ftp_mgr.connect()
         #self.ftp_pool = FtpPoolManager(num * 4)
+
+
+    def __del__(self):
+        self.ftp_mgr.close()
 
     def fetch_data(self, basic_path, file_name):
         ftp_url = basic_path + "/" + file_name

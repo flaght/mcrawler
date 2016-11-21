@@ -13,10 +13,10 @@ from twisted.internet import defer
 from twisted.internet import reactor, protocol
 from twisted.internet import threads
 
-from base.log import kid_log
-from netsvc.packet_processing import PacketHead
-from netsvc.resolve import NetData
-from scheduler.analysis_manage_model.analytical_manager import AnalyticalManager
+from analysis.base.mlog import mlog
+from analysis.netsvc.packet_processing import PacketHead
+from analysis.netsvc.resolve import NetData
+from analysis.scheduler.analysis_manage_model.analytical_manager import AnalyticalManager
 
 
 class KIDBaseSchedulerClient(protocol.Protocol):
@@ -40,7 +40,7 @@ class KIDBaseSchedulerClient(protocol.Protocol):
         self.send_thread.start()
 
     def connectionMade(self):
-        kid_log.log().debug("connection success")
+        mlog.log().debug("connection success")
         self.is_alive = True
         self.transport.write(self.analy_mgr.login(6, self.password, self.user))
         self.analy_mgr.feedback = self.feedback_state
@@ -53,13 +53,13 @@ class KIDBaseSchedulerClient(protocol.Protocol):
     def dataReceived(self, data):
         "As soon as any data is received, write it back."
         pack_stream, result = self.net_data.net_wok(data)
-        kid_log.log().debug("result %d", result)
+        mlog.log().debug("result %d", result)
         if result == 0:
             return
         packet_head = self.analy_mgr.unpack_head(pack_stream)
         if (int(packet_head.packet_length) - int(packet_head.packet_head_length())
                 <> int(packet_head.data_length)):
-            kid_log.log().error("packet_length error %d",
+            mlog.log().error("packet_length error %d",
                                 int(packet_head.packet_length))
             return
         if packet_head.packet_length <= packet_head.packet_head_length():
@@ -69,11 +69,11 @@ class KIDBaseSchedulerClient(protocol.Protocol):
         if packet_head.operate_code == 100:  # 心跳包回复
             self.transport.write(pack_stream)
         elif packet_head.operate_code == 1002:
-            kid_log.log().debug("operate_code %d", packet_head.operate_code)
+            mlog.log().debug("operate_code %d", packet_head.operate_code)
             manager_id, token = struct.unpack('=I32s', pack_stream[26:])
             self.analy_mgr.manager_id = manager_id
             self.analy_mgr.token = token
-            kid_log.log().debug('id:%d  token:%s', manager_id, token)
+            mlog.log().debug('id:%d  token:%s', manager_id, token)
         elif packet_head.operate_code == 1030:
             self.analy_mgr.analytical_hbase_info(pack_stream)
 

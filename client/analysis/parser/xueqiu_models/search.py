@@ -2,7 +2,7 @@
 
 import json
 import icu
-from db.xueqiu import XueQiu as xqdb
+from analysis.db.xueqiu import XueQiu as xqdb
 
 """
 Created on 201601015

@@ -5,11 +5,11 @@ Created on 2016年11月6日
 @author: kerry
 """
 
-from base.sqlite_ext import SQLiteExt
+from analysis.base.sqlite_ext import SQLiteExt
 import threading
 import icu
 import os
-from base.mlog import mlog
+from analysis.base.mlog import mlog
 
 
 class SQLLiteStorage():
@@ -37,7 +37,8 @@ class SQLLiteStorage():
         try:
             self.engine.create_table(crate_table_sql)
         except Exception, e:
-            mlog.log().error('create_table error:%s' % e)
+            #mlog.log().error('create_table error:%s' % e)
+            pass
 
 
     def save_data(self,sql,data):
@@ -52,6 +53,7 @@ class SQLLiteStorage():
                 self.engine.save(item['db'],
                                  item['data'])
         except Exception, e:
-            mlog.log().error('save error:%s' % e)
+            #mlog.log().error('save error:%s' % e)
+            pass
 
 

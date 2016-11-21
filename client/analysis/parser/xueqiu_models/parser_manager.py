@@ -9,8 +9,8 @@ Created on 201601015
 import json
 import icu
 
-from parser.xueqiu_models.search import xq_search
-from db.xueqiu import XueQiu as  xqdb
+from analysis.parser.xueqiu_models.search import xq_search
+from analysis.db.xueqiu import XueQiu as xqdb
 
 
 class XueQiuParser:

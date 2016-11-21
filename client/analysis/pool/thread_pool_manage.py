@@ -6,8 +6,8 @@ Created on 2016年11月13日
 @author: kerry
 """
 
-from base.threadpool import ThreadPool,NoResultsPending,makeRequests
-from base.mlog import mlog
+from analysis.base.threadpool import ThreadPool,NoResultsPending,makeRequests
+from analysis.base.mlog import mlog
 
 class ThreadPoolManager:
 

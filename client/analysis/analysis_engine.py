@@ -9,11 +9,12 @@ Created on 2016年11月13日
 import base64
 import json
 import zlib
-from base.mlog import mlog
-from parser.cleaning import CleaningCrawler
-from parser.parser import Parser as MParser
-from scheduler.fetch.fetch_manage import FetchFileManager
-from scheduler.logic.schedule_engine import ScheduleEngne
+from analysis.base.mlog import mlog
+from analysis.parser.cleaning import CleaningCrawler
+from analysis.parser.parser import Parser as MParser
+from analysis.scheduler.fetch.fetch_manage import FetchFileManager
+from analysis.scheduler.logic.schedule_engine import ScheduleEngne
+from analysis.scheduler.input.input_manage import InputManager
 
 """
 采用多线程方式来获取数据,解析,存储数据。
@@ -27,22 +28,33 @@ class AnalysisEngine:
         Returns:
             object:
         """
+
         self.parser = MParser()
         self.task_queue = []
         self.recovery_file = {}
         self.fetch_mgr = FetchFileManager()
         self.scheduler = ScheduleEngne()
 
+
+        config = {'ftp':{'type':1, 'host':'61.147.114.73', 'port':21, 'user':'crawler', 'passwd':'123456x', 'timeout':5, 'local':'./'}}
+        self.input_mgr = InputManager(config)
+        self.input_mgr.start()
+
     def __del__(self):
         pass
 
 
+    def input_data(self, path):
+        return self.input_mgr.get_alldata(path)
     """
     解析数据
     """
     def __data_parser(self, content, pid):
         data = CleaningCrawler.clean_data(content)
-        return self.parser.parse(pid, data)
+        if data is not  None:
+            return self.parser.parse(pid, data)
+        else:
+            return {'status': -1}
 
     """
     拉取文件转化为数据
@@ -59,8 +71,8 @@ class AnalysisEngine:
         """
         根据平台id,传递给管理类
         """
-        print parser_dict
-        self.scheduler.process_data(pid, parser_dict)
+        if parser_dict['status'] == 1:
+            self.scheduler.process_data(pid, parser_dict)
 
 
 

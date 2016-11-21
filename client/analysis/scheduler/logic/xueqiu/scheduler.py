@@ -11,7 +11,7 @@ Created on 2016年11月19日
 """
 
 from analysis.scheduler.storage.manage_model.xueqiu.storager_manage import Storager
-from db.xueqiu import XueQiu as xqdb
+from analysis.db.xueqiu import XueQiu as xqdb
 
 class Scheduler:
 

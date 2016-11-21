@@ -6,7 +6,7 @@ Created on 2016年11月19日
 @author: kerry
 """
 
-from db.xueqiu import XueQiu as xqdb
+from analysis.db.xueqiu import XueQiu as xqdb
 
 """
 用于处理雪球相关的存储

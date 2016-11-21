@@ -5,7 +5,7 @@ Created on 2015年11月5日
 @author: chenyitao
 """
 
-from netsvc.packet_processing import AnalyzedURLInfo
+from analysis.netsvc.packet_processing import AnalyzedURLInfo
 
 
 class AnalyzedURLManager(object):
