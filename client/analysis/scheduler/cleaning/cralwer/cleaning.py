@@ -10,8 +10,8 @@ import zlib
 import base64
 from analysis.base.mlog import mlog
 
-class CleaningCrawler:
 
+class CleaningCrawler():
     @classmethod
     def clean_data(cls, content):
         charset_name = ''
@@ -43,7 +43,3 @@ class CleaningCrawler:
             return None
 
         return data
-
-
-
-

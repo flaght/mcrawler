@@ -34,5 +34,10 @@ class Scheduler:
     def __search_event(self, pid, data):
         self.storager.process_data(pid, data)
 
+    def __get_uid(self, pid, data):
+        uid_set = data['content']
+        self.storager.process_data(pid, uid_set)
+
     def __create_selector(self):
-        self.logic_selector = {60006: self.__search_event}
+        self.logic_selector = {60006: self.__search_event,
+                               60007: self.__get_uid}

@@ -28,7 +28,10 @@ class Parser:
         rt = None
         if parse_id == 1:
             rt = HeXunParser.parse_xml(content)
-        elif parse_id == 60006:
+        elif parse_id == 60006 or parse_id == 60007:
             rt = XQ_parser.parse(parse_id, content)
             status = -1 if rt is None else 1
+        else:
+            rt = content
+            status = 1
         return {"status":status,"content":rt}

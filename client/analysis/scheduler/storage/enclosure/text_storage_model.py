@@ -11,7 +11,7 @@ import time
 import json
 import icu
 from analysis.base.ftp_ext import FTPExt
-from analysis.base.analysis_conf_manager import analysis_conf
+
 
 class TextStorage(threading.Thread):
     '''

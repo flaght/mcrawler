@@ -27,3 +27,15 @@ class FileFTPManage:
         self.file_manage.set_path(path)
         return self.file_manage.get_file_list()
 
+    def file(self,path, filename):
+        """
+        获取单个文件
+        Args:
+            path:
+            filename:
+
+        Returns:
+
+        """
+        pass
+

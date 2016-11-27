@@ -40,6 +40,14 @@ class XueQiu:
         sql = '''INSERT INTO `''' + table + '''` values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
         return sql
 
+    @classmethod
+    def get_id(cls, table):
+        sql =  '''SELECT id, uid, title, text, created_at,
+                    retweet_count, reply_count, fav_count,
+                    retweet_id, type, source_link, edited_at,
+                    pic, target, source FROM `''' + table + '''`'''
+        return sql
+
 
 
 

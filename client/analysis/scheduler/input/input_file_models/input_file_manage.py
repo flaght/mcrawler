@@ -6,6 +6,7 @@ Created on 2016年11月18日
 """
 
 from analysis.scheduler.input.input_file_models.file_ftp_manage import FileFTPManage
+from analysis.scheduler.input.input_file_models.file_local_manage import FileLocalManage
 class FilerOpcode:
     """
     storage opcode
@@ -26,5 +27,5 @@ class InputFileManager:
         stype = config['type']
         if stype == filer_opcode.ftp:
             return FileFTPManage(config)
-        else:
-            return None
+        elif stype == filer_opcode.local:
+            return FileLocalManage(config)

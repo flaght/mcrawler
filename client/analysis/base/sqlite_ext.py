@@ -107,6 +107,21 @@ class SQLiteExt():
         else:
             print('the [{}] is empty or equal None!'.format(sql))
 
+    def fetch(self,sql):
+        queue = []
+        if sql is not None and sql != '':
+            cur = self.__get_cursor()
+            cur.execute(sql)
+            r = cur.fetchall()
+            if len(r) > 0:
+                for e in range(len(r)):
+                    queue.append(r[e])
+            return queue
+        else:
+            print('the [{}] is empty or equal None!'.format(sql))
+            return None
+
+
 
 def main():
     sqlmgr = SQLiteExt("./text.db",  0)

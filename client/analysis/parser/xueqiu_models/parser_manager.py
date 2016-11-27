@@ -11,14 +11,31 @@ import icu
 
 from analysis.parser.xueqiu_models.search import xq_search
 from analysis.db.xueqiu import XueQiu as xqdb
+from analysis.base.mlog import mlog
 
 
 class XueQiuParser:
     def __init__(self):
         self.dbname = "xueqiu.db"
+        self.logic_selector = {60006: self.__search_event,
+                               60007: self.__get_uid}
 
     def parse(self, parse_id, content):
-        return self.__search_event(content)
+        #return self.__search_event(content)
+        scheduler = self.logic_selector[parse_id]
+        if scheduler:
+            return scheduler(content)
+        return  None
+
+
+    def __get_uid(self,content):
+        dict = {}
+        for key in content:
+            mlog.log().info("tabel name %s content %d",key, len(content[key]))
+            for t in content[key]:
+                uid = t[1]
+                dict[uid] = uid
+        return dict
 
     def __search_event(self,content):
         result_list,symbol = xq_search.parser(content)

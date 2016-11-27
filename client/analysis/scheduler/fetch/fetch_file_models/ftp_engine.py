@@ -4,6 +4,8 @@ Created on 2016年11月18日
 
 @author: kerry
 """
+
+
 from analysis.common.ftp_manager import FTPManager
 from analysis.pool.ftp_pool_manage import FtpPoolManager
 from analysis.base.analysis_conf_manager import analysis_conf
@@ -35,7 +37,7 @@ class FtpEngine:
 
     def fetch_data(self, basic_path, file_name):
         ftp_url = basic_path + "/" + file_name
-        ftp_objstring = MString(file_name)
+        ftp_objstring = MString(file_name) #ftp文本文件处理
         if self.ftp_mgr.get(ftp_url, ftp_objstring.write):
             return ftp_objstring.string
         else:
