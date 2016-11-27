@@ -62,9 +62,10 @@ class TextStorage(threading.Thread):
         self.setDaemon(True)
         self.start()
 
-    def upload_data(self, data, path, filename):
+    def upload_data(self, data, path, pid, filename):
         self.wait_queue.append({'data': data,
                                 'path': path,
+                                'pid':pid,
                                 'filename': filename})
         self.is_stop = False
         self.run()
@@ -78,6 +79,7 @@ class TextStorage(threading.Thread):
                 item = self.wait_queue.pop(0)
                 self.__upload_data(item['data'],
                                    item['path'],
+                                   item['pid'],
                                    item['filename'])
             else:
                 time.sleep(0.5)
@@ -97,8 +99,9 @@ class TextStorage(threading.Thread):
             print 'ftp error:%s' % e
             return None
 
-    def __upload_data(self, data, path, filename):
+    def __upload_data(self, data, path, pid, filename):
         path_list = path.split('/')
+        path_list.append(pid)
         if not self.ftp.is_connected():
             print 'ftp error'
             self.ftp.close()

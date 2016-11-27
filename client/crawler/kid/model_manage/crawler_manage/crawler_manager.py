@@ -88,19 +88,23 @@ class CrawlerManager(threading.Thread):
     def __storage(self, dic):
         task = dic['task']
         item = dic['item']
-        key = item['basic']['key']
         if item is None:
             self.__task_state_feedback(task, 10)
+            return
+        key = item['basic']['key']
         self.__task_state_feedback(task, 5)
         table_name = str(task.attr_id)
+        pid = str(task.pid)
         if kid_setting.CRAWLER_TYPE == 2:
             table_name += '_detail'
-        ret = storage_manager.write_data(item, table_name, task.storage)
+        ret = storage_manager.write_data(item, table_name, pid, task.storage)
         if not ret:
             print_plus('Storage result failed', level=2)
-            self.__task_state_feedback(task, 7)
+            self.__task_state_feedback(task, 10)
             return
         self.__task_state_feedback(task, 6)
+        if task.storage == 2: #FTP
+            table_name = table_name +'/' + pid
         self.storage_list.append({'job_id': task.job_id,
                                   'attr_id': task.attr_id,
                                   'table': table_name,

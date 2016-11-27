@@ -254,6 +254,11 @@ class TaskInfo {
   void set_id(const int64 id) {
     data_->id_ = id;
   }
+
+  void set_pid(const int64 pid) {
+    data_->pid_ = pid;
+  }
+
   void set_depth(const int8 depth) {
     data_->depth_ = depth;
   }
@@ -340,6 +345,10 @@ class TaskInfo {
   const int64 id() const {
     return data_->id_;
   }
+
+  const int64 pid() const {
+    return data_->pid_;
+  }
   const int64 crawl_num() const {
     return data_->crawl_num_;
   }
@@ -415,6 +424,7 @@ class TaskInfo {
     Data()
         : refcount_(1),
           id_(0),
+          pid_(0),
           type_(UNKNOW_TASK),
           depth_(1),
           cur_depth_(1),
@@ -438,6 +448,7 @@ class TaskInfo {
 
    public:
     int64 id_;
+    int64 pid_; //任务父id
     int8 type_;
     int8 depth_;
     int8 cur_depth_;

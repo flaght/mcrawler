@@ -16,12 +16,13 @@ class TaskInfo(object):
     '''
     任务属性
     '''
-    __struct_analysis_rule = '=QQQBBBBBBBB256s'
+    __struct_analysis_rule = '=QQQQBBBBBBBB256s'
     task_info_length = struct.calcsize(__struct_analysis_rule)
 
     def __init__(self, params=None):
         if not params:
             self.job_id = 0
+            self.pid = 0
             self.attr_id = 0
             self.job_time = 0
             self.depth = 0
@@ -35,6 +36,7 @@ class TaskInfo(object):
             self.url = ''
             return
         (self.job_id,
+        self.pid,
         self.attr_id,
         self.job_time,
         self.depth,
@@ -54,6 +56,7 @@ class TaskInfo(object):
         '''
         package_body = struct.pack(self.__struct_analysis_rule,
                                    self.job_id,
+                                   self.pid,
                                    self.attr_id,
                                    self.job_time,
                                    self.depth,

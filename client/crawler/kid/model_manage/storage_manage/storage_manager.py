@@ -27,7 +27,7 @@ class StorageManager(object):
                                        kid_setting.FTP_UNAME,
                                        kid_setting.FTP_PWD)
 
-    def write_data(self, data, table_path, storage_type=1):
+    def write_data(self, data, table_path, pid, storage_type=1):
         '''
         write data to hbase
         data: {'basic':{'content':'xx', 'key':'xxx', 'url':'xxxx'}}
@@ -43,7 +43,7 @@ class StorageManager(object):
                 return True
         else:
             self.ftp_manager.upload_data(data['basic']['content'],
-                                         table_path,
+                                         table_path, pid,
                                          data['basic']['key'])
             return True
 
