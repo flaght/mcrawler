@@ -85,6 +85,15 @@ class SQLiteExt():
         else:
             print('the [{}] is empty or equal None!'.format(table))
 
+    def check_table(self, table):
+        """检测此表是否存在"""
+        if table is not None and table != '':
+            sql = "select name from sqlite_master where type='table' and name = '" + table + "' order by name"
+            #sql = "SELECT name FROM sqlite_master WHERE type='table' and name = 'crawl_info'"
+            if  len(self.fetch(sql)) > 0:
+                return True
+        return False
+
     def create_table(self, sql):
         if sql is not None and sql != '':
             cur = self.__get_cursor()
