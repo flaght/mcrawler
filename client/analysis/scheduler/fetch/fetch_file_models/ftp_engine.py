@@ -7,9 +7,9 @@ Created on 2016年11月18日
 
 
 from analysis.common.ftp_manager import FTPManager
-from analysis.pool.ftp_pool_manage import FtpPoolManager
 from analysis.base.analysis_conf_manager import analysis_conf
 from analysis.common.mstring import MString
+from analysis.scheduler.cleaning.cralwer.cleaning import CleaningCrawler
 
 
 """
@@ -35,11 +35,18 @@ class FtpEngine:
     def __del__(self):
         self.ftp_mgr.close()
 
+
+    def __clean_data(self,content):
+        return CleaningCrawler.clean_data(content)
+
+
+
     def fetch_data(self, basic_path, file_name):
         ftp_url = basic_path + "/" + file_name
         ftp_objstring = MString(file_name) #ftp文本文件处理
         if self.ftp_mgr.get(ftp_url, ftp_objstring.write):
-            return ftp_objstring.string
+            # 数据清洗
+            return self.__clean_data(ftp_objstring.string)
         else:
             return None
 

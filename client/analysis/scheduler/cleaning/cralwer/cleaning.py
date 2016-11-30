@@ -42,4 +42,13 @@ class CleaningCrawler():
             mlog.log().error(e)
             return None
 
-        return data
+        url = dict.get('url')
+        pid = dict.get('pid')
+        if url is not None:
+            url = base64.b32decode(url)
+
+        if pid is not None and url is not None:
+            result = {'data': data, 'url': url, 'pid': dict['pid']}
+        else:
+            result = {'data': data}
+        return result

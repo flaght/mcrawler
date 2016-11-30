@@ -25,14 +25,24 @@ class Storager:
 
     def __create_selector(self):
         self.storage_selector = {60006: self.__storage_search,
-                                 60007: self.__storage_get_uid}
+                                 60007: self.__storage_get_uid,
+                                 599: self.__storage_crawl}
 
 
     def __storage_search(self,content):
         name_table = xqdb.build_table_name(content)
         content_data = content['content']['result']
-        self.sqlite_manager.create_table(xqdb.create_search_sql(name_table),1)
+        if not self.sqlite_manager.check_table(name_table):
+            self.sqlite_manager.create_table(xqdb.create_search_sql(name_table),1)
         self.sqlite_manager.save_data(xqdb.save_search_format(name_table), content_data)
+
+    def __storage_crawl(self, content):
+        name_table = xqdb.build_table_name(content)
+        content_data = [(content['content']['result']['uid'],content['content']['result']['max_page'])]
+        if not self.sqlite_manager.check_table(name_table):
+            self.sqlite_manager.create_table(xqdb.create_crawl_uid_sql(name_table),1)
+        self.sqlite_manager.save_data(xqdb.save_crawl_format(name_table), content_data)
+
 
     def __storage_get_uid(self, content):
         t = json.dumps(content)

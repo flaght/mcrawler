@@ -20,7 +20,7 @@ class SQLLiteStorage():
         self.name = name
         self.wait_queue = []
 
-    def create_table(self,crate_table_sql,type):
+    def create_table(self,crate_table_sql, type = 1):
         """
 
         Args:
@@ -33,12 +33,14 @@ class SQLLiteStorage():
         if type == 0:
             drop_table_sql =  'DROP TABLE IF EXISTS ' + self.table
             self.engine.drop_table(drop_table_sql)
-
         try:
             self.engine.create_table(crate_table_sql)
         except Exception, e:
-            #mlog.log().error('create_table error:%s' % e)
-            pass
+            mlog.log().error('create_table error:%s' % e)
+
+
+    def check_table(self, table_name):
+        return self.engine.check_table(table_name)
 
 
     def save_data(self,sql,data):
@@ -53,7 +55,7 @@ class SQLLiteStorage():
                 self.engine.save(item['db'],
                                  item['data'])
         except Exception, e:
-            #mlog.log().error('save error:%s' % e)
+            mlog.log().error('save error:%s' % e)
             pass
 
 

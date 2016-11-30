@@ -10,7 +10,7 @@ import json
 import icu
 
 from analysis.parser.xueqiu_models.search import xq_search
-from analysis.db.xueqiu import XueQiu as xqdb
+from analysis.parser.xueqiu_models.user_timeline import xq_usertimeline
 from analysis.base.mlog import mlog
 
 
@@ -18,14 +18,17 @@ class XueQiuParser:
     def __init__(self):
         self.dbname = "xueqiu.db"
         self.logic_selector = {60006: self.__search_event,
-                               60007: self.__get_uid}
+                               599: self.__get_uid_crawler}
 
     def parse(self, parse_id, content):
-        #return self.__search_event(content)
-        scheduler = self.logic_selector[parse_id]
+        pid = content.get('pid')
+        if pid is None:
+            pid = 60006
+
+        scheduler = self.logic_selector[int(pid)]
         if scheduler:
             return scheduler(content)
-        return  None
+        return None
 
 
     def __get_uid(self,content):
@@ -37,17 +40,27 @@ class XueQiuParser:
                 dict[uid] = uid
         return dict
 
+
+
+    def __get_uid_crawler(self, content):
+        uid, max_page = xq_usertimeline.cralw_info(content)
+        if uid is None or max_page is None:
+            return None
+        try:
+            pid = content['pid']
+        except Exception, e:
+            pid = 0
+        return {'uid':uid,'max_page':max_page,'pid':pid}
+
     def __search_event(self,content):
-        result_list,symbol = xq_search.parser(content)
+        result_list,symbol = xq_search.parser(content['data'])
         if symbol is None or result_list is None:
             return None
-        #return {"code":1,"dbname":self.dbname ,"name_table":xqdb.crate_search_sql(symbol),"sql_formate":xqdb.save_search_format(symbol),"result":result_list}
+
         return {'key':symbol, 'result':result_list}
 
-        #name_table = xqdb.crate_search_sql(symbol)
-        #self.sqlite_manager.create_table(name_table,1)
-        #if result_list is not None:
-          #  self.sqlite_manager.save_data(xqdb.save_search_format(symbol),result_list)
+
+
     """
     def parser_search(self, content):
         prefix = "discuss"

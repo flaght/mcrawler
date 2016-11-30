@@ -25,7 +25,13 @@ class Scheduler:
         pass
 
 
-    def process_data(self,pid, data):
+    def process_data(self,pltid, data):
+        content = data['content']
+        pid = content.get('pid')
+        if pid is None:
+            pid = pltid
+        else:
+            pid = int(pid)
         logic_method = self.logic_selector[pid]
         if logic_method:
             logic_method(pid, data)
@@ -38,6 +44,11 @@ class Scheduler:
         uid_set = data['content']
         self.storager.process_data(pid, uid_set)
 
+    def __fetch_crawl(self, pid, data):
+        content = {'content':{'key':'crawl_info','result':data}}
+        self.storager.process_data(pid, content)
+
     def __create_selector(self):
         self.logic_selector = {60006: self.__search_event,
-                               60007: self.__get_uid}
+                               598: self.__get_uid,
+                               599: self.__fetch_crawl}
