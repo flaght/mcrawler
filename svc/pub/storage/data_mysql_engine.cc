@@ -25,7 +25,7 @@ bool DataMYSQLEngine::WriteData(const int32 type, base_logic::Value* value) {
     LOG_ERROR("GetConnection Error");
     return false;
   }
-  engine->Release();
+  engine->FreeRes();
   r = engine->SQLExec(sql.c_str());
   if (!r) {
     LOG_ERROR("exec sql error");
@@ -55,7 +55,7 @@ bool DataMYSQLEngine::ReadData(const int32 type, base_logic::Value* value,
       r = false;
       break;
     }
-    engine->Release();
+    engine->FreeRes();
     r = engine->SQLExec(sql.c_str());
     if (!r) {
       LOG_ERROR("exec sql error");

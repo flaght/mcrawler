@@ -70,8 +70,9 @@ void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, uid);
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, "100000");
     LOG_MSG2("%s", stock_url.c_str());
-    //kafka_producer_.AddTaskInfo(task,task.base_polling_time(),i_url);
+    kafka_producer_.AddTaskInfo(task,task.base_polling_time(),stock_url);
   }
+  LOG_DEBUG2("size %d",dict_value->size())
 }
 
 void XueqiuTaskManager::CreateCNSMStockDiscuss(
