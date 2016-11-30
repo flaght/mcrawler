@@ -18,7 +18,7 @@ ftp kafka hbase sqlite等采用预先建立连接数(和线程数相同),以参�
 """
 class AnalysisEngine:
 
-    def __init__(self):
+    def __init__(self, config):
         """
 
         Returns:
@@ -30,10 +30,7 @@ class AnalysisEngine:
         self.recovery_file = {}
         self.fetch_mgr = FetchFileManager()
         self.scheduler = ScheduleEngne()
-
-
-        #config = {'ftp':{'type':1, 'host':'61.147.114.73', 'port':21, 'user':'crawler', 'passwd':'123456x', 'timeout':5, 'local':'./'}}
-        config = {'local':{'type':3, 'path':'/Users/kerry/work/pj/gitfork/mcrawler/client'}}
+        self.config = config
         self.input_mgr = InputManager(config)
         self.input_mgr.start()
 
@@ -49,14 +46,13 @@ class AnalysisEngine:
 
 
 
-
     """
     解析数据
     """
-    def __data_parser(self, content, pid):
+    def __data_parser(self, content, pltid):
         #data = CleaningCrawler.clean_data(content)
         if content is not  None:
-            return self.parser.parse(pid, content)
+            return self.parser.parse(pltid, content)
         else:
             return {'status': -1}
 
