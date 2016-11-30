@@ -28,7 +28,7 @@ class SockCManagerREG(SockHead):
             # body
             self.level = kid_setting.DEVICE_LEVEL
             self.password = kid_setting.DEVICE_PASSWD
-            self.mac =  "A0999B04D047"#current_device_manager.get_mac_address()
+            self.mac =  current_device_manager.get_mac_address()
             return
         params = super(self.__class__, self).compress_encrypt(params, False)
         str_head = params[0:SockHead.sock_head_len]

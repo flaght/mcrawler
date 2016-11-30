@@ -62,11 +62,12 @@ class TextStorage(threading.Thread):
         self.setDaemon(True)
         self.start()
 
-    def upload_data(self, data, path, pid, filename):
+    def upload_data(self, data, path, pid, filename, url):
         self.wait_queue.append({'data': data,
                                 'path': path,
                                 'pid':pid,
-                                'filename': filename})
+                                'filename': filename,
+                                'url': url})
         self.is_stop = False
         self.run()
 
@@ -80,7 +81,8 @@ class TextStorage(threading.Thread):
                 self.__upload_data(item['data'],
                                    item['path'],
                                    item['pid'],
-                                   item['filename'])
+                                   item['filename'],
+                                   item['url'])
             else:
                 time.sleep(0.5)
 
@@ -99,7 +101,7 @@ class TextStorage(threading.Thread):
             print 'ftp error:%s' % e
             return None
 
-    def __upload_data(self, data, path, pid, filename):
+    def __upload_data(self, data, path, pid, filename, url):
         path_list = path.split('/')
         path_list.append(pid)
         if not self.ftp.is_connected():
@@ -137,6 +139,8 @@ class TextStorage(threading.Thread):
             compressed = zlib.compress(data)
             obj = {'charset': charset_name,
                    'content': base64.b32encode(compressed),
+                   'url': base64.b32encode(url),
+                   'pid':pid,
                    'timestamp': time.time()}
             jsons = json.dumps(obj)
             f.write(jsons)

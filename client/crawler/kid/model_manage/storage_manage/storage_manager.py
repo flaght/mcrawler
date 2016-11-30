@@ -44,7 +44,8 @@ class StorageManager(object):
         else:
             self.ftp_manager.upload_data(data['basic']['content'],
                                          table_path, pid,
-                                         data['basic']['key'])
+                                         data['basic']['key'],
+                                         data['basic']['url'])
             return True
 
 
