@@ -84,7 +84,8 @@ void CrawlerTaskKafka::SetTaskInfo(base_logic::TaskInfo &task_info,
   task_info.set_id(task_id);
 
   //LOG_DEBUG2("=========>id %lld || task id %lld",task_id, task_info.id());
-
+  task_info_dic->GetBigInteger(L"id", &temp_int);
+  task_info.set_pid(temp_int);
   task_info_dic->GetBigInteger(L"depth", &temp_int);
   task_info.set_depth((int8) temp_int);
   task_info_dic->GetBigInteger(L"method", &temp_int);

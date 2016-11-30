@@ -5,9 +5,9 @@ Created on 2016年11月13日
 
 @author: kerry
 """
-from common.ftp_manager import FTPManager
-from base.analysis_conf_manager import analysis_conf
-from base.mlog import mlog
+from analysis.common.ftp_manager import FTPManager
+from analysis.base.analysis_conf_manager import analysis_conf
+from analysis.base.mlog import mlog
 
 
 class FtpPoolManager:

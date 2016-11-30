@@ -199,7 +199,7 @@ void ConsoleDB::CallBackFetchBatchRuleTask(void* param,
 
       if (rows[10] != NULL)
         info_value->SetBigInteger(L"isfinish",
-                                   atoll(rows[0]));
+                                   atoll(rows[10]));
       if (rows[11] != NULL)
         info_value->SetString(L"url", rows[11]);
       list->Append((base_logic::Value*) (info_value));

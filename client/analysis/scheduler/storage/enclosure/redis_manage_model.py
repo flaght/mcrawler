@@ -6,7 +6,7 @@ Created on 2015年10月9日
 """
 
 import redis
-from base.analysis_conf_manager import analysis_conf
+from analysis.base.analysis_conf_manager import analysis_conf
 
 
 class RedisManageModel(object):

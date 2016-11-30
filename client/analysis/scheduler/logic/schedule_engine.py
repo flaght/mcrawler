@@ -5,7 +5,7 @@ Created on 2015年9月29日
 
 @author: kerry
 """
-from xueqiu.scheduler import Scheduler as XQScheduler
+from analysis.scheduler.logic.xueqiu.scheduler import Scheduler as XQScheduler
 
 class ScheduleEngne:
     def __init__(self):

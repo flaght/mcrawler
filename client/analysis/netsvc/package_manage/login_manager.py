@@ -6,7 +6,7 @@ Created on 2015年10月6日
 
 @author: kerry
 """
-from netsvc.packet_processing import AnalyticalReg
+from analysis.netsvc.packet_processing import AnalyticalReg
 
 
 class LoginManager(object):

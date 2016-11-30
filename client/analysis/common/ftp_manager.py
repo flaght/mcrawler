@@ -4,9 +4,9 @@ Created on 2016年8月6日
 
 @author: kerry
 """
-from base.ftp_ext import FTPExt
-from base.analysis_conf_manager import analysis_conf
-from base.mlog import mlog
+from analysis.base.ftp_ext import FTPExt
+from analysis.base.analysis_conf_manager import analysis_conf
+from analysis.base.mlog import mlog
 import io
 
 

@@ -5,6 +5,9 @@
 #include "console_stock_manager.h"
 #include "logic/logic_unit.h"
 #include "logic/logic_comm.h"
+#include "file/file_path.h"
+#include "file/file_util.h"
+#include "basic/basic_util.h"
 
 namespace console_logic {
 
@@ -35,9 +38,41 @@ void XueqiuTaskManager::CreateTask(base_logic::TaskInfo& task) {
       CreateCNSMStockDiscuss(task);
       break;
     }
+
+    case SB_USER_DISCUSS: {
+      CreateUserDiscuss(task);
+      break;
+    }
     default:
       break;
   }
+}
+
+void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
+  std::string symbol = "{%d}";
+  //读取文件
+  std::string s_fle_name = "./xueqiuinit.txt";
+  std::string content;
+  int error_code;
+  std::string error_str;
+  file::FilePath file_name(s_fle_name);
+  bool r = file::ReadFileToString(file_name, &content);
+  base_logic::ValueSerializer* serializer = base_logic::ValueSerializer::Create(base_logic::IMPL_JSON);
+  base_logic::Value* value = serializer->Deserialize(&content, &error_code, &error_str);
+  if (value == NULL)
+    return;
+  base_logic::DictionaryValue* dict_value = (base_logic::DictionaryValue*)(value);
+  base_logic::DictionaryValue::key_iterator it = dict_value->begin_keys();
+  for (; it != dict_value->end_keys(); ++it){
+    std::string uid = base::BasicUtil::StringConversions::WideToASCII((*it));
+    //LOG_DEBUG2("uid %s", uid.c_str());
+    std::string stock_url = task.url();
+    stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, uid);
+    stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, "100000");
+    LOG_MSG2("%s", stock_url.c_str());
+    kafka_producer_.AddTaskInfo(task,task.base_polling_time(),stock_url);
+  }
+  LOG_DEBUG2("size %d",dict_value->size())
 }
 
 void XueqiuTaskManager::CreateCNSMStockDiscuss(

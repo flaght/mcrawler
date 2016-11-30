@@ -213,6 +213,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
       //LOG_DEBUG2("id %lld url %s",info.id(),info.url().c_str());
       struct TaskUnit* unit = new struct TaskUnit;
       unit->task_id = info.id();
+      unit->pd = info.pid();
       unit->attr_id = info.attrid();
       unit->max_depth = info.depth();
       unit->current_depth = info.cur_depth();
@@ -305,6 +306,7 @@ bool TaskSchdulerManager::DistributionTask() {
       LOG_MSG2("DistributionTask task_id=%d", info.id());
       struct TaskUnit* unit = new struct TaskUnit;
       unit->task_id = info.id();
+      unit->pid = info.id();
       unit->attr_id = info.attrid();
       unit->max_depth = info.depth();
       unit->current_depth = info.cur_depth();

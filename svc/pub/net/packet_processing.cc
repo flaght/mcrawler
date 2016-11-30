@@ -111,6 +111,7 @@ bool PacketProsess::PacketStream(const PacketHead* packet_head,
 
         for ( ; it != vAssignmentMultiTask->task_set.end(); it++) {
             out.Write64((*it)->task_id);
+            out.Write64((*it)->pid);
             out.Write64((*it)->attr_id);
             out.Write64((*it)->unix_time);
             out.Write8((*it)->max_depth);
@@ -574,6 +575,7 @@ bool PacketProsess::UnpackStream(const void* packet_stream, int32 len,
             struct TaskUnit* unit = new struct TaskUnit;
             int32 temp = 0;
             unit->task_id = in.Read64();
+            unit->pid = in.Read64();
             unit->attr_id = in.Read64();
             unit->unix_time = in.Read64();
             unit->max_depth = in.Read8();
@@ -1235,6 +1237,7 @@ void PacketProsess::DumpPacket(const struct PacketHead* packet_head) {
         PRINT_INT(vAssignmentMultiTask->id);
         for (; it != vAssignmentMultiTask->task_set.end(); it++) {
             PRINT_INT64((*it)->task_id);
+            PRINT_INT64((*it)->pid);
             PRINT_INT64((*it)->attr_id);
             PRINT_INT64((*it)->unix_time);
             PRINT_INT64((*it)->max_depth);

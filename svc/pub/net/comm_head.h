@@ -142,10 +142,11 @@ struct AssignmentSingleTask:public PacketHead{
 };
 
 
-#define TASK_UNIT_SIZE (sizeof(int64) * 3 + sizeof(int8) * 8\
+#define TASK_UNIT_SIZE (sizeof(int64) * 4 + sizeof(int8) * 8\
          + URL_SIZE - 1)
 struct TaskUnit{
     int64  task_id;
+    int64  pid;
     int64  attr_id;
     int64  unix_time;
     int8   max_depth;
@@ -217,8 +218,8 @@ struct StorageUnit{
     int64 attr_id;
     int8  max_depth;
     int8  cur_depth;
-    char  key_name[STORAGE_INFO_SIZE];
-    char  pos_name[URL_SIZE];
+    char  key_name[STORAGE_INFO_SIZE]; //位置
+    char  pos_name[URL_SIZE]; //文件名
 };
 
 //  CRAWL_HBASE_STORAGE_INFO = 1018 //CRAWL_FTP_STORAGE_INFO = 1019

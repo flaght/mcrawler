@@ -31,13 +31,35 @@ class XueQiu:
                     `pic` VARCHAR(256) NULL,
                     `target` VARCHAR(256) NULL,
                     `source` VARCHAR(256) NULL,
-                    PRIMARY KEY (`id`));'''
+                     PRIMARY KEY (`id`));'''
         return sql
+
+    @classmethod
+    def create_crawl_uid_sql(cls, table):
+        sql = '''CREATE TABLE `''' + table + '''`(
+                    `uid` BIGINT NOT NULL,
+                    `max_page` BIGINT NOT NULL,
+                     PRIMARY KEY (`uid`));'''
+        return sql
+
 
 
     @classmethod
     def save_search_format(cls,table):
         sql = '''INSERT INTO `''' + table + '''` values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
+        return sql
+
+    @classmethod
+    def save_crawl_format(cls, table):
+        sql = '''INSERT INTO `''' + table + '''` values (?, ?)'''
+        return sql
+
+    @classmethod
+    def get_id(cls, table):
+        sql = '''SELECT id, uid, title, text, created_at,
+                    retweet_count, reply_count, fav_count,
+                    retweet_id, type, source_link, edited_at,
+                    pic, target, source FROM `''' + table + '''`'''
         return sql
 
 

@@ -96,6 +96,7 @@ TaskInfo& TaskInfo::DeepCopy(const TaskInfo& task) {
 
 void TaskInfo::ValueSerialization(base_logic::DictionaryValue* dict) {
   dict->GetBigInteger(L"id", &data_->id_);
+  data_->pid_ = data_->id_;
   dict->GetCharInteger(L"depth", &data_->depth_);
   dict->GetCharInteger(L"machine", &data_->machine_);
   dict->GetCharInteger(L"storage", &data_->storage_);

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import json
-import icu
-from db.xueqiu import XueQiu as xqdb
 
 """
 Created on 201601015
 
 @author kerry
 """
+
 
 class Search():
     """
@@ -26,7 +25,6 @@ class Search():
         if (jobj.has_key("error_code")):
             return None, None
         symbol = jobj.get("symbol", "")
-        #symbol = "SZ000538"
         dlist = jobj.get("list", "")
         for d in dlist:
             x = self.__parser_search_text_unit(d)
@@ -34,7 +32,7 @@ class Search():
         if (len(tlist) > 0):
             return tlist,str(symbol)
         else:
-            return  None,str(symbol)
+            return None,str(symbol)
 
 
     def __parser_search_text_unit(self, unit):
