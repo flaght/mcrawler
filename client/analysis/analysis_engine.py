@@ -51,7 +51,7 @@ class AnalysisEngine:
     """
     def __data_parser(self, content, pltid):
         #data = CleaningCrawler.clean_data(content)
-        if content is not  None:
+        if content is not None:
             return self.parser.parse(pltid, content)
         else:
             return {'status': -1}

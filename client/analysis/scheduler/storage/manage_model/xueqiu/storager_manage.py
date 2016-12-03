@@ -25,7 +25,7 @@ class Storager:
 
     def __create_selector(self):
         self.storage_selector = {60006: self.__storage_search,
-                                 60007: self.__storage_get_uid,
+                                 -599: self.__storage_get_uid,
                                  599: self.__storage_crawl}
 
 

@@ -24,6 +24,18 @@ from multiprocessing import Pool
 4.平台id 0 忽略平台
 
 """
+
+"""
+config = {'ftp':{'type':1, 'host':'61.147.114.73', 'port':21, 'user':'crawler', 'passwd':'123456x', 'timeout':5, 'local':'./'},
+          'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler/client'}
+         }
+"""
+
+
+
+
+
+
 class Console:
 
     def __init__(self):
@@ -90,8 +102,13 @@ def main():
     if result.successful():
         print  "successful"
 
+
+
 def test():
-    analysis_engine = AnalysisEngine()
+    config = {'ftp': {'type': 1, 'host': '61.147.114.73', 'port': 21, 'user': 'crawler',
+                      'passwd': '123456x', 'timeout': 5, 'local': './'}}
+
+    analysis_engine = AnalysisEngine(config)
     file_list = analysis_engine.input_data('~/text_storage/60006bak')
     i = 0
     count = len(file_list)
@@ -106,9 +123,42 @@ def test():
 
 
 def test_local():
-    analysis_engine = AnalysisEngine()
+    config = {'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler/client'}}
+    analysis_engine = AnalysisEngine(config)
     analysis_engine.process_file_data(60007,'./','xueqiu.db', 2)
 
 
+
+
+def parser_xueqiu():
+
+    config = {'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler/client'}}
+    analysis_engine = AnalysisEngine(config)
+    analysis_engine.process_file_data(60006, './analysis/', 'xueqiu.db', 2)
+
+
+"""
+    input_path = '~/text_storagebak/60006bak'
+    file_path = '~/text_storagebak/60006bak'
+    plt_id = 60006
+
+
+    config = {'ftp': {'type': 1, 'host': '61.147.114.73', 'port': 21, 'user': 'crawler',
+                      'passwd': '123456x', 'timeout': 5, 'local': './'}}
+    analysis_engine = AnalysisEngine(config)
+    file_list = analysis_engine.input_data(input_path)
+    i = 0
+    count = len(file_list)
+    while i < count:
+        unit_list = file_list[i:i+5]
+        i += 5
+        start_time = time.time()
+        for t in unit_list:
+            analysis_engine.process_file_data(plt_id, file_path, t, 0)
+        end_time = time.time()
+        mlog.log().info("analysis file count %d  expend %d", i, end_time - start_time)
+
+"""
+
 if __name__ == '__main__':
-    test_local()
+    parser_xueqiu()

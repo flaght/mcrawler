@@ -23,10 +23,10 @@ class LocalEngine:
 
 
     def fetch_data(self, basic_path, file_name):
-        file_path = self.basic_path + '/' + basic_path + '/' + file_name
+        file_path = self.basic_path + '/' + basic_path +  file_name
         mlog.log().info("%s",file_path)
         dict = self.__clean_data(file_path, 0)
-        return dict
+        return {'pid': -599,'dict':dict}
 
 
 
