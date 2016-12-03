@@ -41,7 +41,7 @@ class Scheduler:
         self.storager.process_data(pid, data)
 
     def __get_uid(self, pid, data):
-        uid_set = data['content']
+        uid_set = data['content']['result']
         self.storager.process_data(pid, uid_set)
 
     def __fetch_crawl(self, pid, data):
@@ -50,5 +50,5 @@ class Scheduler:
 
     def __create_selector(self):
         self.logic_selector = {60006: self.__search_event,
-                               598: self.__get_uid,
+                               -599: self.__get_uid,
                                599: self.__fetch_crawl}

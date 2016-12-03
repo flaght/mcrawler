@@ -18,7 +18,8 @@ class XueQiuParser:
     def __init__(self):
         self.dbname = "xueqiu.db"
         self.logic_selector = {60006: self.__search_event,
-                               599: self.__get_uid_crawler}
+                               599: self.__get_uid_crawler,
+                               -599: self.__get_uid}
 
     def parse(self, parse_id, content):
         pid = content.get('pid')
@@ -33,12 +34,13 @@ class XueQiuParser:
 
     def __get_uid(self,content):
         dict = {}
-        for key in content:
-            mlog.log().info("tabel name %s content %d",key, len(content[key]))
-            for t in content[key]:
+        data = content.get('dict')
+        for key in data:
+            mlog.log().info("tabel name %s content %d",key, len(data[key]))
+            for t in data[key]:
                 uid = t[1]
                 dict[uid] = uid
-        return dict
+        return {'pid':-599, 'result':dict}
 
 
 

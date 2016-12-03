@@ -73,6 +73,7 @@ class CrawlerTasklogic {
  private:
     scoped_ptr<crawler_task_logic::CrawlerTaskDB>             task_db_;
     scoped_ptr<crawler_task_logic::TaskTimeManager>           task_time_mgr_;
+    //crawler_task_logic::TaskTimeManager*                      task_time_mgr_;
     scoped_ptr<crawler_task_logic::CrawlerTaskKafka>          task_kafka_;
     crawler_schduler::SchdulerEngine*                         crawler_schduler_engine_;
 };

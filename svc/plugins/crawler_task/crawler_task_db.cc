@@ -25,6 +25,7 @@ CrawlerTaskDB::~CrawlerTaskDB() {
     delete mysql_engine_;
     mysql_engine_ = NULL;
   }
+  LOG_MSG("~CrawlerTaskDB()");
 }
 
 bool CrawlerTaskDB::FecthBatchTask(std::list<base_logic::TaskInfo>* list,
