@@ -213,7 +213,7 @@ bool TaskSchdulerManager::DistributionTempTask() {
       //LOG_DEBUG2("id %lld url %s",info.id(),info.url().c_str());
       struct TaskUnit* unit = new struct TaskUnit;
       unit->task_id = info.id();
-      unit->pd = info.pid();
+      unit->pid = info.pid();
       unit->attr_id = info.attrid();
       unit->max_depth = info.depth();
       unit->current_depth = info.cur_depth();
@@ -407,7 +407,7 @@ int32 TaskSchdulerManager::GetSurplusTaskCount() {
       task_count > task_cache_->task_exec_map_.size() ?
           task_count : task_cache_->task_exec_map_.size();
 
-  int32 surplus = crawler_count * 500 - exec_count;
+  int32 surplus = crawler_count * 100 - exec_count;
 
   LOG_DEBUG2("surplus [%d] exec_count[%d] crawler_count[%d][%d]",
       surplus, exec_count,crawler_count,crawler_count*500);

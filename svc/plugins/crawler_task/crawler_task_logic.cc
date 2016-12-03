@@ -35,11 +35,9 @@ bool CrawlerTasklogic::Init() {
     if (config == NULL)
         return false;
     r = config->LoadConfig(path);
-    //base_logic::DataControllerEngine::Init(config);
     task_db_.reset(new crawler_task_logic::CrawlerTaskDB(config));
     task_kafka_.reset(new crawler_task_logic::CrawlerTaskKafka(config));
-    task_time_mgr_.reset(
-           new crawler_task_logic::TaskTimeManager(task_db_.get(), task_kafka_.get()));
+    task_time_mgr_.reset(new crawler_task_logic::TaskTimeManager(task_db_.get(), task_kafka_.get()));
 
     std::string cralwer_library = "./crawler_schduler/crawler_schduler.so";
     std::string cralwer_func = "GetCrawlerSchdulerEngine";

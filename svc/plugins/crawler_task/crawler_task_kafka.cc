@@ -30,6 +30,7 @@ CrawlerTaskKafka::CrawlerTaskKafka(config::FileConfig* config) {
 
 CrawlerTaskKafka::~CrawlerTaskKafka() {
   kafka_consumer_.Close();
+  LOG_MSG("~CrawlerTaskKafka()");
 }
 
 bool CrawlerTaskKafka::FectchBatchTempTask(

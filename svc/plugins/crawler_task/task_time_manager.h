@@ -35,7 +35,7 @@ class TaskTimeManager {
 
  private:
     crawler_task_logic::TaskSchdulerManager*               schduler_mgr_;
-    scoped_ptr<crawler_task_logic::CrawlerTaskDB>          task_db_;
+    crawler_task_logic::CrawlerTaskDB*                     task_db_;
     CrawlerTaskKafka*									                     task_kafka_;
 };
 
