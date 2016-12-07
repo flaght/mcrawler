@@ -29,7 +29,7 @@ class AnalysisEngine:
         self.task_queue = []
         self.recovery_file = {}
         self.fetch_mgr = FetchFileManager()
-        self.scheduler = ScheduleEngne()
+        self.scheduler = ScheduleEngne(config)
         self.config = config
         self.input_mgr = InputManager(config)
         self.input_mgr.start()

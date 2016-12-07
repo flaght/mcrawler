@@ -14,7 +14,7 @@ namespace console_logic {
 
 class XueqiuTaskManager {
  public:
-  XueqiuTaskManager();
+  XueqiuTaskManager(console_logic::ConsoleKafka* producer);
   virtual ~XueqiuTaskManager();
  public:
   void CreateTask(base_logic::TaskInfo& task);
@@ -28,7 +28,7 @@ class XueqiuTaskManager {
  private:
   void CreateSMRank(const std::string& replace_str,const base_logic::TaskInfo& task);
  private:
-  ConsoleStockManager* stock_manager_;
-  console_logic::ConsoleKafka kafka_producer_;
+  ConsoleStockManager*          stock_manager_;
+  console_logic::ConsoleKafka*  kafka_producer_;
 };
 }

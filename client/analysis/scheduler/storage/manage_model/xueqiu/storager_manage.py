@@ -11,15 +11,17 @@ from analysis.db.xueqiu import XueQiu as xqdb
 """
 用于处理雪球相关的存储
 """
-from scheduler.storage.manage_model.base_storager import BaseStorager,storage_opcode
+from analysis.scheduler.storage.manage_model.base_storager import BaseStorager
+from analysis.common.operationcode import storage_opcode
 import json
 
 
 class Storager:
     def __init__(self,config):
-        self.sqlite_manager = BaseStorager.create_storager(storage_opcode.sqlite, config)
-        config1 = {'name':'1.txt'}
-        self.text_manager = BaseStorager.create_storager(storage_opcode.text, config1)
+        if config.get('type') == 5:
+            self.sqlite_manager = BaseStorager.create_storager(storage_opcode.sqlite, config)
+        elif config.get('type') == 3:
+            self.text_manager = BaseStorager.create_storager(storage_opcode.text, config)
         self.__create_selector()
 
 

@@ -7,15 +7,7 @@ Created on 2016年11月18日
 
 from analysis.scheduler.input.input_file_models.file_ftp_manage import FileFTPManage
 from analysis.scheduler.input.input_file_models.file_local_manage import FileLocalManage
-class FilerOpcode:
-    """
-    storage opcode
-    """
-    ftp = 1
-    http = 2
-    local = 3
-
-filer_opcode = FilerOpcode()
+from analysis.common.operationcode import filer_opcode
 
 class InputFileManager:
     """

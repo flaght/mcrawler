@@ -15,10 +15,10 @@ from analysis.db.xueqiu import XueQiu as xqdb
 
 class Scheduler:
 
-    def __init__(self):
-        config = {}
-        config['name'] = xqdb.database
-        self.storager = Storager(config)
+    def __init__(self, config):
+        #config = {}
+        #config['name'] = xqdb.database
+        self.storager = Storager(config.get('result'))
         self.__create_selector()
 
     def __del__(self):

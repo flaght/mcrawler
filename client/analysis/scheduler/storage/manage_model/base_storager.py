@@ -8,26 +8,7 @@ Created on 2016年11月19日
 
 from analysis.scheduler.storage.enclosure.sqlite_manage_model import SQLLiteStorage
 from analysis.base.text_ext import TextExt as TextStorage
-
-
-class StoragerOpode:
-    """
-    storage opcode
-    """
-    redis = 0
-
-    hbase = 1
-
-    mysql = 2
-
-    text = 3
-
-    memcache = 4
-
-    sqlite = 5
-
-
-storage_opcode = StoragerOpode()
+from analysis.common.operationcode import storage_opcode
 
 
 class BaseStorager:

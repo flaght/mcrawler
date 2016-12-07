@@ -12,7 +12,7 @@ namespace console_logic {
 
 class ConsoleKafka {
  public:
-  ConsoleKafka();
+  ConsoleKafka(config::FileConfig* config);
   virtual ~ConsoleKafka();
  public:
   void AddTaskInfo(const base_logic::TaskInfo& task,

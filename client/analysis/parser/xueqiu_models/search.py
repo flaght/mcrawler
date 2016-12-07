@@ -34,6 +34,9 @@ class Search():
         else:
             return None,str(symbol)
 
+    def clean(self,data):
+        pass
+
 
     def __parser_search_text_unit(self, unit):
         id = unit.get("id", "")

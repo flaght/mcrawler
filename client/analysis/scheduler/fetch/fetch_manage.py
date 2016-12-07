@@ -6,18 +6,7 @@ Created on 2016年11月18日
 """
 from fetch_file_models.ftp_engine import FtpEngine
 from fetch_file_models.local_engine import LocalEngine
-class FetchFileOpcode:
-    """
-    fetch file opcode
-    """
-    ftp = 0
-
-    http = 1
-
-    local = 2
-
-
-fetch_file_opcode = FetchFileOpcode()
+from analysis.common.operationcode import fetch_file_opcode
 
 
 class FetchFileManager: # 返回为存储的数据

@@ -10,7 +10,8 @@
 
 namespace console_logic {
 
-HexunTaskManager::HexunTaskManager() {
+HexunTaskManager::HexunTaskManager(console_logic::ConsoleKafka* producer) {
+  kafka_producer_ = producer;
   stock_manager_ = ConsoleStockEngine::GetConsoleStockManager();
   cache_ = new HexunCache();
   InitThreadrw(&lock_);
@@ -70,7 +71,7 @@ void HexunTaskManager::CreateAllStockHeat(const base_logic::TaskInfo& task,
     btask.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
 
     //LOG_DEBUG2("%s",btask.url().c_str());
-    kafka_producer_.AddKafkaTaskInfo(task.id(), task.attrid(), 1, 1,
+    kafka_producer_->AddKafkaTaskInfo(task.id(), task.attrid(), 1, 1,
                                      task.method(), task.machine(),
                                      task.storage(), 0, 0, btask.polling_time(),
                                      btask.last_task_time(), s_url);
@@ -180,7 +181,7 @@ void HexunTaskManager::CreateSecondaryStockHeat(
       btask.set_base_polling_time(task.base_polling_time());
       btask.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
       //LOG_DEBUG2("btask polling_time %lld",btask.polling_time());
-      kafka_producer_.AddKafkaTaskInfo(btask.id(), btask.attrid(), 1, 1,
+      kafka_producer_->AddKafkaTaskInfo(btask.id(), btask.attrid(), 1, 1,
                                        btask.method(), btask.machine(),
                                        btask.storage(), 0, 0,
                                        btask.polling_time(),

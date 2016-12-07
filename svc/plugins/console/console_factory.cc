@@ -47,13 +47,16 @@ ConsoleFactory::~ConsoleFactory() {
     delete console_cache_;
     console_cache_ = NULL;
   }
+
+  if (kafka_producer_) {
+    delete kafka_producer_;
+    kafka_producer_ = NULL;
+  }
   DeinitThreadrw(lock_);
 }
 
 void ConsoleFactory::Init() {
   stock_mgr_ = console_logic::ConsoleStockEngine::GetConsoleStockManager();
-  hexun_task_mgr_ = new console_logic::HexunTaskManager();
-  xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager();
   console_cache_ = new ConsoleCache();
 }
 
@@ -63,6 +66,9 @@ void ConsoleFactory::InitParam(config::FileConfig* config) {
   TimeFetchTask();
   console_db_->FetchBatchRuleTask(&console_cache_->task_idle_map_);
   console_db_->FetchBatchCountTask(&console_cache_->task_idle_map_);
+  kafka_producer_ = new ConsoleKafka(config);
+  hexun_task_mgr_ = new console_logic::HexunTaskManager(kafka_producer_);
+  xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager(kafka_producer_);
 
 }
 

@@ -7,11 +7,18 @@
 
 namespace console_logic {
 
-ConsoleKafka::ConsoleKafka() {
+ConsoleKafka::ConsoleKafka(config::FileConfig* config) {
+ /*
   if (PRODUCER_INIT_SUCCESS
       != kafka_producer_.Init(
           0, "kafka_newsparser_algo",
           "192.168.1.85:9091,192.168.1.80:9091,192.168.1.81:9091", NULL))
+    LOG_ERROR("producer kafka_newsparser_algo init failed");
+  else
+    LOG_ERROR("producer kafka_newsparser_algo init success");
+  */
+  if (PRODUCER_INIT_SUCCESS
+      != kafka_producer_.Init(config->kafka_list_.front()))
     LOG_ERROR("producer kafka_newsparser_algo init failed");
   else
     LOG_ERROR("producer kafka_newsparser_algo init success");
