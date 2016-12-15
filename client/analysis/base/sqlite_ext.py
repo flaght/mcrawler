@@ -57,11 +57,11 @@ class SQLiteExt():
         连接对象"""
         conn = sqlite3.connect(path)
         if os.path.exists(path) and os.path.isfile(path):
-            print('硬盘上面:[{}]'.format(path))
+            mlog.log().info('硬盘上面:[{}]'.format(path))
             return conn
         else:
             conn = None
-            print('内存上面:[:memory:]')
+            mlog.log().info('内存上面:[:memory:]')
             return sqlite3.connect(':memory:')
 
     def __close_all(self, cur):
@@ -83,7 +83,7 @@ class SQLiteExt():
             self.conn.commit()
             self.__close_all(cur)
         else:
-            print('the [{}] is empty or equal None!'.format(table))
+            mlog.log().error('the [{}] is empty or equal None!'.format(table))
 
     def check_table(self, table):
         """检测此表是否存在"""
@@ -101,7 +101,7 @@ class SQLiteExt():
             self.conn.commit()
             self.__close_all(cur)
         else:
-            print('the [{}] is empty or equal None!'.format(sql))
+            mlog.log().error('the [{}] is empty or equal None!'.format(sql))
 
 
     def save(self, sql, data):
@@ -114,7 +114,7 @@ class SQLiteExt():
                     self.conn.commit()
                 self.__close_all(cur)
         else:
-            print('the [{}] is empty or equal None!'.format(sql))
+            mlog.log().error('the [{}] is empty or equal None!'.format(sql))
 
     def fetch(self,sql):
         queue = []
@@ -127,7 +127,7 @@ class SQLiteExt():
                     queue.append(r[e])
             return queue
         else:
-            print('the [{}] is empty or equal None!'.format(sql))
+            mlog.log().error('the [{}] is empty or equal None!'.format(sql))
             return None
 
 
@@ -156,7 +156,7 @@ def main():
 
         sqlmgr.create_table(create_table_sql)
     except Exception,e:
-        print "Create table failed"
+        mlog.log().error("Create table failed")
 
 
 ("\n"

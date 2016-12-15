@@ -35,6 +35,28 @@ class XueQiu:
         return sql
 
     @classmethod
+    def create_clean_search_sql(cls,table):
+        sql = '''CREATE TABLE `''' + table + '''`(
+                    `id` BIGINT NOT NULL,
+                    `uid` BIGINT NULL,
+                    `title` VARCHAR(128) NULL,
+                    `text` VARCHAR(40960) NULL,
+                    `created_at` INT NULL,
+                    `retweet_count` INT NULL,
+                    `reply_count` INT NULL,
+                    `fav_count` INT NULL,
+                    `retweet_id` INT NULL,
+                    `type` INT NULL,
+                    `source_link` VARCHAR(256),
+                    `edited_at` INT NULL,
+                    `pic` VARCHAR(256) NULL,
+                    `target` VARCHAR(256) NULL,
+                    `source` VARCHAR(256) NULL,
+                    `clean_data` VARCHAR(40960) NULL,
+                     PRIMARY KEY (`id`));'''
+        return sql
+
+    @classmethod
     def create_crawl_uid_sql(cls, table):
         sql = '''CREATE TABLE `''' + table + '''`(
                     `uid` BIGINT NOT NULL,
@@ -48,6 +70,12 @@ class XueQiu:
     def save_search_format(cls,table):
         sql = '''INSERT INTO `''' + table + '''` values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
         return sql
+
+    @classmethod
+    def save_search_clean_format(cls,table):
+        sql = '''INSERT INTO `''' + table + '''` values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
+        return sql
+
 
     @classmethod
     def save_crawl_format(cls, table):

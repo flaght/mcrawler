@@ -5,6 +5,7 @@
 
 #include "config/config.h"
 #include "console_db.h"
+#include "console_kafka.h"
 #include "console_stock_manager.h"
 #include "hexun_task_manager.h"
 #include "xueqiu_task_manager.h"
@@ -48,6 +49,7 @@ class ConsoleFactory {
   struct threadrw_t*                     lock_;
   console_logic::ConsoleStockManager*  stock_mgr_;
   console_logic::ConsoleDB* console_db_;
+  console_logic::ConsoleKafka*  kafka_producer_;
   console_logic::HexunTaskManager*  hexun_task_mgr_;
   console_logic::XueqiuTaskManager*  xueqiu_task_mgr_;
 };

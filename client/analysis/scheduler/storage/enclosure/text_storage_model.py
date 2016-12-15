@@ -11,6 +11,7 @@ import time
 import json
 import icu
 from analysis.base.ftp_ext import FTPExt
+from analysis.base.mlog import mlog
 
 
 class TextStorage(threading.Thread):
@@ -40,13 +41,13 @@ class TextStorage(threading.Thread):
         self.ftp.set_pasv(True, host)
         try:
             if not self.ftp.connect(host, port):
-                print 'connect ftp srever failed'
+                mlog.log().error('connect ftp srever failed')
                 return
             if not self.ftp.login(user, passwd):
-                print 'login ftp server failed'
+                mlog.log().error('login ftp server failed')
                 return
         except Exception, e:
-            print 'ftp error:%s' % e
+            mlog.log().error('ftp error:%s' % e)
             return
 
         self.ftp.cwd('~')
@@ -93,20 +94,20 @@ class TextStorage(threading.Thread):
         self.ftp.set_pasv(True, self.ftp_host)
         try:
             if not self.ftp.connect(self.ftp_host, self.ft_port):
-                print 'connect ftp srever failed'
+                mlog.log().error('connect ftp srever failed')
                 return None
             if not self.ftp.login(self.ftp_user, self.ftp_passwd):
-                print 'login ftp server failed'
+                mlog.log().error('login ftp server failed')
                 return None
             return True
         except Exception, e:
-            print 'ftp error:%s' % e
+            mlog.log().error('ftp error:%s' % e)
             return None
 
     def __upload_data(self, data, path, filename):
         path_list = path.split('/')
         if not self.ftp.is_connected():
-            print 'ftp error'
+            mlog.log().error('ftp error')
             self.ftp.close()
             if self.__reconection() is None:
                 return

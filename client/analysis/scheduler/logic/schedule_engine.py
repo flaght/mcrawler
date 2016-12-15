@@ -8,8 +8,8 @@ Created on 2015年9月29日
 from analysis.scheduler.logic.xueqiu.scheduler import Scheduler as XQScheduler
 
 class ScheduleEngne:
-    def __init__(self):
-        self.xq_scheduler = XQScheduler()
+    def __init__(self, config):
+        self.xq_scheduler = XQScheduler(config)
         self.__create_selector()
 
 

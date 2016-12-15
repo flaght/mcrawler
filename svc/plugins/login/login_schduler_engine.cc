@@ -84,7 +84,7 @@ bool LoginSchdulerManager::FectchBacthCookies(const int64 plat_id,
         return false;
     }
     platform.list.sort(base_logic::LoginCookie::cmp);
-    FecthAndSortCookies(count, platform.list, list, plat_id);
+    FetchAndSortCookies(count, platform.list, list, plat_id);
     return true;
 }
 
@@ -109,7 +109,7 @@ void LoginSchdulerManager::SetCookie(
         plat_update_time = info_update_time;
 }
 
-void LoginSchdulerManager::FecthAndSortCookies(const int64 count,
+void LoginSchdulerManager::FetchAndSortCookies(const int64 count,
         std::list<base_logic::LoginCookie>& src_list,
         std::list<base_logic::LoginCookie>* dst_list, int64 plat_id) {
     time_t current_time = time(NULL);

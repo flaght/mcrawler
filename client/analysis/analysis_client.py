@@ -132,19 +132,22 @@ def test_local():
 
 def parser_xueqiu():
 
-    config = {'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler/client'}}
+    config = {'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler/client'},
+              'result':{'type': 5, 'name':'xueqiuclear.txt'}}
+
     analysis_engine = AnalysisEngine(config)
     analysis_engine.process_file_data(60006, './analysis/', 'xueqiu.db', 2)
 
+    """
 
-"""
     input_path = '~/text_storagebak/60006bak'
     file_path = '~/text_storagebak/60006bak'
     plt_id = 60006
 
 
     config = {'ftp': {'type': 1, 'host': '61.147.114.73', 'port': 21, 'user': 'crawler',
-                      'passwd': '123456x', 'timeout': 5, 'local': './'}}
+                      'passwd': '123456x', 'timeout': 5, 'local': './'},
+              'result': {'type': 5, 'name': 'xueqiudisscu.db'}}
     analysis_engine = AnalysisEngine(config)
     file_list = analysis_engine.input_data(input_path)
     i = 0
@@ -157,8 +160,7 @@ def parser_xueqiu():
             analysis_engine.process_file_data(plt_id, file_path, t, 0)
         end_time = time.time()
         mlog.log().info("analysis file count %d  expend %d", i, end_time - start_time)
-
-"""
+    """
 
 if __name__ == '__main__':
     parser_xueqiu()

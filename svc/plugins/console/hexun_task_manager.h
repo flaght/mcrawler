@@ -21,7 +21,7 @@ class HexunCache {
 
 class HexunTaskManager {
  public:
-  HexunTaskManager();
+  HexunTaskManager(console_logic::ConsoleKafka* producer);
   virtual ~HexunTaskManager();
  public:
   void CreateTask(base_logic::TaskInfo& task);
@@ -37,13 +37,14 @@ class HexunTaskManager {
                           const int32 ago_day);
 
   void CreateSecondaryStockHeat(const base_logic::TaskInfo& task,
+                                const int32 start,
                                 const int32 ago_day);
  public:
   void TempAllStockDayHeat();
 
  private:
-  ConsoleStockManager* stock_manager_;
-  console_logic::ConsoleKafka kafka_producer_;
+  ConsoleStockManager*             stock_manager_;
+  console_logic::ConsoleKafka*     kafka_producer_;
   HexunCache* cache_;
   struct threadrw_t*                     lock_;
 };

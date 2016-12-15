@@ -72,9 +72,9 @@ bool ConsoleDB::FetchBatchCountTask(std::map<int64,base_logic::TaskInfo>* map,
                            const bool is_new) {
   std::string sql;
   if (is_new)
-    sql = "call proc_FecthNewTask()";
+    sql = "call proc_FetchNewTask()";
   else
-    sql = "call proc_FecthCountTask()";
+    sql = "call proc_FetchCountTask()";
 
   return FetchBatchTaskT<TaskContainerMap>(sql,map);
 }
@@ -83,9 +83,9 @@ bool ConsoleDB::FetchBatchRuleTask(std::map<int64, base_logic::TaskInfo>* map,
                                    const bool is_new) {
   std::string sql;
   if (is_new)
-    sql = "call proc_FecthNewTask()";
+    sql = "call proc_FetchNewTask()";
   else
-    sql = "call proc_FecthBatchRuleTask()";
+    sql = "call proc_FetchBatchRuleTask()";
 
   return FetchBatchTaskT<TaskContainerMap>(sql,map);
 
@@ -95,9 +95,9 @@ bool ConsoleDB::FetchBatchRuleTask(std::list<base_logic::TaskInfo>* list,
                                    const bool is_new) {
   std::string sql;
   if (is_new)
-    sql = "call proc_FecthNewTask()";
+    sql = "call proc_FetchBatchNewRuleTask()";
   else
-    sql = "call proc_FecthBatchRuleTask()";
+    sql = "call proc_FetchBatchRuleTask()";
   return FetchBatchTaskT<TaskContainerList>(sql,list);
 }
 

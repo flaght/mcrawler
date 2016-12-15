@@ -5,6 +5,7 @@ Created on 2016年7月28日
 @author: kerry
 """
 import json
+from analysis.base.mlog import mlog
 from kafka import KafkaConsumer
 from kafka import SimpleClient, SimpleProducer, SimpleConsumer
 from analysis.base.analysis_conf_manager import analysis_conf
@@ -19,7 +20,6 @@ class KafkaConsumerManager():
         self.client = client
         self.host = host
         self.coname = coname
-        print self.host
         # self.setDaemon(True)
         # self.start()
 
@@ -28,9 +28,7 @@ class KafkaConsumerManager():
 
     def process_data(self, data):
         name = data['key_name'] + data['pos_name'] + '.txt'
-        print name
         ftp_url = '~/text_storage/' + data['key_name'] + '/' + data['pos_name']
-        print ftp_url
         # ftp_manager_t.download(str(name), (ftp_url))
 
     def run(self):
@@ -40,14 +38,12 @@ class KafkaConsumerManager():
         while True:
             consumer = KafkaConsumer(bootstrap_servers=self.host)
             consumer.subscribe([self.coname])
-            print 'start'
             for message in consumer:
                 try:
                     json_info = json.loads(message[6])
-                    print  json_info
                     self.callback(json_info)
                 except Exception, e:
-                    print e
+                    mlog.log().error(e)
 
 
 

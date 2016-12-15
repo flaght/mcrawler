@@ -11,7 +11,8 @@
 
 namespace console_logic {
 
-XueqiuTaskManager::XueqiuTaskManager() {
+XueqiuTaskManager::XueqiuTaskManager(console_logic::ConsoleKafka* producer) {
+  kafka_producer_ = producer;
   stock_manager_ = ConsoleStockEngine::GetConsoleStockManager();
 }
 
@@ -70,9 +71,9 @@ void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, uid);
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, "100000");
     LOG_MSG2("%s", stock_url.c_str());
-    kafka_producer_.AddTaskInfo(task,task.base_polling_time(),stock_url);
+    kafka_producer_->AddTaskInfo(task,task.base_polling_time(),stock_url);
   }
-  LOG_DEBUG2("size %d",dict_value->size())
+  LOG_DEBUG2("size %d",dict_value->size());
 }
 
 void XueqiuTaskManager::CreateCNSMStockDiscuss(
@@ -101,7 +102,7 @@ void XueqiuTaskManager::CreateCNSMStockDiscuss(
           base::BasicUtil::StringUtil::Int64ToString(index));
       index++;
       LOG_MSG2("%s", i_url.c_str());
-      kafka_producer_.AddTaskInfo(task,task.base_polling_time(),i_url);
+      kafka_producer_->AddTaskInfo(task,task.base_polling_time(),i_url);
 
     }
 
@@ -121,7 +122,7 @@ void XueqiuTaskManager::CreateCNSMStockHeat(const base_logic::TaskInfo& task) {
                                                 stock.symbol_ext());
 
     LOG_MSG2("%s", stock_url.c_str());
-    kafka_producer_.AddTaskInfo(task,task.base_polling_time(),stock_url);
+    kafka_producer_->AddTaskInfo(task,task.base_polling_time(),stock_url);
   }
 }
 
@@ -139,7 +140,7 @@ void XueqiuTaskManager::CreateSMRank(const std::string& replace_str,
   std::string symbol = "{%d}";
   std::string s_url = task.url();
   s_url = logic::SomeUtils::StringReplace(s_url, symbol, replace_str);
-  kafka_producer_.AddTaskInfo(task,task.base_polling_time(),s_url);
+  kafka_producer_->AddTaskInfo(task,task.base_polling_time(),s_url);
 }
 
 }

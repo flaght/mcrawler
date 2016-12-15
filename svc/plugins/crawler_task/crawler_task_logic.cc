@@ -69,7 +69,7 @@ bool CrawlerTasklogic::Init() {
 
 void CrawlerTasklogic::InitTask(crawler_task_logic::TaskSchdulerManager* schduler_mgr) {
     std::list<base_logic::TaskInfo> task_list;
-    task_db_->FecthBatchTask(&task_list);
+    task_db_->FetchBatchTask(&task_list);
     schduler_mgr->FetchBatchTask(&task_list);
     base::SysRadom::GetInstance()->DeinitRandom();
 }
@@ -199,7 +199,7 @@ void CrawlerTasklogic::TimeFetchTask() {
     crawler_task_logic::TaskSchdulerManager* schduler_mgr =
             crawler_task_logic::TaskSchdulerEngine::GetTaskSchdulerManager();
     std::list<base_logic::TaskInfo> list;
-    task_db_->FecthBatchTask(&list, true);
+    task_db_->FetchBatchTask(&list, true);
     schduler_mgr->FetchBatchTask(&list, true);
 }
 

@@ -1,20 +1,20 @@
 //  Copyright (c) 2015-2015 The KID Authors. All rights reserved.
 //  Created on: 2015.9.22 Author: kerry
 
-#include <mysql.h>
-#include <sstream>
-#include <set>
 #include "crawler_task/crawler_task_db.h"
-#include "logic/logic_unit.h"
-#include "logic/logic_comm.h"
 #include "basic/basic_util.h"
-#include "basic/template.h"
 #include "basic/radom_in.h"
+#include "basic/template.h"
+#include "logic/logic_comm.h"
+#include "logic/logic_unit.h"
+#include <mysql.h>
+#include <set>
+#include <sstream>
 
 namespace crawler_task_logic {
 
-CrawlerTaskDB::CrawlerTaskDB(config::FileConfig* config) {
-  //mysql_engine_.reset(base_logic::DataControllerEngine::Create(MYSQL_TYPE));
+CrawlerTaskDB::CrawlerTaskDB(config::FileConfig *config) {
+  // mysql_engine_.reset(base_logic::DataControllerEngine::Create(MYSQL_TYPE));
   mysql_engine_ = base_logic::DataEngine::Create(MYSQL_TYPE);
   mysql_engine_->InitParam(config->mysql_db_list_);
   task_platform_inited_ = false;
@@ -28,7 +28,7 @@ CrawlerTaskDB::~CrawlerTaskDB() {
   LOG_MSG("~CrawlerTaskDB()");
 }
 
-bool CrawlerTaskDB::FecthBatchTask(std::list<base_logic::TaskInfo>* list,
+bool CrawlerTaskDB::FetchBatchTask(std::list<base_logic::TaskInfo> *list,
                                    const bool is_new) {
   bool r = false;
   scoped_ptr<base_logic::DictionaryValue> dict(
@@ -36,22 +36,22 @@ bool CrawlerTaskDB::FecthBatchTask(std::list<base_logic::TaskInfo>* list,
 
   std::string sql;
   if (is_new)
-    sql = "call proc_FecthNewTask()";
+    sql = "call proc_FetchNewTask()";
   else
-    sql = "call proc_FecthBatchTask()";
-  base_logic::ListValue* listvalue;
+    sql = "call proc_FetchBatchTask()";
+  base_logic::ListValue *listvalue;
   dict->SetString(L"sql", sql);
-  r = mysql_engine_->ReadData(0, (base_logic::Value*) (dict.get()),
+  r = mysql_engine_->ReadData(0, (base_logic::Value *)(dict.get()),
                               CallBackFectchBatchTask);
   if (!r)
     return false;
   dict->GetList(L"resultvalue", &listvalue);
   while (listvalue->GetSize()) {
     base_logic::TaskInfo task;
-    base_logic::Value* result_value;
+    base_logic::Value *result_value;
     listvalue->Remove(0, &result_value);
-    base_logic::DictionaryValue* dict_result_value =
-        (base_logic::DictionaryValue*) (result_value);
+    base_logic::DictionaryValue *dict_result_value =
+        (base_logic::DictionaryValue *)(result_value);
     task.ValueSerialization(dict_result_value);
     task.set_type(MAIN_LASTING_TASK);
     list->push_back(task);
@@ -62,23 +62,24 @@ bool CrawlerTaskDB::FecthBatchTask(std::list<base_logic::TaskInfo>* list,
   return true;
 }
 
-bool CrawlerTaskDB::RecordTaskState(base_logic::TaskInfo& task,
+bool CrawlerTaskDB::RecordTaskState(base_logic::TaskInfo &task,
                                     const int32 type) {
   bool r = false;
   scoped_ptr<base_logic::DictionaryValue> dict(
       new base_logic::DictionaryValue());
   std::string sql;
-  sql = "call proc_RecordTaskState("
-      + base::BasicUtil::StringUtil::Int64ToString(task.id()) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(
-          static_cast<int64>(task.state())) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(task.last_task_time()) + ","
-      + base::BasicUtil::StringUtil::Int64ToString((task.polling_time())) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(time(NULL)) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(type) + ")";
-  base_logic::ListValue* listvalue;
+  sql =
+      "call proc_RecordTaskState(" +
+      base::BasicUtil::StringUtil::Int64ToString(task.id()) + "," +
+      base::BasicUtil::StringUtil::Int64ToString(
+          static_cast<int64>(task.state())) +
+      "," + base::BasicUtil::StringUtil::Int64ToString(task.last_task_time()) +
+      "," + base::BasicUtil::StringUtil::Int64ToString((task.polling_time())) +
+      "," + base::BasicUtil::StringUtil::Int64ToString(time(NULL)) + "," +
+      base::BasicUtil::StringUtil::Int64ToString(type) + ")";
+  base_logic::ListValue *listvalue;
   dict->SetString(L"sql", sql);
-  r = mysql_engine_->WriteData(0, (base_logic::Value*) (dict.get()));
+  r = mysql_engine_->WriteData(0, (base_logic::Value *)(dict.get()));
   if (!r)
     return false;
 
@@ -86,7 +87,7 @@ bool CrawlerTaskDB::RecordTaskState(base_logic::TaskInfo& task,
 }
 
 void CrawlerTaskDB::CreateTaskLog(const int32 id,
-                                  std::list<base_logic::TaskInfo>* list) {
+                                  std::list<base_logic::TaskInfo> *list) {
   bool r = false;
   scoped_ptr<base_logic::DictionaryValue> dict(
       new base_logic::DictionaryValue());
@@ -95,39 +96,40 @@ void CrawlerTaskDB::CreateTaskLog(const int32 id,
     std::string sql;
     base_logic::TaskInfo task = list->front();
     list->pop_front();
-    sql = "call proc_CreateTaskLog("
-        + base::BasicUtil::StringUtil::Int64ToString(id) + ","
-        + base::BasicUtil::StringUtil::Int64ToString(task.id()) + ","
-        + base::BasicUtil::StringUtil::Int64ToString(task.attrid()) + ","
-        + base::BasicUtil::StringUtil::Int64ToString(task.last_task_time())
-        + "," + base::BasicUtil::StringUtil::Int64ToString(task.machine()) + ","
-        + base::BasicUtil::StringUtil::Int64ToString(task.method()) + ",'"
-        + task.url().c_str() + "');";
-    base_logic::ListValue* listvalue;
+    sql = "call proc_CreateTaskLog(" +
+          base::BasicUtil::StringUtil::Int64ToString(id) + "," +
+          base::BasicUtil::StringUtil::Int64ToString(task.id()) + "," +
+          base::BasicUtil::StringUtil::Int64ToString(task.attrid()) + "," +
+          base::BasicUtil::StringUtil::Int64ToString(task.last_task_time()) +
+          "," + base::BasicUtil::StringUtil::Int64ToString(task.machine()) +
+          "," + base::BasicUtil::StringUtil::Int64ToString(task.method()) +
+          ",'" + task.url().c_str() + "');";
+    base_logic::ListValue *listvalue;
     dict->SetString(L"sql", sql);
-    r = mysql_engine_->WriteData(0, (base_logic::Value*) (dict.get()));
+    r = mysql_engine_->WriteData(0, (base_logic::Value *)(dict.get()));
   }
   return;
 }
 
-void CrawlerTaskDB::CreateTaskLog(const int32 id, base_logic::TaskInfo& task) {
+void CrawlerTaskDB::CreateTaskLog(const int32 id, base_logic::TaskInfo &task) {
   bool r = false;
   scoped_ptr<base_logic::DictionaryValue> dict(
       new base_logic::DictionaryValue());
   std::string sql;
 
-  //call crawler.proc_CreateTaskLog(111111,3,1472350855,1,1,'http://www.baidu.com')
-  sql = "call proc_CreateTaskLog("
-      + base::BasicUtil::StringUtil::Int64ToString(id) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(task.id()) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(task.attrid()) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(task.last_task_time()) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(task.machine()) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(task.method()) + ",'"
-      + task.url().c_str() + "')";
-  base_logic::ListValue* listvalue;
+  // call
+  // crawler.proc_CreateTaskLog(111111,3,1472350855,1,1,'http://www.baidu.com')
+  sql = "call proc_CreateTaskLog(" +
+        base::BasicUtil::StringUtil::Int64ToString(id) + "," +
+        base::BasicUtil::StringUtil::Int64ToString(task.id()) + "," +
+        base::BasicUtil::StringUtil::Int64ToString(task.attrid()) + "," +
+        base::BasicUtil::StringUtil::Int64ToString(task.last_task_time()) +
+        "," + base::BasicUtil::StringUtil::Int64ToString(task.machine()) + "," +
+        base::BasicUtil::StringUtil::Int64ToString(task.method()) + ",'" +
+        task.url().c_str() + "')";
+  base_logic::ListValue *listvalue;
   dict->SetString(L"sql", sql);
-  r = mysql_engine_->WriteData(0, (base_logic::Value*) (dict.get()));
+  r = mysql_engine_->WriteData(0, (base_logic::Value *)(dict.get()));
 
   return;
 }
@@ -138,27 +140,27 @@ void CrawlerTaskDB::UpdateTaskLog(const int64 task_id, const int8 state) {
       new base_logic::DictionaryValue());
   std::string sql;
 
-  //call crawler.proc_UpdateTaskType(111111,2)
-  sql = "call proc_UpdateTaskType("
-      + base::BasicUtil::StringUtil::Int64ToString(task_id) + ","
-      + base::BasicUtil::StringUtil::Int64ToString(state) + ")";
-  base_logic::ListValue* listvalue;
+  // call crawler.proc_UpdateTaskType(111111,2)
+  sql = "call proc_UpdateTaskType(" +
+        base::BasicUtil::StringUtil::Int64ToString(task_id) + "," +
+        base::BasicUtil::StringUtil::Int64ToString(state) + ")";
+  base_logic::ListValue *listvalue;
   dict->SetString(L"sql", sql);
-  r = mysql_engine_->WriteData(0, (base_logic::Value*) (dict.get()));
+  r = mysql_engine_->WriteData(0, (base_logic::Value *)(dict.get()));
   return;
 }
 
-void CrawlerTaskDB::CallBackFectchBatchTask(void* param,
-                                            base_logic::Value* value) {
-  base_logic::DictionaryValue* dict = (base_logic::DictionaryValue*) (value);
-  base_logic::ListValue* list = new base_logic::ListValue();
-  base_storage::DBStorageEngine* engine =
-      (base_storage::DBStorageEngine*) (param);
+void CrawlerTaskDB::CallBackFectchBatchTask(void *param,
+                                            base_logic::Value *value) {
+  base_logic::DictionaryValue *dict = (base_logic::DictionaryValue *)(value);
+  base_logic::ListValue *list = new base_logic::ListValue();
+  base_storage::DBStorageEngine *engine =
+      (base_storage::DBStorageEngine *)(param);
   MYSQL_ROW rows;
   int32 num = engine->RecordCount();
   if (num > 0) {
-    while (rows = (*(MYSQL_ROW*) (engine->FetchRows())->proc)) {
-      base_logic::DictionaryValue* info_value =
+    while (rows = (*(MYSQL_ROW *)(engine->FetchRows())->proc)) {
+      base_logic::DictionaryValue *info_value =
           new base_logic::DictionaryValue();
       if (rows[0] != NULL)
         info_value->SetBigInteger(L"id", atoll(rows[0]));
@@ -189,22 +191,22 @@ void CrawlerTaskDB::CallBackFectchBatchTask(void* param,
         info_value->SetBigInteger(L"polling_time", atoll(rows[9]) / 2);
       if (rows[10] != NULL)
         info_value->SetString(L"url", rows[10]);
-      list->Append((base_logic::Value*) (info_value));
+      list->Append((base_logic::Value *)(info_value));
     }
   }
-  dict->Set(L"resultvalue", (base_logic::Value*) (list));
+  dict->Set(L"resultvalue", (base_logic::Value *)(list));
 }
 
 bool CrawlerTaskDB::GetTaskPlatTaskDescription(
-    std::list<base_logic::TaskPlatDescription>* list) {
+    std::list<base_logic::TaskPlatDescription> *list) {
   //  call crawler.proc_GetTaskPlatInfo()
   bool r = false;
   scoped_ptr<base_logic::DictionaryValue> dict(
       new base_logic::DictionaryValue());
   std::string sql = "call proc_GetTaskPlatInfo()";
-  base_logic::ListValue* listvalue;
+  base_logic::ListValue *listvalue;
   dict->SetString(L"sql", sql);
-  r = mysql_engine_->ReadData(0, (base_logic::Value*) (dict.get()),
+  r = mysql_engine_->ReadData(0, (base_logic::Value *)(dict.get()),
                               CallBackGetTaskPlatDescription);
   if (!r)
     return false;
@@ -212,26 +214,26 @@ bool CrawlerTaskDB::GetTaskPlatTaskDescription(
   dict->GetList(L"resultvalue", &listvalue);
   while (listvalue->GetSize()) {
     base_logic::TaskPlatDescription description;
-    base_logic::Value* result_value;
+    base_logic::Value *result_value;
     listvalue->Remove(0, &result_value);
     description.ValueSerialization(
-        (base_logic::DictionaryValue*) (result_value));
+        (base_logic::DictionaryValue *)(result_value));
     list->push_back(description);
   }
   return true;
 }
 
-void CrawlerTaskDB::CallBackGetTaskPlatDescription(void* param,
-                                                   base_logic::Value* value) {
-  base_logic::DictionaryValue* dict = (base_logic::DictionaryValue*) (value);
-  base_logic::ListValue* list = new base_logic::ListValue();
-  base_storage::DBStorageEngine* engine =
-      (base_storage::DBStorageEngine*) (param);
+void CrawlerTaskDB::CallBackGetTaskPlatDescription(void *param,
+                                                   base_logic::Value *value) {
+  base_logic::DictionaryValue *dict = (base_logic::DictionaryValue *)(value);
+  base_logic::ListValue *list = new base_logic::ListValue();
+  base_storage::DBStorageEngine *engine =
+      (base_storage::DBStorageEngine *)(param);
   MYSQL_ROW rows;
   int32 num = engine->RecordCount();
   if (num > 0) {
-    while (rows = (*(MYSQL_ROW*) (engine->FetchRows())->proc)) {
-      base_logic::DictionaryValue* info_value =
+    while (rows = (*(MYSQL_ROW *)(engine->FetchRows())->proc)) {
+      base_logic::DictionaryValue *info_value =
           new base_logic::DictionaryValue();
       if (rows[0] != NULL)
         info_value->SetBigInteger(L"id", atoll(rows[0]));
@@ -252,14 +254,14 @@ void CrawlerTaskDB::CallBackGetTaskPlatDescription(void* param,
                                    logic::SomeUtils::StringToIntChar(rows[5]));
       if (rows[6] != NULL)
         info_value->SetString(L"description", rows[6]);
-      list->Append((base_logic::Value*) (info_value));
+      list->Append((base_logic::Value *)(info_value));
     }
   }
-  dict->Set(L"resultvalue", (base_logic::Value*) (list));
+  dict->Set(L"resultvalue", (base_logic::Value *)(list));
 }
 
 void CrawlerTaskDB::BatchFectchTaskPlatInfo(
-    std::list<base_logic::TaskPlatDescription>* list) {
+    std::list<base_logic::TaskPlatDescription> *list) {
   while ((*list).size() > 0) {
     base_logic::TaskPlatDescription info = (*list).front();
     (*list).pop_front();
@@ -267,7 +269,7 @@ void CrawlerTaskDB::BatchFectchTaskPlatInfo(
   }
 }
 
-void CrawlerTaskDB::BatchUpdateTaskInfo(std::list<base_logic::TaskInfo>* list) {
+void CrawlerTaskDB::BatchUpdateTaskInfo(std::list<base_logic::TaskInfo> *list) {
   if (!task_platform_inited_) {
     std::list<base_logic::TaskPlatDescription> list;
     GetTaskPlatTaskDescription(&list);
@@ -280,8 +282,8 @@ void CrawlerTaskDB::BatchUpdateTaskInfo(std::list<base_logic::TaskInfo>* list) {
     base_logic::TaskInfo info = (*it);
     base_logic::TaskPlatDescription descripition;
     r = base::MapGet<TASKPLAT_MAP, TASKPLAT_MAP::iterator, int64,
-        base_logic::TaskPlatDescription>(task_platform_, info.attrid(),
-                                         descripition);
+                     base_logic::TaskPlatDescription>(
+        task_platform_, info.attrid(), descripition);
     if (r) {
       info.set_is_forge(descripition.forge());
       info.set_machine(descripition.machine());
@@ -294,4 +296,4 @@ void CrawlerTaskDB::BatchUpdateTaskInfo(std::list<base_logic::TaskInfo>* list) {
   }
 }
 
-}  // namespace crawler_task_logic
+} // namespace crawler_task_logic

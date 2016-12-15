@@ -29,7 +29,7 @@ class AnalysisEngine:
         self.task_queue = []
         self.recovery_file = {}
         self.fetch_mgr = FetchFileManager()
-        self.scheduler = ScheduleEngne()
+        self.scheduler = ScheduleEngne(config)
         self.config = config
         self.input_mgr = InputManager(config)
         self.input_mgr.start()
@@ -62,14 +62,14 @@ class AnalysisEngine:
     """
     拉取文件转化为数据
     """
-    def __process_fetch_file(self, pid, ftype, basic_path, file_name):
-        return self.fetch_mgr.process_data(ftype, basic_path, file_name)
+    def __process_fetch_file(self, pid, ftype, basic_path, file_name, fid):
+        return self.fetch_mgr.process_data(ftype, basic_path, file_name, fid)
 
 
 
 
-    def __process_file(self, pid, ftype, basic_path, file_name):
-        data = self.__process_fetch_file(pid, ftype, basic_path,  file_name)
+    def __process_file(self, pid, ftype, basic_path, file_name, fid):
+        data = self.__process_fetch_file(pid, ftype, basic_path,  file_name, fid)
         parser_dict = self.__data_parser(data, pid)
 
         """
@@ -84,8 +84,8 @@ class AnalysisEngine:
     """
     单进程处理文件
     """
-    def process_file_data(self, pid, basic_path, file_name, ftype):
-        self.__process_file(pid, ftype, basic_path, file_name)
+    def process_file_data(self, pid, basic_path, file_name, ftype, fid = 0):
+        self.__process_file(pid, ftype, basic_path, file_name, fid)
 
     """
     多线程处理文件

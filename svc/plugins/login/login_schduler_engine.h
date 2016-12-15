@@ -48,7 +48,7 @@ class LoginSchdulerManager {
     bool FectchBacthCookies(const int64 plat_id, const int64 count,
             std::list<base_logic::LoginCookie>* list);
 
-    void FecthAndSortCookies(const int64 count,
+    void FetchAndSortCookies(const int64 count,
             std::list<base_logic::LoginCookie>& src_list,
             std::list<base_logic::LoginCookie>* dst_list, int64 plat_id);
 
