@@ -24,7 +24,7 @@ class CrawlerTaskDB {
     virtual ~CrawlerTaskDB();
 
  public:
-    bool FecthBatchTask(std::list<base_logic::TaskInfo>* list,
+    bool FetchBatchTask(std::list<base_logic::TaskInfo>* list,
             const bool is_new = false);
 
     bool RecordTaskState(base_logic::TaskInfo& task, const int32 type);

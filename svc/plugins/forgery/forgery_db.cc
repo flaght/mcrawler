@@ -25,7 +25,7 @@ bool ForgeryDB::FectchBatchForgeryIP(std::list<base_logic::ForgeryIP>* list) {
     bool r = false;
     scoped_ptr<base_logic::DictionaryValue> dict(
                     new base_logic::DictionaryValue());
-    std::string sql = "call proc_FecthBatchIP()";
+    std::string sql = "call proc_FetchBatchIP()";
     base_logic::ListValue* listvalue;
     dict->SetString(L"sql", sql);
     r = mysql_engine_->ReadData(0, (base_logic::Value*)(dict.get()),
@@ -51,7 +51,7 @@ bool ForgeryDB::FectchBatchForgeryUA(std::list<base_logic::ForgeryUA>* list) {
     bool r = false;
     scoped_ptr<base_logic::DictionaryValue> dict(
                     new base_logic::DictionaryValue());
-    std::string sql = "call proc_FecthBatchUA()";
+    std::string sql = "call proc_FetchBatchUA()";
     base_logic::ListValue* listvalue;
     dict->SetString(L"sql", sql);
     r = mysql_engine_->ReadData(0, (base_logic::Value*)(dict.get()),

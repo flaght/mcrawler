@@ -21,12 +21,12 @@ bool TaskDB::FecthBatchTask(std::list<base_logic::TaskInfo>* list,
     bool r = false;
     scoped_ptr<base_logic::DictionaryValue> dict(
                 new base_logic::DictionaryValue());
-    //  call proc_FecthBatchTask()
+    //  call proc_FetchBatchTask()
     std::string sql;
     if (is_new)
         sql  = "call proc_FecthNewTask()";
     else
-        sql = "call proc_FecthBatchTask()";
+        sql = "call proc_FetchBatchTask()";
     base_logic::ListValue* listvalue;
     dict->SetString(L"sql", sql);
     r = mysql_engine_->ReadData(0, (base_logic::Value*)(dict.get()),
