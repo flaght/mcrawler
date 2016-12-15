@@ -37,6 +37,7 @@ class HexunTaskManager {
                           const int32 ago_day);
 
   void CreateSecondaryStockHeat(const base_logic::TaskInfo& task,
+                                const int32 start,
                                 const int32 ago_day);
  public:
   void TempAllStockDayHeat();
