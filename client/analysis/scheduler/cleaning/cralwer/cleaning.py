@@ -19,7 +19,7 @@ class CleaningCrawler():
             dict = json.loads(content)
         except Exception, e:
             mlog.log().error(e)
-            print content
+            mlog.log().error(content)
         data = ''
         # 解base64
         try:

@@ -7,6 +7,7 @@ Created on 2015年12月15日
 
 from ftplib import FTP, parse227, parse229
 import socket
+from analysis.base.mlog import mlog
 
 class FTPExt(FTP):
     '''
@@ -39,5 +40,5 @@ class FTPExt(FTP):
             self.voidcmd("NOOP")
             return True
         except Exception, e:
-            print 'ftp error:%s' % e
+            mlog.log().error('ftp error:%s' % e)
             return False

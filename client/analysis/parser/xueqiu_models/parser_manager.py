@@ -9,6 +9,7 @@ Created on 201601015
 import json
 import icu
 
+from analysis.parser.xueqiu_models.common import xq_common
 from analysis.parser.xueqiu_models.search import xq_search
 from analysis.parser.xueqiu_models.user_timeline import xq_usertimeline
 from analysis.base.mlog import mlog
@@ -19,7 +20,8 @@ class XueQiuParser:
         self.dbname = "xueqiu.db"
         self.logic_selector = {60006: self.__search_event,
                                599: self.__get_uid_crawler,
-                               -599: self.__get_uid}
+                               -599: self.__get_uid,
+                               -600: self.__clean_search_event}
 
     def parse(self, parse_id, content):
         pid = content.get('pid')
@@ -31,6 +33,9 @@ class XueQiuParser:
             return scheduler(content)
         return None
 
+    """
+    提取讨论区里用户的id
+    """
 
     def __get_uid(self,content):
         dict = {}
@@ -43,6 +48,9 @@ class XueQiuParser:
         return {'pid':-599, 'result':dict}
 
 
+    """
+    每个用户对应的讨论数
+    """
 
     def __get_uid_crawler(self, content):
         uid, max_page = xq_usertimeline.cralw_info(content)
@@ -54,6 +62,10 @@ class XueQiuParser:
             pid = 0
         return {'uid':uid,'max_page':max_page,'pid':pid}
 
+    """
+    每支股票对应的讨论信息
+    """
+
     def __search_event(self,content):
         result_list,symbol = xq_search.parser(content['data'])
         if symbol is None or result_list is None:
@@ -62,45 +74,23 @@ class XueQiuParser:
         return {'key':symbol, 'result':result_list}
 
 
-
     """
-    def parser_search(self, content):
-        prefix = "discuss"
-        data = ""
-        jobj = json.loads(content)
-        if (jobj.has_key("error_code")):
-            return None, None
-        symbol = jobj.get("symbol", "")
-        count = jobj.get("page", "")
-        dlist = jobj.get("list", "")
-
-        #print xqdb.crate_searcg_sql(symbol)
-
-        for d in dlist:
-            data += self.__parser_search_list_unit(d)
-        return prefix + '/' + str(symbol) + '/', str(count), data
-
-
-
-    def __parser_search_text_unit(self, unit):
-        id = unit.get("id", "")
-        user_id = unit.get("user_id","")
-        create_time = unit.get("created_at", "")
-        title = unit.get("title", "")
-        text = unit.get("text", "")
-        return "{0},{1},{2},{3},{4}".format(str(id),
-                                                str(user_id), str(create_time), str(title), str(text))
-
-    def __parser_search_list_unit(self, unit):
-        data = ""
-        data += self.__parser_search_text_unit(unit)
-        if unit.get("retweeted_status", "") <> None:
-            data += ","
-            data += self.__parser_search_text_unit(unit.get("retweeted_status", ""))
-        data += "\r\n"
-        return data
-
+    清洗数据
     """
+
+    def __clean_search_event(self,content):
+        dt = {}
+        d = content['dict']
+        for key, value in d.items():
+            lt = []
+            for t in value:
+                replpy = xq_common.quote_format(t[3])
+                l = list(t)
+                s = json.dumps(replpy)
+                l.append(s.decode('unicode-escape'))
+                lt.append(l)
+            dt[key] = lt
+        return {'pid':600,'result':dt}
 
 def main():
     """

@@ -60,10 +60,10 @@ class FTPManager:
         self.__u_connect()
 
     def log(self):
-        print self.host
-        print self.port
-        print self.name
-        print self.pwd
+        mlog.log().info(self.host)
+        mlog.log().info(self.port)
+        mlog.log().info(self.name)
+        mlog.log().info(self.pwd)
 
     def run(self):
         self.ftp.cwd('~/text_storage/60005')

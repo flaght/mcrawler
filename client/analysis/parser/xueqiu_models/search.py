@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import analysis.common.html_manager as html_manager
 
 """
 Created on 201601015
@@ -34,9 +35,6 @@ class Search():
         else:
             return None,str(symbol)
 
-    def clean(self,data):
-        pass
-
 
     def __parser_search_text_unit(self, unit):
         id = unit.get("id", "")
@@ -57,6 +55,17 @@ class Search():
         x = (id,uid,title,text,create_time,retweet_count,reply_count,fav_count,retweet_id,type,source_link,edited_at,pic,target,source)
         return x
 
+    """
+    清洗讨论的脏数据
+    """
+    def clean_text(self,data):
+        return self.__clean_html(data)
+
+    """
+    清洗多余html标签
+    """
+    def __clean_html(self, data):
+        return html_manager(data)
 
 
 xq_search = Search()

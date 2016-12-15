@@ -20,11 +20,11 @@ class FetchFileManager: # 返回为存储的数据
 
 
 
-    def process_data(self, ftype, basic_path, file_name):
+    def process_data(self, ftype, basic_path, file_name, fid = 0):
         if ftype == fetch_file_opcode.ftp:
             return self.ftp_engine.fetch_data(basic_path, file_name)
         elif ftype == fetch_file_opcode.local:
-            return self.local_engine.fetch_data(basic_path, file_name)
+            return self.local_engine.fetch_data(basic_path, file_name, fid)
 
     def process_thread_pool(self, file):
         pass
