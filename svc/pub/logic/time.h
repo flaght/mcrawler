@@ -70,6 +70,8 @@ class Time {
   // For timing sensitive unittests, this function should be used.
   static Time NowFromSystemTime();
 
+  static Time PastTime(int day);
+
   // Converts to/from time_t in UTC and a Time class.
   // TODO(brettw) this should be removed once everybody starts using the |Time|
   // class.

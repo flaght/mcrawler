@@ -40,6 +40,19 @@ const int64 Time::kWindowsEpochDeltaMicroseconds =
 const int64 Time::kTimeTToMicrosecondsOffset = kWindowsEpochDeltaMicroseconds;
 
 // static
+Time Time::PastTime(int day) {
+  struct timeval tv;
+  struct timezone tz = { 0, 0 };  // UTC
+  if (gettimeofday(&tv, &tz) != 0) {
+    LOG_ERROR("Could not determine time of day");
+  }
+  // Combine seconds and microseconds in a 64-bit field containing microseconds
+  // since the epoch.  That's enough for nearly 600 centuries.  Adjust from
+  // Unix (1970) to Windows (1601) epoch.
+  return Time((tv.tv_sec * kMicrosecondsPerSecond + tv.tv_usec) +
+      kWindowsEpochDeltaMicroseconds - (kMicrosecondsPerDay *day));
+}
+// static
 Time Time::Now() {
   struct timeval tv;
   struct timezone tz = { 0, 0 };  // UTC
