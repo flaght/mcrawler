@@ -63,7 +63,7 @@ void ConsoleFactory::Init() {
 void ConsoleFactory::InitParam(config::FileConfig* config) {
   console_db_ = new console_logic::ConsoleDB(config);
   stock_mgr_->Init(console_db_);
-  TimeFetchTask();
+  //TimeFetchTask();
   console_db_->FetchBatchRuleTask(&console_cache_->task_idle_map_);
   console_db_->FetchBatchCountTask(&console_cache_->task_idle_map_);
   kafka_producer_ = new ConsoleKafka(config);
@@ -81,7 +81,7 @@ void ConsoleFactory::Dest() {
 
 void ConsoleFactory::TimeFetchTask() {
   std::list<base_logic::TaskInfo> list;
-  console_db_->FetchBatchRuleTask(&list);
+  console_db_->FetchBatchRuleTask(&list, true);
   base_logic::WLockGd lk(lock_);
   if(list.size() > 0) {
     base_logic::TaskInfo info = list.front();
@@ -94,11 +94,10 @@ void ConsoleFactory::TimeFetchTask() {
 void ConsoleFactory::DistributionTask() {
   time_t current_time = time(NULL);
   base_logic::RLockGd lk(lock_);
-  if (console_cache_->task_idle_map_.size() <= 0) {
-    LOG_MSG2("distrubute task current_time=%d console_cache_->task_idle_map_.size=%d",
+  LOG_MSG2("distrubute task current_time=%d console_cache_->task_idle_map_.size=%d",
                (int)current_time, console_cache_->task_idle_map_.size());
+  if (console_cache_->task_idle_map_.size() <= 0)
     return;
-  }
 
   int32 count = console_cache_->task_idle_map_.size();
   int32 index = 0;
@@ -107,8 +106,9 @@ void ConsoleFactory::DistributionTask() {
   for (; it != console_cache_->task_idle_map_.end(), index < count;
       it++, index++) {
     base_logic::TaskInfo& info = it->second;
-    if (info.is_finish()==0)
+    if (info.is_finish()==0 || info.is_finish() < -1){
       continue;
+    }
     LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
