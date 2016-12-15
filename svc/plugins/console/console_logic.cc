@@ -56,6 +56,7 @@ void Consolelogic::FreeInstance() {
 bool Consolelogic::OnIniTimer(struct server *srv) {
   if (srv->add_time_task != NULL) {
       srv->add_time_task(srv, "console", TIME_DISTRIBUTION_TASK, 10, -1);
+      srv->add_time_task(srv, "console", TIME_FETCH_TASK, 10, -1);
   }
   return true;
 }
