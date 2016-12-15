@@ -45,7 +45,7 @@ void TaskTimeManager::TaskTimeEvent(int opcode, int time) {
 
 void TaskTimeManager::TimeFetchTask() {
     std::list<base_logic::TaskInfo> list;
-    task_db_->FecthBatchTask(&list, true);
+    task_db_->FetchBatchTask(&list, true);
     schduler_mgr_->FetchBatchTask(&list);
 }
 
