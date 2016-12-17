@@ -94,7 +94,7 @@ void HexunTaskManager::CreateSecondaryStockDayHeat(
 
 void HexunTaskManager::CreateSecondaryStockQuarterHeat(
     const base_logic::TaskInfo& task) {
-  CreateSecondaryStockHeat(task, 0, 1);
+  CreateSecondaryStockHeat(task, 1, 1);
 }
 
 void HexunTaskManager::CreateSecondaryStockHeat(
