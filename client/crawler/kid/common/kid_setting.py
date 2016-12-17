@@ -84,10 +84,10 @@ elif __VER == 0: # release
 '''
 FTP INFO
 '''
-FTP_HOST = '61.147.114.73'
+FTP_HOST = '61.147.114.87'
 FTP_PORT = 21
 FTP_UNAME = 'crawler'
-FTP_PWD = '123456x'
+FTP_PWD = 'iZuHMcLekKhBW7D6Yf'
 
 '''
 DEVICE INFO
