@@ -180,28 +180,31 @@ void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
 }
 
 bool TaskSchdulerManager::DistributionTempTask() {
+  base_logic::WLockGd lk(lock_);
+  //分配任务控制 每个爬虫数不超过500个  故 500 * 爬虫个数
+  int32 surplus = GetSurplusTaskCount();
+  LOG_MSG2("task_check_map_ size %d", task_cache_->task_check_map_.size());
+  LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
+  LOG_MSG2("task_temp_map_ size %d", task_cache_->task_temp_map_.size());
+  LOG_MSG2("task_exec_map_ size %d", task_cache_->task_exec_map_.size());
+  LOG_MSG2("task_complete_map_ size %d", task_cache_->task_complete_map_.size());
+  LOG_MSG2("surplus %d", surplus);
 
-  {
-    base_logic::RLockGd lk(lock_);
-    LOG_MSG2("task_check_map_ size %d", task_cache_->task_check_map_.size());LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());LOG_MSG2("task_temp_map_ size %d", task_cache_->task_temp_map_.size());LOG_MSG2("task_exec_map_ size %d", task_cache_->task_exec_map_.size());LOG_MSG2("task_complete_map_ size %d", task_cache_->task_complete_map_.size());
-  }
   if (task_cache_->task_temp_list_.size() <= 0)
     return true;
 
-  //分配任务控制 每个爬虫数不超过500个  故 500 * 爬虫个数
 
-  int32 surplus = GetSurplusTaskCount();
 
   if (!crawler_schduler_engine_->CheckOptimalCrawler()) {
     LOG_MSG("no have OptimalCrawler");
     return true;
   }
+
   int32 base_num = 5;
   time_t current_time = time(NULL);
   std::list<base_logic::TaskInfo> log_list;
   struct AssignmentMultiTask task;
   MAKE_HEAD(task, ASSIGNMENT_MULTI_TASK, 0, 0, 0, 0);
-  base_logic::WLockGd lk(lock_);
 
   task_cache_->task_temp_list_.sort(base_logic::TaskInfo::cmp);
   //DumpTask();
@@ -248,6 +251,8 @@ bool TaskSchdulerManager::DistributionTempTask() {
         net::PacketProsess::ClearCrawlerTaskList(&task);
       }
     } else {
+      LOG_MSG2("state==>%d  current_time==>%ld totoal_polling_time==%ld last_time==>%ld polling_time===>%ld",
+               info.state(),current_time, info.totoal_polling_time(), info.last_task_time(), info.polling_time());
       break;
     }
   }
