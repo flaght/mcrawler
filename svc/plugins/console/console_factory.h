@@ -44,6 +44,8 @@ class ConsoleFactory {
 
   void TimeFetchTask();
 
+  void UpdateStock();
+
  private:
   ConsoleCache*     console_cache_;
   struct threadrw_t*                     lock_;

@@ -90,6 +90,9 @@ void ConsoleFactory::TimeFetchTask() {
   }
 }
 
+void ConsoleFactory::UpdateStock(){
+  stock_mgr_->UpdateStock();
+}
 
 void ConsoleFactory::DistributionTask() {
   time_t current_time = time(NULL);

@@ -8,6 +8,7 @@
 
 #define TIME_DISTRIBUTION_TASK       10000
 #define TIME_FETCH_TASK              10001
+#define TIME_UPDATE_STOCK            10002
 
 namespace console_logic {
 
