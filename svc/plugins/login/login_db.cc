@@ -1,5 +1,5 @@
 //  Copyright (c) 2015-2016 The kid Authors. All rights reserved.
-//    2 //  Created on: 2016.1.5 Author: kerry
+//   Created on: 2016.1.5 Author: kerry
 
 #include "login/login_db.h"
 #include <mysql.h>
@@ -160,6 +160,9 @@ void LoginDB::CallBackGetCookies(void* param, base_logic::Value* value) {
 
       if (rows[5] != NULL)
         info_value->SetString(L"passwd", rows[5]);
+
+      if (rows[6] != NULL)
+        info_value->SetInteger(L"rule", atol(rows[6]));
 
       list->Append((base_logic::Value*) (info_value));
     }

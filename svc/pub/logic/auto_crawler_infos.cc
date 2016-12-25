@@ -325,6 +325,17 @@ LoginCookie& LoginCookie::operator=(const LoginCookie& login_cookie) {
   return (*this);
 }
 
+LoginCookie& LoginCookie::DeepCopy(const LoginCookie& cookie) {
+  if (cookie.data_ != NULL) {
+    this->set_cookie_attr_id(cookie.get_cookie_attr_id());
+    this->set_cookie_id(cookie.get_cookie_id());
+    this->set_cookie_last_time(cookie.send_last_time());
+    this->set_username(cookie.get_username());
+    this->set_passwd(cookie.get_passwd());
+  }
+  return (*this);
+}
+
 void LoginCookie::ValueSerialization(base_logic::DictionaryValue* dict) {
   dict->GetBigInteger(L"cookie_id", &data_->cookie_id_);
   dict->GetBigInteger(L"cookie_attr_id", &data_->cookie_attr_id_);
@@ -332,6 +343,7 @@ void LoginCookie::ValueSerialization(base_logic::DictionaryValue* dict) {
   dict->GetString(L"cookie_body", &data_->cookie_body);
   dict->GetString(L"username", &data_->username);
   dict->GetString(L"passwd", &data_->passwd);
+  dict->GetInteger(L"rule", &data_->rule_);
 }
 
 }  // namespace base_logic

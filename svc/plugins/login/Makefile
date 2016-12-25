@@ -99,7 +99,9 @@ login_db.o : ./login_db.cc ./login_db.h
 login_schduler_engine.o : ./login_schduler_engine.cc ./login_schduler_engine.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./login_schduler_engine.cc $(INCLUDE_PATHS)
 	
-
+create_cookie.o : ./create_cookie.cc ./create_cookie.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./create_cookie.cc $(INCLUDE_PATHS)
+	
 data_engine.o :  $(USER_DIR)/storage/data_engine.cc $(USER_DIR)/storage/data_engine.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/storage/data_engine.cc $(INCLUDE_PATHS)
 
@@ -119,8 +121,8 @@ logic_unit.o :  $(USER_DIR)/logic/logic_unit.cc $(USER_DIR)/logic/logic_unit.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/logic/logic_unit.cc $(INCLUDE_PATHS)
 		
 
-$(PLUGIN) : login_init.o  login_logic.o login_db.o packet_processing.o logic_unit.o login_schduler_engine.o\
-	auto_crawler_infos.o data_engine.o data_mysql_engine.o mysql_pool.o\
+$(PLUGIN) : login_init.o  login_logic.o login_db.o create_cookie.o logic_unit.o login_schduler_engine.o\
+	auto_crawler_infos.o data_engine.o data_mysql_engine.o mysql_pool.o packet_processing.o \
 	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient \
 	$^ -o $@

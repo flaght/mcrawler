@@ -14,7 +14,7 @@ class GetIPFromDaili666(object):
         '''
         '''
         self.api_url = 'http://vxer.daili666api.com/ip/?\
-tid=555730392709970&num=50&delay=3&foreign=none&ports=80,8080'
+tid=558465838696598&num=50&delay=3&foreign=none&ports=80,8080'
 
     def start_request(self):
         '''

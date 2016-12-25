@@ -992,11 +992,20 @@ class LoginCookie {
     data_->send_last_time_ = time(NULL);
   }
 
+
+  void set_cookie_id(const int64 id) {
+    data_->cookie_id_ = id;
+  }
+
   void set_cookie_attr_id(const int64 id) {
     data_->cookie_attr_id_ = id;
   }
   void set_cookie_body(const std::string& cookie_body) {
     data_->cookie_body = cookie_body;
+  }
+
+  void set_cookie_last_time(time_t send_last_time){
+    data_->send_last_time_ = send_last_time;
   }
 
   void set_username(const std::string& username) {
@@ -1028,6 +1037,9 @@ class LoginCookie {
     return data_->send_last_time_;
   }
 
+  const int64 get_cookie_id() const {
+    return data_->cookie_id_;
+  }
   const int64 get_cookie_attr_id() const {
     return data_->cookie_attr_id_;
   }
@@ -1051,6 +1063,12 @@ class LoginCookie {
     return data_->update_last_time_;
   }
 
+  const int32 rule() const {
+    return data_->rule_;
+  }
+
+  LoginCookie& DeepCopy(const LoginCookie& cookie);
+
   static inline bool cmp(const LoginCookie& t_login_cookie,
                          const LoginCookie& r_login_cookie) {
     return t_login_cookie.send_last_time() > r_login_cookie.send_last_time();
@@ -1066,11 +1084,13 @@ class LoginCookie {
           cookie_id_(0),
           is_read(false),
           is_first(false),
-          send_last_time_(0) {
+          send_last_time_(0),
+          rule_(0){
     }
    public:
     int64 cookie_id_;
     int64 cookie_attr_id_;
+    int32 rule_;
     time_t send_last_time_;
     time_t update_last_time_;
     std::string cookie_body;
