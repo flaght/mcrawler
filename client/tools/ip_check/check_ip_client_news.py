@@ -5,6 +5,7 @@ doc
 import MySQLdb
 import time
 from models.get_ip_from_daili666 import GetIPFromDaili666
+from models.get_ip_from_002 import GetIPFrom002
 from models.check_proxy import CheckProxy
 from models.save_in_db import SaveInDatabase
 from common import setting
@@ -46,7 +47,7 @@ class Client(object):
         '''
         #获得IP
         self.all_ip_list = []
-        get_ip = GetIPFromDaili666()
+        get_ip = GetIPFrom002()
         get_ip.start_request()
         self.all_ip_list = get_ip.all_ip_list
         #获得当前数据库的ip

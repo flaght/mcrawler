@@ -27,6 +27,7 @@ class ConsoleStockManager {
   void Init(console_logic::ConsoleDB* console_db);
   void Swap(std::list<console_logic::StockInfo>& list);
   void Test();
+  void UpdateStock();
  private:
   struct threadrw_t* lock_;
   ConsoleStockCache* stock_cache_;

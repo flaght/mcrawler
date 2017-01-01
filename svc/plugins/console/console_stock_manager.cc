@@ -32,6 +32,12 @@ void ConsoleStockManager::Init(console_logic::ConsoleDB* console_db) {
   console_db_->FectchStCode(stock_cache_->stock_map_);
 }
 
+void ConsoleStockManager::UpdateStock(){
+  base_logic::RLockGd lk(lock_);
+  console_db_->FectchStCode(stock_cache_->stock_map_);
+  LOG_MSG2("stock size %d", stock_cache_->stock_map_.size());
+}
+
 void ConsoleStockManager::Test() {
   //LOG_DEBUG2("stock_map_ %lld", stock_cache_->stock_map_.size());
 }

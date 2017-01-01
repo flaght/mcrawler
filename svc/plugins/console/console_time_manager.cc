@@ -23,6 +23,10 @@ void ConsoleTimeManager::ConsoleTimeEvent(int opcode, int time) {
     case TIME_FETCH_TASK:
       factory_->TimeFetchTask();
       break;
+
+    case TIME_UPDATE_STOCK:
+      factory_->UpdateStock();
+      break;
     default:
       break;
   }
