@@ -52,7 +52,7 @@ class Discussion:
         rlyf = 0
         while not self.__str_pos >= len(self.__stringlist):
             value = self.__stringlist[self.__str_pos]
-            if value == 'relpy':
+            if value == ':回复' or value == '回复':
                 rlyf = 1
                 if current_pos > 0:
                     node["reply"] = self.__stringlist[self.__str_pos - 1]
@@ -63,24 +63,18 @@ class Discussion:
                 self.__str_pos += 1
                 current_pos += 1
                 node["quote"] = self.__build_dictionary(self.__stringlist[self.__str_pos + 1])
-                tcontent = node.get("content")
-                if tcontent is None:
-                    node["content"] = value
-                else:
-                    tcontent += value
-                    node["content"] = tcontent
+                node["content"] = value
             elif self.__check_nickname(value):
                 if rlyf == 0:
-                    c = self.__stringlist[self.__str_pos + 1]
-                    t = c[0:1]
                     node["author"] = self.__stringlist[self.__str_pos]
             else:  # 字符串没有特殊性,视为普通内容
-                tcontent = node.get("content")
-                if tcontent is None:
-                    node["content"] = value
-                else:
-                    tcontent += value
-                    node["content"] = tcontent
+                if value[0:1] <> ":":
+                    tcontent = node.get("content")
+                    if tcontent is None:
+                        node["content"] = value
+                    else:
+                        tcontent += value
+                        node["content"] = tcontent
             self.__str_pos += 1
             current_pos += 1
         self.__stack_depth -= 1
@@ -92,17 +86,15 @@ class Discussion:
         # for string in stringlist:
         string = self.__stringlist[self.__str_pos]
         node = self.__build_dictionary()
-        print json.dumps(node)
+        return node
 
     def parser_int(self, text):
 
         soup = BeautifulSoup(self.__face_format(text), "lxml")
 
         for string in soup.stripped_strings:
-            if string == '回复' or string == ':回复':
-                string = 'relpy'
             self.__stringlist.append(string)
-        self.__parser_t()
+        print json.dumps(self.__parser_t())
 
 
 if __name__ == '__main__':
@@ -119,8 +111,8 @@ if __name__ == '__main__':
 
 
 
-    spider_url = "https://xueqiu.com/v4/statuses/user_timeline.json?user_id=4105865702&page=1&type=&_=1480139101751"
-    #spider_url = "https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol=SZ300072&hl=0&source=all&sort=alpha&page=1&_=1483343250780"
+    #spider_url = "https://xueqiu.com/v4/statuses/user_timeline.json?user_id=4105865702&page=1&type=&_=1480139101751"
+    spider_url = "https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol=SZ300072&hl=0&source=all&sort=alpha&page=1&_=1483343250780"
     user_agent = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9a1) Gecko/20070308 Minefield/3.0a1"
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.LWPCookieJar()))
     urllib2.install_opener(opener)
@@ -138,9 +130,14 @@ if __name__ == '__main__':
         str = response.read()
         tstr = json.loads(str)
 
-    for i in tstr.get('statuses'):
+    tobj = []
+    for i in tstr.get('list'):
         text = i.get('text')
         dis = Discussion()
         text = text.replace('<p>', '')
         text = text.replace('</p>', '')
         dis.parser_int(text)
+        #tobj.append(dis.parser_int(text))
+
+    #tm = json.dumps(tobj)
+    #print tm
