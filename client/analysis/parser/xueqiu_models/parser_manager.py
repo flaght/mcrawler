@@ -11,6 +11,7 @@ import icu
 
 from analysis.parser.xueqiu_models.common import xq_common
 from analysis.parser.xueqiu_models.search import xq_search
+from analysis.parser.xueqiu_models.discussion import Discussion
 from analysis.parser.xueqiu_models.user_timeline import xq_usertimeline
 from analysis.base.mlog import mlog
 
@@ -84,9 +85,13 @@ class XueQiuParser:
         for key, value in d.items():
             lt = []
             for t in value:
-                replpy = xq_common.quote_format(t[3])
+                #replpy = xq_common.quote_format(t[3])
+                dic = Discussion()
+                reply = dic.parser_int(t[3])
                 l = list(t)
-                s = json.dumps(replpy)
+                s = json.dumps(reply)
+                print s
+                print "<======"
                 l.append(s.decode('unicode-escape'))
                 lt.append(l)
             dt[key] = lt
