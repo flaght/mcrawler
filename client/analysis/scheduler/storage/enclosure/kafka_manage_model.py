@@ -41,7 +41,8 @@ class KafkaConsumerManager():
             for message in consumer:
                 try:
                     json_info = json.loads(message[6])
-                    self.callback(json_info)
+                    print json_info
+                    #self.callback(json_info)
                 except Exception, e:
                     mlog.log().error(e)
 
@@ -53,10 +54,10 @@ def main():
 
     #t.run()
 
-    #t = KafkaConsumerManager(None, "61.147.114.85:9092,61.147.114.80:9092,61.147.114.81:9092",
-    #                         "newsparser_task_algo")
+    t = KafkaConsumerManager(None, "61.147.114.85:9092,61.147.114.80:9092,61.147.114.81:9092",
+                             "kafka_newsparser_algo")
 
-    #t.run()
+    t.run()
 
     #t = KafkaConsumerManager(None, "61.147.114.74:9092",
      #                                               "newsparser_task_algo")

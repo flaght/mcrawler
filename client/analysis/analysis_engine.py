@@ -32,11 +32,16 @@ class AnalysisEngine:
         self.scheduler = ScheduleEngne(config)
         self.config = config
         self.input_mgr = InputManager(config)
-        self.input_mgr.start()
 
     def __del__(self):
         pass
 
+
+    def start(self,func_callback=None):
+        if func_callback is not None:
+            self.input_mgr.start(func_callback)
+        else:
+            self.input_mgr.start()
 
     def input_data(self, path, filename=None):
         if filename is None:

@@ -51,7 +51,7 @@ class Storager:
 
     def __storage_crawl(self, content):
         name_table = xqdb.build_table_name(content)
-        content_data = [(content['content']['result']['uid'],content['content']['result']['max_page'])]
+        content_data = [(content['content']['result']['content']['uid'],content['content']['result']['content']['max_page'])]
         if not self.sqlite_manager.check_table(name_table):
             self.sqlite_manager.create_table(xqdb.create_crawl_uid_sql(name_table),1)
         self.sqlite_manager.save_data(xqdb.save_crawl_format(name_table), content_data)

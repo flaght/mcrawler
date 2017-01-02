@@ -44,7 +44,8 @@ class FtpEngine:
     def fetch_data(self, basic_path, file_name):
         ftp_url = basic_path + "/" + file_name
         ftp_objstring = MString(file_name) #ftp文本文件处理
-        if self.ftp_mgr.get(ftp_url, ftp_objstring.write):
+        #if self.ftp_mgr.get(ftp_url, ftp_objstring.write):
+        if self.ftp_mgr.get(basic_path, file_name, ftp_objstring.write):
             # 数据清洗
             return self.__clean_data(ftp_objstring.string)
         else:

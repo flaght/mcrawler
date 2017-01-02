@@ -11,21 +11,21 @@ Created on 2016年11月19日
 """
 
 from analysis.scheduler.storage.manage_model.xueqiu.storager_manage import Storager
-from analysis.db.xueqiu import XueQiu as xqdb
+
 
 class Scheduler:
-
     def __init__(self, config):
-        #config = {}
-        #config['name'] = xqdb.database
-        self.storager = Storager(config.get('result'))
+        tconfig = config.get('result')
+        if tconfig is not None:
+            mconfig = tconfig.get('60006')
+            if mconfig is not None:
+                self.storager = Storager(mconfig)
         self.__create_selector()
 
     def __del__(self):
         pass
 
-
-    def process_data(self,pltid, data):
+    def process_data(self, pltid, data):
         content = data['content']
         pid = content.get('pid')
         if pid is None:
@@ -36,11 +36,10 @@ class Scheduler:
         if logic_method:
             logic_method(pid, data)
 
-
     def __search_event(self, pid, data):
         self.storager.process_data(pid, data)
 
-    def __clean_search_event(self,pid,data):
+    def __clean_search_event(self, pid, data):
         self.storager.process_data(pid, data)
 
     def __get_uid(self, pid, data):
@@ -48,7 +47,7 @@ class Scheduler:
         self.storager.process_data(pid, uid_set)
 
     def __fetch_crawl(self, pid, data):
-        content = {'content':{'key':'crawl_info','result':data}}
+        content = {'content': {'key': 'crawl_info', 'result': data}}
         self.storager.process_data(pid, content)
 
     def __create_selector(self):
