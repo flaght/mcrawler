@@ -1,17 +1,17 @@
 //  Copyright (c) 2015-2015 The KID Authors. All rights reserved.
 //  Created on: 2015年9月23日 Author: kerry
 #include "crawler_task/task_schduler_engine.h"
-#include <string>
-#include "logic/time.h"
+#include "basic/radom_in.h"
+#include "basic/template.h"
 #include "logic/logic_comm.h"
 #include "logic/logic_unit.h"
-#include "basic/template.h"
-#include "basic/radom_in.h"
+#include "logic/time.h"
+#include <string>
 
 namespace crawler_task_logic {
 
-TaskSchdulerManager* TaskSchdulerEngine::schduler_mgr_ = NULL;
-TaskSchdulerEngine* TaskSchdulerEngine::schduler_engine_ = NULL;
+TaskSchdulerManager *TaskSchdulerEngine::schduler_mgr_ = NULL;
+TaskSchdulerEngine *TaskSchdulerEngine::schduler_engine_ = NULL;
 
 TaskSchdulerManager::TaskSchdulerManager()
     : crawler_count_(0),
@@ -37,7 +37,7 @@ TaskSchdulerManager::~TaskSchdulerManager() {
 
 void TaskSchdulerManager::Init() {
   InitThreadrw(&lock_);
-  //Test();
+  // Test();
 }
 
 void TaskSchdulerManager::Test() {
@@ -71,18 +71,17 @@ void TaskSchdulerManager::Test() {
    info.set_method(2);
    info.set_base_polling_time(30);
    task_cache_->task_temp_list_.push_back(info);*/
-
 }
-void TaskSchdulerManager::InitDB(crawler_task_logic::CrawlerTaskDB* task_db) {
+void TaskSchdulerManager::InitDB(crawler_task_logic::CrawlerTaskDB *task_db) {
   task_db_ = task_db;
 }
 
 void TaskSchdulerManager::Init(
-    crawler_schduler::SchdulerEngine* crawler_engine) {
+    crawler_schduler::SchdulerEngine *crawler_engine) {
   crawler_schduler_engine_ = crawler_engine;
 }
 
-void TaskSchdulerManager::FetchBatchTask(std::list<base_logic::TaskInfo>* list,
+void TaskSchdulerManager::FetchBatchTask(std::list<base_logic::TaskInfo> *list,
                                          bool is_first) {
   base_logic::WLockGd lk(lock_);
   time_t current_time = time(NULL);
@@ -97,7 +96,7 @@ void TaskSchdulerManager::FetchBatchTask(std::list<base_logic::TaskInfo>* list,
 }
 
 void TaskSchdulerManager::FetchBatchTemp(
-    std::list<base_logic::TaskInfo>* list) {
+    std::list<base_logic::TaskInfo> *list) {
   base_logic::WLockGd lk(lock_);
   while ((*list).size() > 0) {
     base_logic::TaskInfo info = (*list).front();
@@ -123,7 +122,6 @@ bool TaskSchdulerManager::AlterTaskState(const int socket, const int64 task_id,
     r = true;
   } else {
     r = false;
-    //LOG_ERROR2("socket find no scheduler %d task crawler id %d",socket,info.crawler_id());
   }
 
   if (TASK_EXECUED == state || TASK_ERROR == state) {  //已经不在执行状态
@@ -133,7 +131,7 @@ bool TaskSchdulerManager::AlterTaskState(const int socket, const int64 task_id,
     if (TASK_EXECUED == state)
       task_cache_->task_complete_map_[task_id] = info;
     else if (TASK_ERROR == state) {  //直接回收
-      info.set_state(TASK_WAIT);  //回收任务调整状态
+      info.set_state(TASK_WAIT);    //回收任务调整状态
       task_cache_->task_temp_list_.push_back(info);
       task_cache_->task_temp_map_[info.id()] = info;
     }
@@ -142,7 +140,8 @@ bool TaskSchdulerManager::AlterTaskState(const int socket, const int64 task_id,
   }
   scheduler.sync_task_count();
 
-  // LOG_DEBUG2("crawler id(%d), task count(%d) task id(%lld) task state(%d)",scheduler.id(),
+  // LOG_DEBUG2("crawler id(%d), task count(%d) task id(%lld) task
+  // state(%d)",scheduler.id(),
   //   scheduler.exec_task_count(),info.id(),info.state());
   return true;
 }
@@ -162,8 +161,10 @@ void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
   TASKINFO_MAP::iterator it = task_cache_->task_exec_map_.begin();
   time_t current_time = time(NULL);
   for (; it != task_cache_->task_exec_map_.end();) {
-    base_logic::TaskInfo& task = it->second;
-    if (((current_time >= task.create_time() + 600) && task.state() == TASK_SEND)
+    base_logic::TaskInfo &task = it->second;
+    if (((current_time >= task.create_time() + 60)
+        && (task.state() == TASK_SEND || task.state() == TASK_RECV
+            || task.state() == TASK_EXECUING))
         || (task.state() == TASK_ERROR)) {
       //如果已经存储 则保留上次状态
       if (task_cache_->task_temp_map_.find(task.id())
@@ -183,17 +184,11 @@ bool TaskSchdulerManager::DistributionTempTask() {
   base_logic::WLockGd lk(lock_);
   //分配任务控制 每个爬虫数不超过500个  故 500 * 爬虫个数
   int32 surplus = GetSurplusTaskCount();
-  LOG_MSG2("task_check_map_ size %d", task_cache_->task_check_map_.size());
-  LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
-  LOG_MSG2("task_temp_map_ size %d", task_cache_->task_temp_map_.size());
-  LOG_MSG2("task_exec_map_ size %d", task_cache_->task_exec_map_.size());
-  LOG_MSG2("task_complete_map_ size %d", task_cache_->task_complete_map_.size());
-  LOG_MSG2("surplus %d", surplus);
+  LOG_MSG2("task_check_map_ size %d", task_cache_->task_check_map_.size());LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());LOG_MSG2("task_temp_map_ size %d", task_cache_->task_temp_map_.size());LOG_MSG2("task_exec_map_ size %d", task_cache_->task_exec_map_.size());LOG_MSG2("task_complete_map_ size %d",
+      task_cache_->task_complete_map_.size());LOG_MSG2("surplus %d", surplus);
 
   if (task_cache_->task_temp_list_.size() <= 0)
     return true;
-
-
 
   if (!crawler_schduler_engine_->CheckOptimalCrawler()) {
     LOG_MSG("no have OptimalCrawler");
@@ -207,14 +202,14 @@ bool TaskSchdulerManager::DistributionTempTask() {
   MAKE_HEAD(task, ASSIGNMENT_MULTI_TASK, 0, 0, 0, 0);
 
   task_cache_->task_temp_list_.sort(base_logic::TaskInfo::cmp);
-  //DumpTask();
+  // DumpTask();
   while (task_cache_->task_temp_list_.size() > 0 && surplus > 0) {
     base_logic::TaskInfo info = task_cache_->task_temp_list_.front();
-    //LOG_DEBUG2("url=%s attr_id=%ld", info.url().c_str(), info.attrid());
+    // LOG_DEBUG2("url=%s attr_id=%ld", info.url().c_str(), info.attrid());
     if ((info.state() == TASK_WAIT || info.state() == TASK_EXECUED)
         && (current_time >= info.totoal_polling_time())) {
-      //LOG_DEBUG2("id %lld url %s",info.id(),info.url().c_str());
-      struct TaskUnit* unit = new struct TaskUnit;
+      // LOG_DEBUG2("id %lld url %s",info.id(),info.url().c_str());
+      struct TaskUnit *unit = new struct TaskUnit;
       unit->task_id = info.id();
       unit->pid = info.pid();
       unit->attr_id = info.attrid();
@@ -243,16 +238,18 @@ bool TaskSchdulerManager::DistributionTempTask() {
       surplus--;
       if (task.task_set.size() % base_num == 0 && task.task_set.size() != 0) {
         int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
-            (const void*) &task, 0);
+            (const void *) &task, 0);
         if (crawler_id > 0) {
           SetTaskInfosCrawlerId(&task, crawler_id);
-          //task_db_->CreateTaskLog(crawler_id, &log_list);
+          // task_db_->CreateTaskLog(crawler_id, &log_list);
         }
         net::PacketProsess::ClearCrawlerTaskList(&task);
       }
     } else {
-      LOG_MSG2("state==>%d  current_time==>%ld totoal_polling_time==%ld last_time==>%ld polling_time===>%ld",
-               info.state(),current_time, info.totoal_polling_time(), info.last_task_time(), info.polling_time());
+      LOG_MSG2("state==>%d  current_time==>%ld totoal_polling_time==%ld "
+          "last_time==>%ld polling_time===>%ld",
+          info.state(), current_time, info.totoal_polling_time(),
+          info.last_task_time(), info.polling_time());
       break;
     }
   }
@@ -262,16 +259,16 @@ bool TaskSchdulerManager::DistributionTempTask() {
     LOG_MSG2("task_set size %d  log_list size %d", task.task_set.size(),
         log_list.size());
     int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
-        (const void*) &task, 0);
+        (const void *) &task, 0);
     if (crawler_id > 0) {
       SetTaskInfosCrawlerId(&task, crawler_id);
       //新增日志
-      //task_db_->CreateTaskLog(crawler_id, &log_list);
+      // task_db_->CreateTaskLog(crawler_id, &log_list);
     }
     net::PacketProsess::ClearCrawlerTaskList(&task);
   }
 
-  //LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
+  // LOG_MSG2("task_temp_list_ size %d", task_cache_->task_temp_list_.size());
   return true;
 }
 
@@ -281,7 +278,7 @@ bool TaskSchdulerManager::DistributionTask() {
   if (task_cache_->task_idle_map_.size() <= 0) {
     LOG_MSG2(
         "distrubute task current_time=%d task_cache_->task_idle_map_.size=%d",
-        (int) current_time, task_cache_->task_idle_map_.size());
+        (int)current_time, task_cache_->task_idle_map_.size());
     return true;
   }
   if (!crawler_schduler_engine_->CheckOptimalCrawler()) {
@@ -291,7 +288,7 @@ bool TaskSchdulerManager::DistributionTask() {
 
   LOG_MSG2(
       "distrubute task current_time=%d task_cache_->task_idle_map_.size=%d",
-      (int) current_time, task_cache_->task_idle_map_.size());
+      (int)current_time, task_cache_->task_idle_map_.size());
   struct AssignmentMultiTask task;
   MAKE_HEAD(task, ASSIGNMENT_MULTI_TASK, 0, 0, 0, 0);
   base_logic::WLockGd lk(lock_);
@@ -300,16 +297,16 @@ bool TaskSchdulerManager::DistributionTask() {
   TASKINFO_MAP::iterator it = task_cache_->task_idle_map_.begin();
   for (; it != task_cache_->task_idle_map_.end(), index < count;
       it++, index++) {
-    base_logic::TaskInfo& info = it->second;
-    //task_db_->RecordTaskState(info, 0);
-    //task_db_->CreateTaskLog(info);
+    base_logic::TaskInfo &info = it->second;
+    // task_db_->RecordTaskState(info, 0);
+    // task_db_->CreateTaskLog(info);
     LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
     if ((info.state() == TASK_WAIT
         || info.last_task_time() + info.polling_time() < current_time)) {
       LOG_MSG2("DistributionTask task_id=%d", info.id());
-      struct TaskUnit* unit = new struct TaskUnit;
+      struct TaskUnit *unit = new struct TaskUnit;
       unit->task_id = info.id();
       unit->pid = info.id();
       unit->attr_id = info.attrid();
@@ -334,7 +331,7 @@ bool TaskSchdulerManager::DistributionTask() {
                        base::SysRadom::GetInstance()->GetRandomID());
       task_cache_->task_exec_map_[info.id()] = info;
       if (task.task_set.size() % base_num == 0 && task.task_set.size() != 0) {
-        crawler_schduler_engine_->SendOptimalCrawler((const void*) &task, 0);
+        crawler_schduler_engine_->SendOptimalCrawler((const void *) &task, 0);
         net::PacketProsess::ClearCrawlerTaskList(&task);
       }
     }
@@ -342,18 +339,18 @@ bool TaskSchdulerManager::DistributionTask() {
 
   //解决余数
   if (task.task_set.size() > 0) {
-    crawler_schduler_engine_->SendOptimalCrawler((const void*) &task, 0);
+    crawler_schduler_engine_->SendOptimalCrawler((const void *) &task, 0);
     net::PacketProsess::ClearCrawlerTaskList(&task);
   }
   return true;
 }
 
-void TaskSchdulerManager::SetTaskInfosCrawlerId(const PacketHead* packet,
+void TaskSchdulerManager::SetTaskInfosCrawlerId(const PacketHead *packet,
                                                 const int32 crawler_id) {
-  struct AssignmentMultiTask* multi = (struct AssignmentMultiTask*) packet;
-  std::list<struct TaskUnit*>::iterator it = multi->task_set.begin();
+  struct AssignmentMultiTask *multi = (struct AssignmentMultiTask *) packet;
+  std::list<struct TaskUnit *>::iterator it = multi->task_set.begin();
   for (; it != multi->task_set.end(); it++) {
-    struct TaskUnit* unit = (*it);
+    struct TaskUnit *unit = (*it);
     SetTaskInfoCrawlerId(unit->task_id, crawler_id);
   }
 }
@@ -380,18 +377,28 @@ void TaskSchdulerManager::DumpTask() {
     base_logic::TaskInfo task = (*it);
     time_t polling_time = task.totoal_polling_time();
     time_t create_time = task.create_time();
-    struct tm* polling_local = localtime(&polling_time);
-    struct tm* create_local = localtime(&create_time);
+    struct tm *polling_local = localtime(&polling_time);
+    struct tm *create_local = localtime(&create_time);
 
-    LOG_DEBUG2(
-        "==> id-->%lld  polling_time-->%lld(%d-%d %d:%d:%d) create_time-->%lld(%d-%d %d:%d:%d)",
+    LOG_DEBUG2("==> id-->%lld  polling_time-->%lld(%d-%d %d:%d:%d) "
+        "create_time-->%lld(%d-%d %d:%d:%d)",
         task.id(), task.totoal_polling_time(), polling_local->tm_mon + 1,
-        polling_local->tm_mday, polling_local->tm_hour, polling_local->tm_min,
-        polling_local->tm_sec, task.create_time(), create_local->tm_mon + 1,
-        create_local->tm_mday, create_local->tm_hour, create_local->tm_min,
+        polling_local->tm_mday, polling_local->tm_hour,
+        polling_local->tm_min, polling_local->tm_sec, task.create_time(),
+        create_local->tm_mon + 1, create_local->tm_mday,
+        create_local->tm_hour, create_local->tm_min,
         create_local->tm_sec);
   }
 }
+
+/*
+ void TaskSchdulerManager::SetDeepTask(const int socket, base_logic::TaskInfo& task) {
+ //查找是否存在
+ TASKINFO_MAP t_map;
+ bool r =  base::MapGet<DEEP_TASKINFO_MAP, DEEP_TASKINFO_MAP::iterator, TASKINFO_MAP>
+ (task_cache_->task_deep_exec_map_, socket, t_map);
+ t_map[task.id()]
+ }*/
 
 int32 TaskSchdulerManager::GetSurplusTaskCount() {
   std::map<int32, base_logic::CrawlerScheduler> crawler_map;
@@ -404,8 +411,8 @@ int32 TaskSchdulerManager::GetSurplusTaskCount() {
   for (; it != crawler_map.end(); it++) {
     base_logic::CrawlerScheduler crawler = it->second;
     task_count += crawler.exec_task_count();
-    LOG_DEBUG2("crawler id %d  exec_task_count %d",crawler.id(),crawler.exec_task_count()
-    );
+    LOG_DEBUG2("crawler id %d  exec_task_count %d", crawler.id(),
+        crawler.exec_task_count());
   }
 
   int32 exec_count =
@@ -414,8 +421,8 @@ int32 TaskSchdulerManager::GetSurplusTaskCount() {
 
   int32 surplus = crawler_count * 100 - exec_count;
 
-  LOG_DEBUG2("surplus [%d] exec_count[%d] crawler_count[%d][%d]",
-      surplus, exec_count,crawler_count,crawler_count*500);
+  LOG_DEBUG2("surplus [%d] exec_count[%d] crawler_count[%d][%d]", surplus,
+      exec_count, crawler_count, crawler_count * 500);
 
   return surplus > 0 ? surplus : 0;
 }
