@@ -116,6 +116,7 @@ bool TaskSchdulerManager::AlterTaskState(const int socket, const int64 task_id,
   base_logic::TaskInfo info = task_cache_->task_exec_map_[task_id];
   info.set_state(state);
 
+  time_t current_time = time(NULL);
   base_logic::CrawlerScheduler scheduler;
   bool r = crawler_schduler_engine_->FindCrawlerSchduler(socket, &scheduler);
   if (r && scheduler.id() == info.crawler_id()) {
@@ -132,6 +133,8 @@ bool TaskSchdulerManager::AlterTaskState(const int socket, const int64 task_id,
       task_cache_->task_complete_map_[task_id] = info;
     else if (TASK_ERROR == state) {  //直接回收
       info.set_state(TASK_WAIT);    //回收任务调整状态
+      info.update_time(current_time,
+                       base::SysRadom::GetInstance()->GetRandomID()); //更新下次任务时间
       task_cache_->task_temp_list_.push_back(info);
       task_cache_->task_temp_map_[info.id()] = info;
     }
@@ -170,6 +173,8 @@ void TaskSchdulerManager::RecyclingTask() {  //只回收临时任务
       if (task_cache_->task_temp_map_.find(task.id())
           == task_cache_->task_temp_map_.end()) {
         task.set_state(TASK_WAIT);  //回收任务调整状态
+        task.update_time(current_time,
+                         base::SysRadom::GetInstance()->GetRandomID()); //更新下次任务时间
         task_cache_->task_temp_list_.push_back(task);
         task_cache_->task_temp_map_[task.id()] = task;
       }
