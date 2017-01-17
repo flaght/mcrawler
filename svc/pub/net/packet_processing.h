@@ -123,7 +123,7 @@ class PacketProsess{
     static void DeletePacket(const void* packet_stream, int32 len, struct PacketHead* packet_head);
 
     static void ClearCrawlerTaskList(struct PacketHead* packet_head);
-    
+
     static void ClearDetailTaskList(struct PacketHead* packet_head);
 
     static void ClearHBaseAnalyticalTaskList(struct PacketHead* packet_head);

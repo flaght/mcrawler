@@ -14,10 +14,7 @@
 
 #define DEFAULT_CONFIG_PATH     "./plugins/login/login_config.xml"
 
-
 #define TIME_UPDATE_COOKIE   10001
-
-
 
 namespace login_logic {
 
@@ -86,6 +83,10 @@ bool Loginlogic::OnLoginMessage(struct server *srv, const int socket,
       OnDeliverCookies(srv, socket, packet);
       break;
     }
+    case COOKIES_UPDATE: {
+      OnUpdateCookies(srv ,socket, packet);
+      break;
+    }
     default:
       break;
   }
@@ -113,15 +114,14 @@ bool Loginlogic::OnBroadcastClose(struct server *srv, const int socket) {
 
 bool Loginlogic::OnIniTimer(struct server *srv) {
   if (srv->add_time_task != NULL) {
-    //LOG_DEBUG("srv->add_time_task != NULL");
-    srv->add_time_task(srv, "login", TIME_UPDATE_COOKIE, 3600, -1);
+   // srv->add_time_task(srv, "login", TIME_UPDATE_COOKIE, 3600, -1);
   }
   return true;
 }
 
 bool Loginlogic::OnTimeout(struct server *srv, char *id, int opcode, int time) {
   login_logic::LoginSchdulerManager* schduler_mgr =
-       login_logic::LoginSchdulerEngine::GetLoginSchdulerManager();
+      login_logic::LoginSchdulerEngine::GetLoginSchdulerManager();
   switch (opcode) {
     case TIME_UPDATE_COOKIE: {
       schduler_mgr->SetBatchCookies();
@@ -132,6 +132,17 @@ bool Loginlogic::OnTimeout(struct server *srv, char *id, int opcode, int time) {
   }
   return true;
 }
+
+bool Loginlogic::OnUpdateCookies(struct server* srv, int socket,
+                                 struct PacketHead *packet, const void *msg,
+                                 int32 len) {
+  login_logic::LoginSchdulerManager* schduler_mgr =
+      login_logic::LoginSchdulerEngine::GetLoginSchdulerManager();
+  schduler_mgr->SetBatchCookies();
+  return true;
+}
+
+
 
 bool Loginlogic::OnDeliverCookies(struct server* srv, int socket,
                                   struct PacketHead* packet, const void* msg,
