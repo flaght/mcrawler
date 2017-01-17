@@ -10,6 +10,8 @@
 #define SB_CN_SM_STOCK_HEAT      597 //https://xueqiu.com/recommend/pofriends.json?type=1&code=SH600172&start=0&count=0
 #define SB_CN_SM_STOCK_DISCUSS   598 //https://xueqiu.com/statuses/search.json?count=10&comment=0&symbol=SZ000625&hl=0&source=user&sort=time&page=1&_=1475722708502
 #define SB_USER_DISCUSS          599 //https://xueqiu.com/v4/statuses/user_timeline.json?user_id=1622002697&page=1
+#define SB_USER_MEMBERS          600 //https://xueqiu.com/friendships/groups/members.json?page=2&uid=5964068708&gid=0
+#define SB_USER_FOLLOWERS        601 //https://xueqiu.com/friendships/followers.json?pageNo=1&uid={%d}&size=20
 namespace console_logic {
 
 class XueqiuTaskManager {
@@ -24,6 +26,9 @@ class XueqiuTaskManager {
   void CreateCNSMDayRank(const base_logic::TaskInfo& task);
   void CreateCNSMStockDiscuss(const base_logic::TaskInfo& task);
   void CreateUserDiscuss(const base_logic::TaskInfo& task);
+  void CreateUserMembersMax(const base_logic::TaskInfo& task);
+  void CreateUserFollowers(const base_logic::TaskInfo& task);
+  void CreateUserMembers(const base_logic::TaskInfo& task);
 
  private:
   void CreateSMRank(const std::string& replace_str,const base_logic::TaskInfo& task);

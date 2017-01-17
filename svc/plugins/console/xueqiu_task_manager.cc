@@ -44,9 +44,69 @@ void XueqiuTaskManager::CreateTask(base_logic::TaskInfo& task) {
       CreateUserDiscuss(task);
       break;
     }
+
+    case SB_USER_MEMBERS: {
+      CreateUserMembers(task);
+      break;
+    }
+    case SB_USER_FOLLOWERS: {
+      CreateUserFollowers(task);
+      break;
+    }
     default:
       break;
   }
+}
+
+void XueqiuTaskManager::CreateUserMembers(const base_logic::TaskInfo& task) {
+  std::string s_fle_name = "./member.txt";
+  std::string content;
+  int error_code;
+  std::string error_str;
+  file::FilePath file_name(s_fle_name);
+  std::string symbol = "{%d}";
+  bool r = file::ReadFileToString(file_name, &content);
+  base_logic::ValueSerializer* serializer = base_logic::ValueSerializer::Create(
+      base_logic::IMPL_JSON);
+  base_logic::Value* value = serializer->Deserialize(&content, &error_code,
+                                                     &error_str);
+  if (value == NULL)
+    return;
+
+  base_logic::DictionaryValue* dict_value =
+      (base_logic::DictionaryValue*) (value);
+  base_logic::DictionaryValue::key_iterator it = dict_value->begin_keys();
+  for (; it != dict_value->end_keys(); ++it) {
+    std::string uid = base::BasicUtil::StringConversions::WideToASCII((*it));
+    int64 max_page = 0;
+    base_logic::DictionaryValue* value_t = NULL;
+    r = dict_value->GetDictionary((*it), &value_t);
+    if (!r)
+      continue;
+    r = value_t->GetBigInteger(L"max_page",&max_page);
+    if (!r)
+      continue;
+
+    int64 index = 1;
+    while (index < max_page) {
+      std::string stock_url = task.url();
+      stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol,
+                                                      base::BasicUtil::StringUtil::Int64ToString(index));
+      stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, uid);
+      LOG_MSG2("%s", stock_url.c_str());
+      kafka_producer_->AddTaskInfo(task, task.base_polling_time(), stock_url);
+      index++;
+    }
+  } LOG_DEBUG2("size %d",dict_value->size());
+}
+
+
+void XueqiuTaskManager::CreateUserFollowers(const base_logic::TaskInfo& task) {
+  CreateUserDiscuss(task);
+}
+
+void XueqiuTaskManager::CreateUserMembersMax(const base_logic::TaskInfo& task) {
+  CreateUserDiscuss(task);
 }
 
 void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
@@ -58,22 +118,25 @@ void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
   std::string error_str;
   file::FilePath file_name(s_fle_name);
   bool r = file::ReadFileToString(file_name, &content);
-  base_logic::ValueSerializer* serializer = base_logic::ValueSerializer::Create(base_logic::IMPL_JSON);
-  base_logic::Value* value = serializer->Deserialize(&content, &error_code, &error_str);
+  base_logic::ValueSerializer* serializer = base_logic::ValueSerializer::Create(
+      base_logic::IMPL_JSON);
+  base_logic::Value* value = serializer->Deserialize(&content, &error_code,
+                                                     &error_str);
   if (value == NULL)
     return;
-  base_logic::DictionaryValue* dict_value = (base_logic::DictionaryValue*)(value);
+  base_logic::DictionaryValue* dict_value =
+      (base_logic::DictionaryValue*) (value);
   base_logic::DictionaryValue::key_iterator it = dict_value->begin_keys();
-  for (; it != dict_value->end_keys(); ++it){
+  for (; it != dict_value->end_keys(); ++it) {
     std::string uid = base::BasicUtil::StringConversions::WideToASCII((*it));
     //LOG_DEBUG2("uid %s", uid.c_str());
     std::string stock_url = task.url();
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, uid);
-    stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, "100000");
+    stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol,
+                                                    "100000");
     LOG_MSG2("%s", stock_url.c_str());
-    kafka_producer_->AddTaskInfo(task,task.base_polling_time(),stock_url);
-  }
-  LOG_DEBUG2("size %d",dict_value->size());
+    kafka_producer_->AddTaskInfo(task, task.base_polling_time(), stock_url);
+  }LOG_DEBUG2("size %d",dict_value->size());
 }
 
 void XueqiuTaskManager::CreateCNSMStockDiscuss(
@@ -91,7 +154,8 @@ void XueqiuTaskManager::CreateCNSMStockDiscuss(
     base_logic::TaskInfo btask;
     list.pop_front();
     std::string stock_url = task.url();
-    stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, count_symbol, "20");
+    stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, count_symbol,
+                                                    "20");
     stock_url = logic::SomeUtils::StringReplace(stock_url, stock_symbol,
                                                 stock.symbol_ext());
     int64 index = 1;
@@ -102,7 +166,7 @@ void XueqiuTaskManager::CreateCNSMStockDiscuss(
           base::BasicUtil::StringUtil::Int64ToString(index));
       index++;
       LOG_MSG2("%s", i_url.c_str());
-      kafka_producer_->AddTaskInfo(task,task.base_polling_time(),i_url);
+      kafka_producer_->AddTaskInfo(task, task.base_polling_time(), i_url);
 
     }
 
@@ -122,7 +186,7 @@ void XueqiuTaskManager::CreateCNSMStockHeat(const base_logic::TaskInfo& task) {
                                                 stock.symbol_ext());
 
     LOG_MSG2("%s", stock_url.c_str());
-    kafka_producer_->AddTaskInfo(task,task.base_polling_time(),stock_url);
+    kafka_producer_->AddTaskInfo(task, task.base_polling_time(), stock_url);
   }
 }
 
@@ -140,7 +204,7 @@ void XueqiuTaskManager::CreateSMRank(const std::string& replace_str,
   std::string symbol = "{%d}";
   std::string s_url = task.url();
   s_url = logic::SomeUtils::StringReplace(s_url, symbol, replace_str);
-  kafka_producer_->AddTaskInfo(task,task.base_polling_time(),s_url);
+  kafka_producer_->AddTaskInfo(task, task.base_polling_time(), s_url);
 }
 
 }
