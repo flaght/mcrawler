@@ -46,12 +46,22 @@ class Scheduler:
         uid_set = data['content']['result']
         self.storager.process_data(pid, uid_set)
 
+    def __get_member_max(self, pid, data):
+        uid_member = data['content']['result']
+        self.storager.process_data(pid, uid_member)
+
     def __fetch_crawl(self, pid, data):
         content = {'content': {'key': 'crawl_info', 'result': data}}
         self.storager.process_data(pid, content)
+
+    def __member_max(self,pid,data):
+        self.storager.process_data(pid, data)
+
 
     def __create_selector(self):
         self.logic_selector = {60006: self.__search_event,
                                -599: self.__get_uid,
                                599: self.__fetch_crawl,
-                               600: self.__clean_search_event}
+                               598: self.__clean_search_event,
+                               600: self.__member_max,
+                               -600:self.__get_member_max}

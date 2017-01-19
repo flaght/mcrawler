@@ -29,7 +29,9 @@ class Storager:
         self.storage_selector = {60006: self.__storage_search,
                                  -599: self.__storage_get_uid,
                                  599: self.__storage_crawl,
-                                 600: self.__storage_clean_search}
+                                 598: self.__storage_clean_search,
+                                 600: self.__storage_member_max,
+                                 -600:self.__stroage_get_member}
 
 
     def __storage_search(self,content):
@@ -37,7 +39,15 @@ class Storager:
         content_data = content['content']['result']
         if not self.sqlite_manager.check_table(name_table):
             self.sqlite_manager.create_table(xqdb.create_search_sql(name_table),1)
-        self.sqlite_manager.save_data(xqdb.save_search_format(name_table), content_data)
+        self.sqlite_manager.save_data(xqdb.save_member_max(name_table), content_data)
+
+
+    def __storage_member_max(self, content):
+        name_table = "member_max"
+        content_data = content['content']['result']
+        if not self.sqlite_manager.check_table(name_table):
+            self.sqlite_manager.create_table(xqdb.create_member_max(name_table),1)
+        self.sqlite_manager.save_data(xqdb.save_member_max(name_table), content_data)
 
     def __storage_clean_search(self, content):
         content_data = content['content']['result']
@@ -58,6 +68,10 @@ class Storager:
 
 
     def __storage_get_uid(self, content):
+        t = json.dumps(content)
+        self.text_manager.write(t)
+
+    def __stroage_get_member(self, content):
         t = json.dumps(content)
         self.text_manager.write(t)
 

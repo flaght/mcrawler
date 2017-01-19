@@ -19,13 +19,16 @@ class Xueqiu():
         self.sql_mgr = SQLiteStorage(file_path, 1)
 
 
-    def fetchall_data(self):
+    def fetchall_data(self, pid):
         dict = {}
         result = self.sql_mgr.get_table()
         for t in result:
             s_t = "".join(t)
             mlog.log().info("tablename %s ", s_t)
-            sql = xqdb.get_id(s_t)
+            if pid == -600:
+                sql = xqdb.get_member_max(s_t)
+            else:
+                sql = xqdb.get_id(s_t)
             dict[s_t] = self.sql_mgr.get_data(sql)
         return dict
 

@@ -13,6 +13,16 @@ class XueQiu:
     def build_table_name(cls, dict):
         return dict['content']['key']
 
+
+    @classmethod
+    def create_member_max(cls,table):
+        sql = '''CREATE TABLE `''' + table + '''`(
+                    `uid` BIGINT NOT NULL,
+                    `pid` INT NOT NULL,
+                    `max_page` BIGINT NOT NULL,
+                     PRIMARY KEY (`uid`));'''
+        return sql
+
     @classmethod
     def create_search_sql(cls,table):
         sql = '''CREATE TABLE `''' + table + '''`(
@@ -76,6 +86,11 @@ class XueQiu:
         sql = '''INSERT INTO `''' + table + '''` values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
         return sql
 
+    @classmethod
+    def save_member_max(cls, table):
+        sql = '''INSERT INTO `''' + table + '''` values (?, ?, ?)'''
+        return sql
+
 
     @classmethod
     def save_crawl_format(cls, table):
@@ -89,6 +104,12 @@ class XueQiu:
                     retweet_id, type, source_link, edited_at,
                     pic, target, source FROM `''' + table + '''`'''
         return sql
+
+    @classmethod
+    def get_member_max(cls, table):
+        sql = '''select uid,max_page from   `''' + table + '''`'''
+        return sql
+
 
 
 

@@ -36,7 +36,7 @@ class Search():
             else:
                 return None,str(symbol)
         except Exception, e:
-            return  None,None
+            return None,None
 
 
     def __parser_search_text_unit(self, unit):
