@@ -16,6 +16,7 @@ sys.path.append('./../')
 from analysis.analysis_engine import AnalysisEngine
 from analysis.base.mlog import mlog
 from multiprocessing import Pool
+import json
 
 """
 1.文件来源地址方式
@@ -79,9 +80,9 @@ def run(console):
 
 
 def main():
-    print('Python %s on %s' % (sys.version, sys.platform))
+    mlog.log().info('Python %s on %s' % (sys.version, sys.platform))
     sys_str = platform.system()
-    print sys_str
+    mlog.log().info(sys_str)
     if platform.system() == "Darwin" or platform.system() == "Linux":
         reload(sys)
         sys.setdefaultencoding('utf-8')  # @UndefinedVariable
@@ -100,7 +101,7 @@ def main():
     pool.close()
     pool.join()
     if result.successful():
-        print  "successful"
+        mlog.log().info("successful")
 
 
 
@@ -130,13 +131,44 @@ def test_local():
 
 
 
+
+
+"""
+config = {
+    'kafka': {'type': 4, 'host': '61.147.114.85:9092,61.147.114.80:9092,61.147.114.81:9092',
+              'name': 'newsparser_task_algo'},
+    'result': {
+              '60006':{'type': 5, 'name': '../discuss1.db'},
+              '60008':{'type': 5, 'name': '../hexunstock.db'}
+            }
+}
+
+analysis_engine = AnalysisEngine(config)
+"""
+def tcallback(json):
+    print json
+
+def realtime_hexun():
+    pass
+    #analysis_engine.start(tcallback)
+
+
+def tjson():
+    tmjson = "{\"task_id\": \"2222970082354408886\", \"key_name\": \"60008/589\",     \"attr_id\": \"60008\",     \"analyze_id\": \"907736781\",     \"type\": \"1\",     \"cur_depth\": \"1\",     \"pos_name\": \"ffcd848f528ce73c15dca596057e3a1d\",     \"max_depth\": \"1\" }"
+    t = json.loads(tmjson)
+    analysis_engine.process_file_data(int(t.get('attr_id')), t.get('key_name'), t.get('pos_name'), 0)
+
+
 def parser_xueqiu():
 
-    config = {'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler/client'},
-              'result':{'type': 5, 'name':'xueqiuclear.txt'}}
-
-    analysis_engine = AnalysisEngine(config)
-    analysis_engine.process_file_data(60006, './analysis/', 'xueqiu.db', 2)
+    mconfig = {
+        'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler'},
+        'result':{
+            '60006': {'type': 5, 'name': '../discuss.db'},
+        }
+    }
+    ae = AnalysisEngine(mconfig)
+    ae.process_file_data(60006, './file/', 'xueqiu.db', 2, -600)
 
     """
 
@@ -147,7 +179,7 @@ def parser_xueqiu():
 
     config = {'ftp': {'type': 1, 'host': '61.147.114.73', 'port': 21, 'user': 'crawler',
                       'passwd': '123456x', 'timeout': 5, 'local': './'},
-              'result': {'type': 5, 'name': 'xueqiudisscu.db'}}
+              'result': {'type': 5, 'name': '../discuss1.db'}}
     analysis_engine = AnalysisEngine(config)
     file_list = analysis_engine.input_data(input_path)
     i = 0
@@ -162,5 +194,84 @@ def parser_xueqiu():
         mlog.log().info("analysis file count %d  expend %d", i, end_time - start_time)
     """
 
+"""
+def parser_ftp():
+    tconfig = {
+        'ftp': {'type': 1, 'host': '61.147.114.73', 'port': 21, 'user': 'crawler',
+                'passwd': '123456x', 'timeout': 5, 'local': './'},
+        'result': {
+            '60006': {'type': 5, 'name': '../discuss.db'},
+            '60008': {'type': 5, 'name': '../hexunstock.db'}
+        }
+    }
+    input_path = '~/text_storage/60006/599'
+    tanalysis_engine = AnalysisEngine(tconfig)
+    tanalysis_engine.start()
+    file_list = tanalysis_engine.input_data(input_path)
+    i = 0
+    count = len(file_list)
+    while i < count:
+        unit_list = file_list[i:i + 5]
+        i += 5
+        start_time = time.time()
+        for t in unit_list:
+            tanalysis_engine.process_file_data(60006, input_path, t, 0)
+        end_time = time.time()
+        mlog.log().info("analysis file count %d  expend %d", i, end_time - start_time)
+"""
+
+
+
+
+def parser_local_method(config, path, name, pid, tid):
+    ae = AnalysisEngine(config)
+    ae.process_file_data(pid, path, name, 2, tid)
+
+def parser_ftp_method(config, path, pid):
+    ae = AnalysisEngine(config)
+    ae.start()
+    file_list = ae.input_data(path)
+    i = 0
+    count = len(file_list)
+    while i < count:
+        unit_list = file_list[i:i + 5]
+        i += 5
+        start_time = time.time()
+        for t in unit_list:
+            ae.process_file_data(pid, path, t, 0)
+        end_time = time.time()
+        mlog.log().info("analysis file count %d  expend %d", i, end_time - start_time)
+
+
+
+
 if __name__ == '__main__':
-    parser_xueqiu()
+    if platform.system() == "Darwin" or platform.system() == "Linux":
+        reload(sys)
+        sys.setdefaultencoding('utf-8')  # @UndefinedVariable
+
+    #parser_xueqiu()
+
+    """
+
+    config = {
+        'ftp': {'type': 1, 'host': '61.147.114.73', 'port': 21, 'user': 'crawler',
+                'passwd': '123456x', 'timeout': 5, 'local': './'},
+        'result': {
+            '60006': {'type': 5, 'name': '../member.db'},
+            '60008': {'type': 5, 'name': '../hexunstock.db'}
+        }
+    }
+    path = '~/text_storage/60006/600'
+    pid = 60006
+    parser_ftp_method(config, path, pid)
+
+    """
+    mconfig = {
+        'local': {'type': 3, 'path': '/Users/kerry/work/pj/gitfork/mcrawler'},
+        'result':{
+            '60006': {'type': 3, 'name': '../member.txt'},
+        }
+    }
+
+    parser_local_method(mconfig, 'file/', 'member.db', 60006, -600)
