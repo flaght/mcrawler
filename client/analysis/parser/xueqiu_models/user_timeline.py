@@ -6,6 +6,7 @@ Created on 2016年11月30日
 """
 from analysis.base.urlparse_ext import URLParseExt
 from analysis.base.mlog import mlog
+import json
 class UserTimeline():
 
 
@@ -20,8 +21,9 @@ class UserTimeline():
             data = content['data']
             if data is None:
                 return None,None
-            mlog.log().info(eval(data))
-            max_page = eval(data).get('maxPage',None)
+            #mlog.log().info(eval(data))
+            t = json.loads(data)
+            max_page = t.get('maxPage',None)
             if max_page is None:
                 return None,None
             return uid, max_page

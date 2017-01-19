@@ -16,16 +16,16 @@ class LocalEngine:
         self.file_manage = LocalManager()
         self.basic_path = analysis_conf.local_info['path']
 
-    def __clean_data(self,file_path, type):
+    def __clean_data(self,file_path, pid):
         clean = Xueqiu("./")
         clean.connect(file_path)
-        return clean.fetchall_data()
+        return clean.fetchall_data(pid)
 
 
     def fetch_data(self, basic_path, file_name,fid):
         file_path = self.basic_path + '/' + basic_path +  file_name
         mlog.log().info("%s",file_path)
-        dict = self.__clean_data(file_path, 0)
+        dict = self.__clean_data(file_path, fid)
         return {'pid': fid,'dict':dict}
 
 

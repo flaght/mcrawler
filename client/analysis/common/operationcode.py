@@ -27,8 +27,12 @@ class FilerOpcode:
     filer opcode
     """
     ftp = 1
+
     http = 2
+
     local = 3
+
+    kafka = 4
 
 filer_opcode = FilerOpcode()
 

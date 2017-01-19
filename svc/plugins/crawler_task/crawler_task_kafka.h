@@ -4,32 +4,31 @@
 #ifndef KID_CRAWLER_TASK_KAFKA_H_
 #define KID_CRAWLER_TASK_KAFKA_H_
 
-#include <string>
+#include "basic/basictypes.h"
+#include "basic/scoped_ptr.h"
+#include "logic/auto_crawler_infos.h"
+#include "logic/base_values.h"
+#include "queue/kafka_consumer.h"
 #include <list>
 #include <map>
-#include "logic/auto_crawler_infos.h"
-#include "basic/basictypes.h"
-#include "logic/base_values.h"
-#include "basic/scoped_ptr.h"
-#include "queue/kafka_consumer.h"
+#include <string>
 
 namespace crawler_task_logic {
 
 class CrawlerTaskKafka {
- public:
-  CrawlerTaskKafka(config::FileConfig* config);
+public:
+  CrawlerTaskKafka(config::FileConfig *config);
   virtual ~CrawlerTaskKafka();
 
- public:
-
-  bool FectchBatchTempTask(std::list<base_logic::TaskInfo>* list);
+public:
+  bool FectchBatchTempTask(std::list<base_logic::TaskInfo> *list);
 
   void SetTaskInfo(base_logic::TaskInfo &task_info,
-                   base_logic::DictionaryValue* task_info_dic);
+                   base_logic::DictionaryValue *task_info_dic);
 
- private:
+private:
   kafka_consumer kafka_consumer_;
 };
-}  // namespace crawler_task_logic
+} // namespace crawler_task_logic
 
 #endif /* TASK_DB_H_ */

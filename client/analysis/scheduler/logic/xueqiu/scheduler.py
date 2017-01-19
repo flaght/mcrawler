@@ -11,21 +11,21 @@ Created on 2016年11月19日
 """
 
 from analysis.scheduler.storage.manage_model.xueqiu.storager_manage import Storager
-from analysis.db.xueqiu import XueQiu as xqdb
+
 
 class Scheduler:
-
     def __init__(self, config):
-        #config = {}
-        #config['name'] = xqdb.database
-        self.storager = Storager(config.get('result'))
+        tconfig = config.get('result')
+        if tconfig is not None:
+            mconfig = tconfig.get('60006')
+            if mconfig is not None:
+                self.storager = Storager(mconfig)
         self.__create_selector()
 
     def __del__(self):
         pass
 
-
-    def process_data(self,pltid, data):
+    def process_data(self, pltid, data):
         content = data['content']
         pid = content.get('pid')
         if pid is None:
@@ -36,23 +36,32 @@ class Scheduler:
         if logic_method:
             logic_method(pid, data)
 
-
     def __search_event(self, pid, data):
         self.storager.process_data(pid, data)
 
-    def __clean_search_event(self,pid,data):
+    def __clean_search_event(self, pid, data):
         self.storager.process_data(pid, data)
 
     def __get_uid(self, pid, data):
         uid_set = data['content']['result']
         self.storager.process_data(pid, uid_set)
 
+    def __get_member_max(self, pid, data):
+        uid_member = data['content']['result']
+        self.storager.process_data(pid, uid_member)
+
     def __fetch_crawl(self, pid, data):
-        content = {'content':{'key':'crawl_info','result':data}}
+        content = {'content': {'key': 'crawl_info', 'result': data}}
         self.storager.process_data(pid, content)
+
+    def __member_max(self,pid,data):
+        self.storager.process_data(pid, data)
+
 
     def __create_selector(self):
         self.logic_selector = {60006: self.__search_event,
                                -599: self.__get_uid,
                                599: self.__fetch_crawl,
-                               600: self.__clean_search_event}
+                               598: self.__clean_search_event,
+                               600: self.__member_max,
+                               -600:self.__get_member_max}

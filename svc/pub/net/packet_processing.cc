@@ -357,6 +357,7 @@ bool PacketProsess::PacketStream(const PacketHead* packet_head,
 
       case HEART_PACKET:
       case GET_HARDINFO:
+      case COOKIES_UPDATE:
       case TEMP_CRAWLER_OP: {
         BUILDHEAD(0);
         body_stream = const_cast<char*>(out.GetData());
@@ -967,6 +968,7 @@ bool PacketProsess::UnpackStream(const void* packet_stream, int32 len,
 
       case HEART_PACKET:
       case GET_HARDINFO:
+      case COOKIES_UPDATE:
       case TEMP_CRAWLER_OP:{
           struct PacketHead* vHead =
                   new struct PacketHead;

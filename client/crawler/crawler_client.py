@@ -25,7 +25,7 @@ def main():
     reactor.__init__()  # @UndefinedVariable
     reactor.suggestThreadPoolSize(25) # @UndefinedVariable
     connector = reactor.connectTCP(kid_setting.SERVER_IP, # @UndefinedVariable
-                                   kid_setting.SERVER_PORT,
+                                    kid_setting.SERVER_PORT,
                                    client_factory)
     connector.transport.getHandle().setsockopt(socket.SOL_SOCKET,
                                                socket.SO_SNDBUF,

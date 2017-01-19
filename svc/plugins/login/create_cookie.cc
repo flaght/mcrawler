@@ -12,8 +12,7 @@ XueQiuCookie::XueQiuCookie(const std::string basic_cookie)
   srand(time(NULL));
 }
 
-XueQiuCookie::~XueQiuCookie() {
-}
+XueQiuCookie::~XueQiuCookie() {}
 
 void XueQiuCookie::GetCookies(base_logic::LoginCookie &cookie, const int32 num,
                               std::list<base_logic::LoginCookie> &list) {
@@ -72,7 +71,7 @@ bool CreateCookieEngine::OnCreateCreate(
   switch (pid) {
   case 60006: {
     login_logic::XueQiuCookie xq(info.get_cookie_body());
-    xq.GetCookies(info, num, list);
+    xq.GetCookies(info, num * 5, list);
     break;
   }
   default:

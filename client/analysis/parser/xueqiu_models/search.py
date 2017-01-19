@@ -23,17 +23,20 @@ class Search():
         tlist = []
         jobj = json.loads(data)
 
-        if (jobj.has_key("error_code")):
-            return None, None
-        symbol = jobj.get("symbol", "")
-        dlist = jobj.get("list", "")
-        for d in dlist:
-            x = self.__parser_search_text_unit(d)
-            tlist.append(x)
-        if (len(tlist) > 0):
-            return tlist,str(symbol)
-        else:
-            return None,str(symbol)
+        try:
+            if (jobj.has_key("error_code")):
+                return None, None
+            symbol = jobj.get("symbol", "")
+            dlist = jobj.get("list", "")
+            for d in dlist:
+                x = self.__parser_search_text_unit(d)
+                tlist.append(x)
+            if (len(tlist) > 0):
+                return tlist,str(symbol)
+            else:
+                return None,str(symbol)
+        except Exception, e:
+            return None,None
 
 
     def __parser_search_text_unit(self, unit):

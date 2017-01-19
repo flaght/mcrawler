@@ -105,6 +105,10 @@ void LoginSchdulerManager::SetCookie(const base_logic::LoginCookie &info) {
   platform.current_pos_ = 0;
   int64 info_update_time = info.get_update_time();
   platform.update_time_ = info_update_time;
+  for (COOKIE_LIST::iterator it = list.begin(); it != list.end(); it++) {
+    base_logic::LoginCookie cookie = (*it);
+    LOG_MSG2("cookies %s", cookie.get_cookie_body().c_str());
+  }
   int64 &plat_update_time =
       GetDatabaseUpdateTimeByPlatId(info.get_cookie_attr_id());
   if (plat_update_time < info_update_time)

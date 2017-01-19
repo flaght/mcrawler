@@ -27,7 +27,10 @@ class FTPManager:
         return len(self.ftp.nlst())
 
     def set_path(self,path):
-        self.ftp.cwd(path)
+        self.ftp.cwd('~/text_storage')
+        path_list = path.split('/')
+        for _path in path_list:
+            self.ftp.cwd(_path)
 
     def get_file(self,start,end):
         file_list = self.ftp.nlst()
@@ -46,7 +49,7 @@ class FTPManager:
                 mlog.log().error("login ftp server failed")
                 return False
             self.is_connected = True
-            mlog.log().info("ftp login success")
+            mlog.log().info("host : "+self.host+"  ftp login success")
             return True
         except Exception, e:
             mlog.log().error("ftp error[%s]", e)
@@ -78,18 +81,23 @@ class FTPManager:
 
 
 
-    def get(self, ftp_path, callback=None):
+    def get(self, basic_path, filename, callback=None):
         if not self.ping():
             return False
         try:
-            file_size = self.ftp.size(ftp_path)
+            #self.ftp.cwd('~/text_storage')
+            path_list = basic_path.split('/')
+            for _path in path_list:
+                self.ftp.cwd(_path)
+            #self.ftp.cwd(basic_path)
+            file_size = self.ftp.size(filename)
             if callback is None:
-                self.ftp.retrbinary('RETR ' + ftp_path, self.callback, file_size)
+                self.ftp.retrbinary('RETR ' + filename, self.callback, file_size)
             else:
-                self.ftp.retrbinary('RETR ' + ftp_path, callback, file_size)
+                self.ftp.retrbinary('RETR ' + filename, callback, file_size)
             return True
         except Exception,e:
-            mlog.log().error("ftp error:%s url:%s", e, ftp_path)
+            mlog.log().error("ftp error:%s url:%s", e, filename)
             return False
 
     def ping(self):

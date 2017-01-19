@@ -49,6 +49,10 @@ class Loginlogic {
                 struct PacketHead *packet, const void *msg = NULL,
                 int32 len = 0);
 
+    bool OnUpdateCookies(struct server* srv, int socket,
+                         struct PacketHead *packet, const void *msg = NULL,
+                         int32 len = 0);
+
  private:
     bool Init();
 
