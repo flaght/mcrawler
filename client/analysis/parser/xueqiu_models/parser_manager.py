@@ -7,13 +7,12 @@ Created on 201601015
 """
 
 import json
-import icu
 
-from analysis.parser.xueqiu_models.common import xq_common
 from analysis.parser.xueqiu_models.search import xq_search
 from analysis.parser.xueqiu_models.member import xq_memeber
 from analysis.parser.xueqiu_models.discussion import Discussion
 from analysis.parser.xueqiu_models.user_timeline import xq_usertimeline
+from analysis.comm_opercode import net_task_opercode,local_task_opercode
 from analysis.base.mlog import mlog
 
 
@@ -21,11 +20,13 @@ class XueQiuParser:
     def __init__(self):
         self.dbname = "xueqiu.db"
         self.logic_selector = {60006: self.__search_event,
-                               599: self.__get_uid_crawler,
-                               600: self.__get_member_max,
-                               -599: self.__get_uid,
-                               -598: self.__clean_search_event,
-                               -600: self.__get_uid_member_max}
+                               net_task_opercode.XUEQIU_GET_STOCK_DISCUSSION : self.__search_event,
+                               net_task_opercode.XUEQIU_GET_PERSONAL_TIMELINE_COUNT: self.__get_uid_crawler,
+                               net_task_opercode.XUEQIU_GET_ALL_MEMBER: self.__get_member_userinfo,
+                               net_task_opercode.XUEQIU_GET_FLLOWER_COUNT:self.__get_member_max,
+                               local_task_opercode.XUEQIU_GET_DISCUSSION_UID: self.__get_uid,
+                               local_task_opercode.XUEQIU_DISCUSSION: self.__clean_search_event,
+                               local_task_opercode.XUEQIU_GET_MEMBER_MAX: self.__get_uid_member_max}
 
     def parse(self, parse_id, content):
         pid = content.get('pid')
@@ -49,7 +50,7 @@ class XueQiuParser:
             for t in data[key]:
                 uid = t[1]
                 dict[uid] = uid
-        return {'pid':-599, 'result':dict}
+        return {'pid':local_task_opercode.XUEQIU_GET_DISCUSSION_UID, 'result':dict}
 
 
     """
@@ -59,12 +60,24 @@ class XueQiuParser:
         dict = {}
         data = content.get('dict')
         for key in data:
-            mlog.log().info("tabel name %s content %d",key, len(data[key]))
             for t in data[key]:
                 uid = t[0]
                 max_page = t[1]
                 dict[uid] = {'uid':uid,'max_page':max_page}
-        return {'pid':-600, 'result':dict}
+        return {'pid':local_task_opercode.XUEQIU_GET_MEMBER_MAX, 'result':dict}
+
+    """
+    解析用户关注的每个用户信息
+    """
+    def __get_member_userinfo(self, content):
+        result_list = xq_memeber.member_userinfo(content['data'])
+        if result_list is None:
+            return None
+        try:
+            pid = content['pid']
+        except Exception, e:
+            pid = 0
+        return {'result':result_list,'pid':pid}
 
     """
     每个用户对应的讨论数
@@ -129,7 +142,7 @@ class XueQiuParser:
                 except Exception, e:
                     mlog.log().error("https://xueqiu.com/" + str(t[1]) + "/" + str(t[0]))
             dt[key] = lt
-        return {'pid':600,'result':dt}
+        return {'pid':net_task_opercode.XUEQIU_GET_MEMBER_COUT,'result':dt}
 
 
 

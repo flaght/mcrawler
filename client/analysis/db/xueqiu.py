@@ -23,6 +23,46 @@ class XueQiu:
                      PRIMARY KEY (`uid`));'''
         return sql
 
+
+    @classmethod
+    def create_member_sql(cls,table):
+        sql = '''CREATE TABLE `''' + table + '''`(
+                    `id` BIGINT NOT NULL,
+                    `screen_name` VARCHAR(256) NULL,
+                    `gender` VARCHAR(256) NULL,
+                    `province` VARCHAR(256) NULL,
+                    `description` VARCHAR(256) NULL,
+                    `location` VARCHAR(256) NULL,
+                    `city` VARCHAR(256) NULL,
+                    `intro` VARCHAR(256) NULL,
+                    `name` VARCHAR(256) NULL,
+                    `st_color` VARCHAR(256) NULL,
+                    `domain` VARCHAR(256) NULL,
+                    `type` VARCHAR(256) NULL,
+                    `stock_status_count` VARCHAR(256) NULL,
+                    `recommend` VARCHAR(256) NULL,
+                    `status` INT NULL,
+                    `profile` VARCHAR(256) NULL,
+                    `step` VARCHAR(256) NULL,
+                    `allow_all_stock` VARCHAR(256) NULL,
+                    `cube_count` INT NULL,
+                    `blog_description` VARCHAR(1024) NULL,
+                    `followers_count` INT NULL,
+                    `friends_count` INT NULL,
+                    `status_count` INT NULL,
+                    `url` VARCHAR(256) NULL,
+                    `verified` VARCHAR(256) NULL,
+                    `verified_description` VARCHAR(256) NULL,
+                    `verified_type` VARCHAR(256) NULL,
+                    `verified_realname` VARCHAR(256) NULL,
+                    `stocks_count` INT NULL,
+                    `profile_image_url` VARCHAR(256) NULL,
+                    `name_pinyin` VARCHAR(256) NULL,
+                    `screenname_pinyin` VARCHAR(256) NULL,
+                    `photo_domain` VARCHAR(256) NULL,
+                    PRIMARY KEY (`id`));'''
+        return sql
+
     @classmethod
     def create_search_sql(cls,table):
         sql = '''CREATE TABLE `''' + table + '''`(
@@ -75,6 +115,12 @@ class XueQiu:
         return sql
 
 
+
+    @classmethod
+    def save_member_format(cls,table):
+        sql = '''INSERT INTO `''' + table + ('` values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?\n'
+                                             '        , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        return sql
 
     @classmethod
     def save_search_format(cls,table):

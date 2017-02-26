@@ -6,11 +6,12 @@ Created on 2016年11月19日
 @author: kerry
 """
 
-from analysis.db.xueqiu import XueQiu as xqdb
-
 """
 用于处理雪球相关的存储
 """
+
+from analysis.db.xueqiu import XueQiu as xqdb
+from analysis.comm_opercode import net_task_opercode,local_task_opercode
 from analysis.scheduler.storage.manage_model.base_storager import BaseStorager
 from analysis.common.operationcode import storage_opcode
 import json
@@ -27,11 +28,12 @@ class Storager:
 
     def __create_selector(self):
         self.storage_selector = {60006: self.__storage_search,
-                                 -599: self.__storage_get_uid,
-                                 599: self.__storage_crawl,
+                                 local_task_opercode.XUEQIU_GET_DISCUSSION_UID: self.__storage_get_uid,
+                                 net_task_opercode.XUEQIU_GET_PERSONAL_TIMELINE_COUNT: self.__storage_crawl,
                                  598: self.__storage_clean_search,
-                                 600: self.__storage_member_max,
-                                 -600:self.__stroage_get_member}
+                                 net_task_opercode.XUEQIU_GET_FLLOWER_COUNT:self.__storage_member_max,
+                                 net_task_opercode.XUEQIU_GET_ALL_MEMBER: self.__storage_member,
+                                 local_task_opercode.XUEQIU_GET_MEMBER_MAX:self.__stroage_get_member}
 
 
     def __storage_search(self,content):
@@ -39,7 +41,14 @@ class Storager:
         content_data = content['content']['result']
         if not self.sqlite_manager.check_table(name_table):
             self.sqlite_manager.create_table(xqdb.create_search_sql(name_table),1)
-        self.sqlite_manager.save_data(xqdb.save_member_max(name_table), content_data)
+        self.sqlite_manager.save_data(xqdb.save_member_format(name_table), content_data)
+
+    def __storage_member(self, content):
+        name_table = "alluser"
+        content_data = content['content']['result']
+        if not self.sqlite_manager.check_table(name_table):
+            self.sqlite_manager.create_table(xqdb.create_member_sql(name_table),1)
+        self.sqlite_manager.save_data(xqdb.save_member_format(name_table), content_data)
 
 
     def __storage_member_max(self, content):

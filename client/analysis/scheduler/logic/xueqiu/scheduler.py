@@ -11,6 +11,7 @@ Created on 2016年11月19日
 """
 
 from analysis.scheduler.storage.manage_model.xueqiu.storager_manage import Storager
+from analysis.comm_opercode import net_task_opercode,local_task_opercode
 
 
 class Scheduler:
@@ -57,11 +58,15 @@ class Scheduler:
     def __member_max(self,pid,data):
         self.storager.process_data(pid, data)
 
+    def __member_userinfo(self, pid, data):
+        self.storager.process_data(pid, data)
+
 
     def __create_selector(self):
         self.logic_selector = {60006: self.__search_event,
-                               -599: self.__get_uid,
-                               599: self.__fetch_crawl,
+                               local_task_opercode.XUEQIU_GET_DISCUSSION_UID: self.__get_uid,
+                               net_task_opercode.XUEQIU_GET_PERSONAL_TIMELINE_COUNT: self.__fetch_crawl,
+                               net_task_opercode.XUEQIU_GET_FLLOWER_COUNT:self.__member_max,
                                598: self.__clean_search_event,
-                               600: self.__member_max,
-                               -600:self.__get_member_max}
+                               net_task_opercode.XUEQIU_GET_ALL_MEMBER: self.__member_userinfo,
+                               local_task_opercode.XUEQIU_GET_MEMBER_MAX:self.__get_member_max}

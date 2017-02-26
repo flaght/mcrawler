@@ -8,6 +8,7 @@ Created on 2016年11月26日
 from analysis.scheduler.fetch.enclosure.sqlite_manage_model import SQLiteStorage
 from analysis.db.xueqiu import XueQiu as xqdb
 from analysis.base.mlog import mlog
+from analysis.comm_opercode import local_task_opercode
 
 
 class Xueqiu():
@@ -25,7 +26,7 @@ class Xueqiu():
         for t in result:
             s_t = "".join(t)
             mlog.log().info("tablename %s ", s_t)
-            if pid == -600:
+            if pid == local_task_opercode.XUEQIU_GET_MEMBER_MAX:
                 sql = xqdb.get_member_max(s_t)
             else:
                 sql = xqdb.get_id(s_t)
