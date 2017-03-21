@@ -156,6 +156,11 @@ class XueQiu:
         sql = '''select uid,max_page from   `''' + table + '''`'''
         return sql
 
+    @classmethod
+    def get_user_discuss_max(cls, table):
+        sql = '''select friends_count,id from   `''' + table + '''`'''
+        return sql
+
 
 
 

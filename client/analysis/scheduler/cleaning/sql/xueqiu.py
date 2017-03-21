@@ -28,6 +28,8 @@ class Xueqiu():
             mlog.log().info("tablename %s ", s_t)
             if pid == local_task_opercode.XUEQIU_GET_MEMBER_MAX:
                 sql = xqdb.get_member_max(s_t)
+            elif pid ==  pid == local_task_opercode.XUEQIU_GET_DISCUSSION_UID:
+                sql = xqdb.get_user_discuss_max(s_t)
             else:
                 sql = xqdb.get_id(s_t)
             dict[s_t] = self.sql_mgr.get_data(sql)
