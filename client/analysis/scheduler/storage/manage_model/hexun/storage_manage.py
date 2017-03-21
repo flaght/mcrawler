@@ -13,6 +13,7 @@ from analysis.db.hexun import HeXun as hxdb
 """
 from analysis.scheduler.storage.manage_model.base_storager import BaseStorager
 from analysis.common.operationcode import storage_opcode
+from analysis.comm_opercode import net_task_opercode
 
 
 class Storager:
@@ -25,7 +26,7 @@ class Storager:
 
 
     def __create_selector(self):
-        self.storage_selector = {588: self.__stock_day_heat}
+        self.storage_selector = {net_task_opercode.HEXUN_STOCK_DAY_HEAT: self.__stock_day_heat}
 
 
     def process_data(self, pid, content):

@@ -252,17 +252,15 @@ if __name__ == '__main__':
 
     #parser_xueqiu()
 
-    """
 
     config = {
         'ftp': {'type': 1, 'host': '61.147.114.73', 'port': 21, 'user': 'crawler',
                 'passwd': '123456x', 'timeout': 5, 'local': './'},
         'result': {
-            '60006': {'type': 5, 'name': '../member.db'},
-            '60008': {'type': 5, 'name': '../hexunstock.db'}
+            '60006': {'type': 5, 'name': '../follwer.db'}
         }
     }
-    path = '~/text_storage/60006/600'
+    path = '~/text_storage/60006/601'
     pid = 60006
     parser_ftp_method(config, path, pid)
 
@@ -275,3 +273,4 @@ if __name__ == '__main__':
     }
 
     parser_local_method(mconfig, 'file/', 'member.db', 60006, -600)
+    """

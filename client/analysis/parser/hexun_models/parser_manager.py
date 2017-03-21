@@ -2,6 +2,7 @@
 import json
 
 from analysis.parser.hexun_models.stock_day_heat import hx_dayheat
+from analysis.comm_opercode import net_task_opercode
 
 """
 Created on 201601015
@@ -11,8 +12,8 @@ Created on 201601015
 
 class HexunParser:
     def __init__(self):
-        self.logic_selector = {588:self.__stock_day_hot,
-                               589:self.__stock_quarter_heat}
+        self.logic_selector = {net_task_opercode.HEXUN_STOCK_DAY_HEAT:self.__stock_day_hot,
+                               net_task_opercode.HEXUN_STOCK_QUARTER_HEAT:self.__stock_quarter_heat}
 
     def parse(self, parse_id, content):
         pid = content.get('pid')
@@ -28,14 +29,14 @@ class HexunParser:
 
     def __stock_day_hot(self, content):
         rt = hx_dayheat.day_heat(content['data'])
-        return {'pid': 588, 'result': rt}
+        return {'pid': net_task_opercode.HEXUN_STOCK_DAY_HEAT, 'result': rt}
 
     """
     每支股票每一刻钟的热度
     """
     def __stock_quarter_heat(self, content):
         rt = hx_dayheat.quarter_heat(content['data'])
-        return {'pid':589, 'result': rt}
+        return {'pid':net_task_opercode.HEXUN_STOCK_QUARTER_HEAT, 'result': rt}
 
 
 HX_parser = HexunParser()
