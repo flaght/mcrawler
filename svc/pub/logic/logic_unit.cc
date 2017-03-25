@@ -149,8 +149,8 @@ int64 SomeUtils::GetReadConfigID(const std::string& file) {
   base_logic::DictionaryValue* value = xml_parser.ReadXml(file);
   if (value == NULL) {return -1;}
   base_logic::DictionaryValue* kafka = NULL;
-  int64 id = 0;
-  r = kafka->GetDictionary(L"kafka", &kafka);
+  std::string  str_id;
+  r = value->GetDictionary(L"kafka", &kafka);
   if (!r) {
     if (value) {
       delete value;
@@ -159,7 +159,7 @@ int64 SomeUtils::GetReadConfigID(const std::string& file) {
     return -1;
   }
 
-  r = kafka->GetBigInteger(L"id", &id);
+  r = kafka->GetString(L"id", &str_id);
   if (!r) {
     if (value) {
       delete value;
@@ -172,7 +172,7 @@ int64 SomeUtils::GetReadConfigID(const std::string& file) {
     delete value;
     value = NULL;
   }
-  return id;
+  return atol(str_id.c_str());
 }
 
 }  //  namespace logic

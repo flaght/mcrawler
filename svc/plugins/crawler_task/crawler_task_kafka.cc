@@ -29,7 +29,7 @@ CrawlerTaskKafka::CrawlerTaskKafka(config::FileConfig *config) {
 }
 
 CrawlerTaskKafka::CrawlerTaskKafka(const int32 svc_id, base::ConnAddr& addr) {
-  std::string source = addr.source() + base::BasicUtil::StringUtil::Int64ToString(svc_id);
+  std::string source = addr.source() + "_" + base::BasicUtil::StringUtil::Int64ToString(svc_id);
   base::ConnAddr new_addr(svc_id, addr.host(), addr.port(),
                           addr.usr(), addr.pwd(),source);
 
