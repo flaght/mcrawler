@@ -72,6 +72,7 @@ private:
   // crawler_task_logic::TaskTimeManager*                      task_time_mgr_;
   scoped_ptr<crawler_task_logic::CrawlerTaskKafka> task_kafka_;
   crawler_schduler::SchdulerEngine *crawler_schduler_engine_;
+  int64 svc_id_;
 };
 
 } // // namespace crawler_task_logic

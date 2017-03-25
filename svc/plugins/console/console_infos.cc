@@ -4,6 +4,29 @@
 
 namespace console_logic {
 
+KafkaInfo::KafkaInfo(void) {
+  data_ = new Data();
+}
+
+KafkaInfo::KafkaInfo(const KafkaInfo& kafka)
+    : data_(kafka.data_) {
+  if (data_ != NULL) {
+    data_->AddRef();
+  }
+}
+
+KafkaInfo& KafkaInfo::operator =(const KafkaInfo& kafka) {
+  if (kafka.data_ != NULL) {
+    kafka.data_->AddRef();
+  }
+  if (data_ != NULL) {
+    data_->Release();
+  }
+
+  data_ = kafka.data_;
+  return (*this);
+}
+
 StockInfo::StockInfo(void) {
   data_ = new Data();
 }

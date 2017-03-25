@@ -4,6 +4,7 @@
 #include <map>
 #include "console_stock_manager.h"
 #include "console_kafka.h"
+#include "console_infos.h"
 
 #define SB_CN_SM_HEAT_HOUR_RANK  595 //https://xueqiu.com/stock/rank.json?size=0&_type=12&type=12
 #define SB_CN_SM_HEAT_DAY_RANK   596 //https://xueqiu.com/stock/rank.json?size=0&_type=12&type=22
@@ -17,23 +18,26 @@ namespace console_logic {
 class XueqiuTaskManager {
  public:
   XueqiuTaskManager(console_logic::ConsoleKafka* producer);
+  XueqiuTaskManager();
   virtual ~XueqiuTaskManager();
  public:
   void CreateTask(base_logic::TaskInfo& task);
+  void CreateTask(const console_logic::KafkaInfo& kafka, base_logic::TaskInfo& task);
  private:
-  void CreateCNSMStockHeat(const base_logic::TaskInfo& task);
-  void CreateCNSMHourRank(const base_logic::TaskInfo& task);
-  void CreateCNSMDayRank(const base_logic::TaskInfo& task);
-  void CreateCNSMStockDiscuss(const base_logic::TaskInfo& task);
-  void CreateUserDiscuss(const base_logic::TaskInfo& task);
-  void CreateUserMembersMax(const base_logic::TaskInfo& task);
-  void CreateUserFollowers(const base_logic::TaskInfo& task);
-  void CreateUserMembers(const base_logic::TaskInfo& task);
+  void CreateCNSMStockHeat(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
+  void CreateCNSMHourRank(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
+  void CreateCNSMDayRank(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
+  void CreateCNSMStockDiscuss(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
+  void CreateUserDiscuss(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
+  void CreateUserMembersMax(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
+  void CreateUserFollowers(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
+  void CreateUserMembers(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task);
 
  private:
-  void CreateSMRank(const std::string& replace_str,const base_logic::TaskInfo& task);
+  void CreateSMRank(const console_logic::KafkaInfo& kafka, const std::string& replace_str,const base_logic::TaskInfo& task);
+  void CreateUser(const console_logic::KafkaInfo& kafka, const std::string& path,const base_logic::TaskInfo& task);
  private:
   ConsoleStockManager*          stock_manager_;
-  console_logic::ConsoleKafka*  kafka_producer_;
+  //console_logic::ConsoleKafka*  kafka_producer_;
 };
 }

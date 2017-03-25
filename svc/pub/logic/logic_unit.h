@@ -79,6 +79,8 @@ class SomeUtils {
     }
     return false;
   }
+
+  static int64 GetReadConfigID(const std::string& file);
 };
 
 class SendUtils {

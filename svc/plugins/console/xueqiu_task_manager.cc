@@ -12,7 +12,11 @@
 namespace console_logic {
 
 XueqiuTaskManager::XueqiuTaskManager(console_logic::ConsoleKafka* producer) {
-  kafka_producer_ = producer;
+//  kafka_producer_ = producer;
+  stock_manager_ = ConsoleStockEngine::GetConsoleStockManager();
+}
+
+XueqiuTaskManager::XueqiuTaskManager() {
   stock_manager_ = ConsoleStockEngine::GetConsoleStockManager();
 }
 
@@ -20,37 +24,37 @@ XueqiuTaskManager::~XueqiuTaskManager() {
 
 }
 
-void XueqiuTaskManager::CreateTask(base_logic::TaskInfo& task) {
+void XueqiuTaskManager::CreateTask(const console_logic::KafkaInfo& kafka, base_logic::TaskInfo& task) {
   int64 task_id = task.id();
   switch (task_id) {
     case SB_CN_SM_HEAT_HOUR_RANK: {
-      CreateCNSMHourRank(task);
+      CreateCNSMHourRank(kafka, task);
       break;
     }
     case SB_CN_SM_HEAT_DAY_RANK: {
-      CreateCNSMDayRank(task);
+      CreateCNSMDayRank(kafka, task);
       break;
     }
     case SB_CN_SM_STOCK_HEAT: {
-      CreateCNSMStockHeat(task);
+      CreateCNSMStockHeat(kafka,task);
       break;
     }
     case SB_CN_SM_STOCK_DISCUSS: {
-      CreateCNSMStockDiscuss(task);
+      CreateCNSMStockDiscuss(kafka, task);
       break;
     }
 
     case SB_USER_DISCUSS: {
-      CreateUserDiscuss(task);
+      CreateUserDiscuss(kafka, task);
       break;
     }
 
     case SB_USER_MEMBERS: {
-      CreateUserMembers(task);
+      CreateUserMembers(kafka, task);
       break;
     }
     case SB_USER_FOLLOWERS: {
-      CreateUserFollowers(task);
+      CreateUserFollowers(kafka, task);
       break;
     }
     default:
@@ -58,8 +62,9 @@ void XueqiuTaskManager::CreateTask(base_logic::TaskInfo& task) {
   }
 }
 
-void XueqiuTaskManager::CreateUserMembers(const base_logic::TaskInfo& task) {
-  std::string s_fle_name = "./member.txt";
+void XueqiuTaskManager::CreateUser(const console_logic::KafkaInfo& kafka,const std::string& path,
+                                   const base_logic::TaskInfo& task) {
+  std::string s_fle_name = path;
   std::string content;
   int error_code;
   std::string error_str;
@@ -72,7 +77,8 @@ void XueqiuTaskManager::CreateUserMembers(const base_logic::TaskInfo& task) {
                                                      &error_str);
   if (value == NULL)
     return;
-
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
+  console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
   base_logic::DictionaryValue* dict_value =
       (base_logic::DictionaryValue*) (value);
   base_logic::DictionaryValue::key_iterator it = dict_value->begin_keys();
@@ -83,36 +89,44 @@ void XueqiuTaskManager::CreateUserMembers(const base_logic::TaskInfo& task) {
     r = dict_value->GetDictionary((*it), &value_t);
     if (!r)
       continue;
-    r = value_t->GetBigInteger(L"max_page",&max_page);
+    r = value_t->GetBigInteger(L"max_page", &max_page);
     if (!r)
       continue;
 
     int64 index = 1;
     while (index < max_page) {
       std::string stock_url = task.url();
-      stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol,
-                                                      base::BasicUtil::StringUtil::Int64ToString(index));
+      stock_url = logic::SomeUtils::StringReplaceUnit(
+          stock_url, symbol, base::BasicUtil::StringUtil::Int64ToString(index));
       stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, uid);
       LOG_MSG2("%s", stock_url.c_str());
-      kafka_producer_->AddTaskInfo(task, task.base_polling_time(), stock_url);
+      kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
       index++;
     }
-  } LOG_DEBUG2("size %d",dict_value->size());
+  }LOG_DEBUG2("size %d",dict_value->size());
+  if (kafka_producer) {delete kafka_producer; kafka_producer = NULL;}
+}
+
+void XueqiuTaskManager::CreateUserMembers(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
+  std::string s_fle_name = "./member.txt";
+  CreateUser(kafka, s_fle_name, task);
 }
 
 
-void XueqiuTaskManager::CreateUserFollowers(const base_logic::TaskInfo& task) {
-  CreateUserDiscuss(task);
+void XueqiuTaskManager::CreateUserFollowers(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
+  std::string s_fle_name = "./follwer.txt";
+  CreateUser(kafka,s_fle_name, task);
+  //CreateUserDiscuss(task);
 }
 
-void XueqiuTaskManager::CreateUserMembersMax(const base_logic::TaskInfo& task) {
-  CreateUserDiscuss(task);
+void XueqiuTaskManager::CreateUserMembersMax(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
+  CreateUserDiscuss(kafka,task);
 }
 
-void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
+void XueqiuTaskManager::CreateUserDiscuss(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
   std::string symbol = "{%d}";
   //读取文件
-  std::string s_fle_name = "./xueqiuinit.txt";
+  std::string s_fle_name = "./user_discus_max.txt";
   std::string content;
   int error_code;
   std::string error_str;
@@ -124,6 +138,9 @@ void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
                                                      &error_str);
   if (value == NULL)
     return;
+
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
+  console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
   base_logic::DictionaryValue* dict_value =
       (base_logic::DictionaryValue*) (value);
   base_logic::DictionaryValue::key_iterator it = dict_value->begin_keys();
@@ -133,14 +150,15 @@ void XueqiuTaskManager::CreateUserDiscuss(const base_logic::TaskInfo& task) {
     std::string stock_url = task.url();
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol, uid);
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol,
-                                                    "100000");
+                                                    "10000");
     LOG_MSG2("%s", stock_url.c_str());
-    kafka_producer_->AddTaskInfo(task, task.base_polling_time(), stock_url);
+    //kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
   }LOG_DEBUG2("size %d",dict_value->size());
+  if (kafka_producer) {delete kafka_producer; kafka_producer = NULL;}
 }
 
 void XueqiuTaskManager::CreateCNSMStockDiscuss(
-    const base_logic::TaskInfo& task) {
+    const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
   // https://xueqiu.com/statuses/search.json?count={%d}&comment=0&symbol={%tstcode}&hl=0&source=user&sort=time&page={%d}
   std::list<console_logic::StockInfo> list;
 
@@ -148,7 +166,9 @@ void XueqiuTaskManager::CreateCNSMStockDiscuss(
   std::string stock_symbol = "{%tstcode}";
   std::string page_symbol = "{%d}";
   int32 max_page = 100;
-  stock_manager_->Swap(list);
+  stock_manager_->Swap(list); 
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
+  console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
   while (list.size() > 0) {
     console_logic::StockInfo stock = list.front();
     base_logic::TaskInfo btask;
@@ -166,18 +186,21 @@ void XueqiuTaskManager::CreateCNSMStockDiscuss(
           base::BasicUtil::StringUtil::Int64ToString(index));
       index++;
       LOG_MSG2("%s", i_url.c_str());
-      kafka_producer_->AddTaskInfo(task, task.base_polling_time(), i_url);
+      kafka_producer->AddTaskInfo(task, task.base_polling_time(), i_url);
 
     }
 
   }
+  if (kafka_producer) {delete kafka_producer; kafka_producer = NULL;}
 
 }
 
-void XueqiuTaskManager::CreateCNSMStockHeat(const base_logic::TaskInfo& task) {
+void XueqiuTaskManager::CreateCNSMStockHeat(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
   std::list<console_logic::StockInfo> list;
   std::string tstock_symbol = "{%tstcode}";
   stock_manager_->Swap(list);
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
+  console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
   while (list.size() > 0) {
     console_logic::StockInfo stock = list.front();
     list.pop_front();
@@ -186,25 +209,29 @@ void XueqiuTaskManager::CreateCNSMStockHeat(const base_logic::TaskInfo& task) {
                                                 stock.symbol_ext());
 
     LOG_MSG2("%s", stock_url.c_str());
-    kafka_producer_->AddTaskInfo(task, task.base_polling_time(), stock_url);
+    kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
   }
+  if (kafka_producer) {delete kafka_producer; kafka_producer = NULL;}
 }
 
-void XueqiuTaskManager::CreateCNSMHourRank(const base_logic::TaskInfo& task) {
-  CreateSMRank("12", task);
+void XueqiuTaskManager::CreateCNSMHourRank(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
+  CreateSMRank(kafka,"12", task);
 }
 
-void XueqiuTaskManager::CreateCNSMDayRank(const base_logic::TaskInfo& task) {
-  CreateSMRank("22", task);
+void XueqiuTaskManager::CreateCNSMDayRank(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
+  CreateSMRank(kafka,"22", task);
 }
 
-void XueqiuTaskManager::CreateSMRank(const std::string& replace_str,
+void XueqiuTaskManager::CreateSMRank(const console_logic::KafkaInfo& kafka, const std::string& replace_str,
                                      const base_logic::TaskInfo& task) {
   base_logic::TaskInfo btask;
   std::string symbol = "{%d}";
   std::string s_url = task.url();
-  s_url = logic::SomeUtils::StringReplace(s_url, symbol, replace_str);
-  kafka_producer_->AddTaskInfo(task, task.base_polling_time(), s_url);
+  s_url = logic::SomeUtils::StringReplace(s_url, symbol, replace_str); 
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
+  console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
+  kafka_producer->AddTaskInfo(task, task.base_polling_time(), s_url);
+  if (kafka_producer) {delete kafka_producer; kafka_producer = NULL;}
 }
 
 }

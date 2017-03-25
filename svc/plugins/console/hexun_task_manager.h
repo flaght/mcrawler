@@ -21,9 +21,11 @@ class HexunCache {
 
 class HexunTaskManager {
  public:
+  HexunTaskManager();
   HexunTaskManager(console_logic::ConsoleKafka* producer);
   virtual ~HexunTaskManager();
  public:
+  void CreateTask(base::ConnAddr& addr, base_logic::TaskInfo& task);
   void CreateTask(base_logic::TaskInfo& task);
  private:
   void CreateAllStockDayHeat(const base_logic::TaskInfo& task);

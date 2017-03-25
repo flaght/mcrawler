@@ -88,6 +88,7 @@ TaskInfo& TaskInfo::DeepCopy(const TaskInfo& task) {
     this->set_state(task.state());
     this->set_storage(task.storage());
     this->set_type(task.type());
+    this->set_svc_id(task.svc_id());
     this->set_url(task.url());
   }
 
@@ -117,6 +118,7 @@ void TaskInfo::ValueSerialization(base_logic::DictionaryValue* dict) {
   dict->GetBigInteger(L"attrid", &data_->attrid_);
   dict->GetBigInteger(L"polling_time", &data_->base_polling_time_);
   dict->GetString(L"url", &data_->url_);
+  dict->GetInteger(L"svc_id",&data_->svc_id_);
 }
 
 ForgeryIP::ForgeryIP() {

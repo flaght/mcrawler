@@ -7,22 +7,26 @@
 #include "core/common.h"
 #include "logic/logic_comm.h"
 #include "logic/logic_unit.h"
+#include "logic/xml_parser.h"
 #include "net/errno.h"
 #include <list>
 #include <string>
 
 #define DEFAULT_CONFIG_PATH "./plugins/crawler_task/crawler_task_config.xml"
+#define CUSTOM_CONFIG_PATH "./plugins/crawler_task/custom_config.xml"
 
 namespace crawler_task_logic {
 
 CrawlerTasklogic *CrawlerTasklogic::instance_ = NULL;
 
-CrawlerTasklogic::CrawlerTasklogic() {
+CrawlerTasklogic::CrawlerTasklogic()
+    : svc_id_(-1) {
   if (!Init())
     assert(0);
 }
 
-CrawlerTasklogic::~CrawlerTasklogic() {}
+CrawlerTasklogic::~CrawlerTasklogic() {
+}
 
 bool CrawlerTasklogic::Init() {
   bool r = false;
@@ -33,17 +37,26 @@ bool CrawlerTasklogic::Init() {
     return false;
   r = config->LoadConfig(path);
   task_db_.reset(new crawler_task_logic::CrawlerTaskDB(config));
-  task_kafka_.reset(new crawler_task_logic::CrawlerTaskKafka(config));
-  task_time_mgr_.reset(new crawler_task_logic::TaskTimeManager(
-      task_db_.get(), task_kafka_.get()));
+
+  svc_id_ = logic::SomeUtils::GetReadConfigID(CUSTOM_CONFIG_PATH);
+  if (svc_id_ == -1)
+    return false;
+
+  task_kafka_.reset(
+      new crawler_task_logic::CrawlerTaskKafka(svc_id_,
+                                               config->kafka_list_.front()));
+
+  task_time_mgr_.reset(
+      new crawler_task_logic::TaskTimeManager(task_db_.get(),
+                                              task_kafka_.get()));
 
   std::string cralwer_library = "./crawler_schduler/crawler_schduler.so";
   std::string cralwer_func = "GetCrawlerSchdulerEngine";
 
   crawler_engine = (crawler_schduler::SchdulerEngine * (*)(void))
-      logic::SomeUtils::GetLibraryFunction(cralwer_library, cralwer_func);
+  logic::SomeUtils::GetLibraryFunction(cralwer_library, cralwer_func);
 
-  crawler_schduler_engine_ = (*crawler_engine)();
+crawler_schduler_engine_  = (*crawler_engine)();
   if (crawler_schduler_engine_ == NULL)
     assert(0);
 
@@ -60,6 +73,7 @@ bool CrawlerTasklogic::Init() {
 
   schduler_mgr->DistributionTask();
   base::SysRadom::GetInstance()->InitRandom();
+
   return true;
 }
 
@@ -99,18 +113,18 @@ bool CrawlerTasklogic::OnTaskMessage(struct server *srv, const int socket,
     return false;
   }
   switch (packet->operate_code) {
-  case REPLY_TASK_STATE: {
-    ReplyTaskState(srv, socket, packet);
-    break;
-  }
+    case REPLY_TASK_STATE: {
+      ReplyTaskState(srv, socket, packet);
+      break;
+    }
 
-  case TEMP_CRAWLER_OP: {
-    TimeDistributionTask();
-    break;
-  }
+    case TEMP_CRAWLER_OP: {
+      TimeDistributionTask();
+      break;
+    }
 
-  default:
-    break;
+    default:
+      break;
   }
   net::PacketProsess::DeletePacket(msg, len, packet);
   return true;
@@ -158,7 +172,7 @@ bool CrawlerTasklogic::OnTimeout(struct server *srv, char *id, int opcode,
 void CrawlerTasklogic::ReplyTaskState(struct server *srv, int socket,
                                       struct PacketHead *packet,
                                       const void *msg, int32 len) {
-  struct ReplyTaskState *task_state = (struct ReplyTaskState *)packet;
+  struct ReplyTaskState *task_state = (struct ReplyTaskState *) packet;
   crawler_task_logic::TaskSchdulerManager *schduler_mgr =
       crawler_task_logic::TaskSchdulerEngine::GetTaskSchdulerManager();
   schduler_mgr->AlterTaskState(socket, task_state->jobid, task_state->state);
@@ -168,7 +182,7 @@ void CrawlerTasklogic::RelpyCrawlNum(struct server *srv, int socket,
                                      struct PacketHead *packet, const void *msg,
                                      int32 len) {
   struct ReplyCrawlContentNum *crawl_num =
-      (struct ReplyCrawlContentNum *)packet;
+      (struct ReplyCrawlContentNum *) packet;
 
   crawler_task_logic::TaskSchdulerManager *schduler_mgr =
       crawler_task_logic::TaskSchdulerEngine::GetTaskSchdulerManager();
@@ -189,4 +203,4 @@ void CrawlerTasklogic::TimeFetchTask() {
   schduler_mgr->FetchBatchTask(&list, true);
 }
 
-} // namespace crawler_task_logic
+}  // namespace crawler_task_logic

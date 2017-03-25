@@ -29,9 +29,13 @@ class Consolelogic {
   bool OnTimeout(struct server *srv, char* id, int opcode, int time);
  private:
   bool Init();
+  bool ReadConfigXML(const std::string& file);
+ private:
+  bool ParserKafkaConaddr(base_logic::DictionaryValue* value,
+                          console_logic::KafkaInfo& kafka);
  private:
   console_logic::ConsoleFactory* factory_;
-  console_logic::ConsoleTimeManager*              console_time_mgr_;
+  console_logic::ConsoleTimeManager* console_time_mgr_;
 
 };
 }  // namespace console_logic

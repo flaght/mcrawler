@@ -201,7 +201,10 @@ void ConsoleDB::CallBackFetchBatchRuleTask(void* param,
         info_value->SetBigInteger(L"isfinish",
                                    atoll(rows[10]));
       if (rows[11] != NULL)
-        info_value->SetString(L"url", rows[11]);
+        info_value->SetInteger(L"svc_id", atoi(rows[11]));
+
+      if (rows[12] != NULL)
+        info_value->SetString(L"url", rows[12]);
       list->Append((base_logic::Value*) (info_value));
     }
   }

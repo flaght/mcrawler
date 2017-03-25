@@ -10,6 +10,66 @@
 
 namespace console_logic {
 
+class KafkaInfo {
+ public:
+  KafkaInfo();
+
+  KafkaInfo(const KafkaInfo& kafka);
+
+  KafkaInfo& operator =(const KafkaInfo& kafka);
+
+  const void set_svc_id(const int32 svc_id){
+    data_->svc_id_ = svc_id;
+  }
+
+  const void set_host(const std::string& host){
+    data_->host_ = host;
+  }
+
+  const void set_kafka_name(const std::string& kafka_name){
+    data_->kafka_name_ = kafka_name;
+  }
+
+  const int32 svc_id() const {
+    return data_->svc_id_;
+  }
+
+  const std::string& host() const {
+    return data_->host_;
+  }
+
+  const std::string& kafka_name() const {
+    return data_->kafka_name_;
+  }
+ private:
+  class Data {
+   public:
+    Data()
+        : refcount_(1),
+          svc_id_(0) {
+    }
+
+   public:
+    int32        svc_id_;
+    std::string  host_;
+    std::string  kafka_name_;
+
+    void AddRef() {
+      __sync_fetch_and_add(&refcount_, 1);
+    }
+    void Release() {
+      __sync_fetch_and_sub(&refcount_, 1);
+      if (!refcount_)
+        delete this;
+    }
+
+   private:
+    int refcount_;
+  };
+
+  Data* data_;
+};
+
 class StockInfo {
  public:
   StockInfo();

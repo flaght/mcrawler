@@ -11,6 +11,8 @@
 #include "xueqiu_task_manager.h"
 
 typedef std::map<int64, base_logic::TaskInfo> TASKINFO_MAP;
+//存储各个控制服务器kafka信息
+typedef std::map<int32, console_logic::KafkaInfo> SVC_MAP;
 
 enum PLTFORM {
   HEXUN_PLATFORM_ID =  60008,
@@ -21,6 +23,7 @@ namespace console_logic {
 class ConsoleCache {
  public:
   TASKINFO_MAP task_idle_map_;
+  SVC_MAP      svc_map_;
 };
 
 class ConsoleFactory {
@@ -40,11 +43,16 @@ class ConsoleFactory {
 
   void Test();
 
+  void SetKafkaInfo(console_logic::KafkaInfo& kafka);
+
+  bool GetKafkaInfo(const int32 svc_id, console_logic::KafkaInfo& kafka);
+
   void DistributionTask();
 
   void TimeFetchTask();
 
   void UpdateStock();
+
 
  private:
   ConsoleCache*     console_cache_;
