@@ -66,7 +66,9 @@ void ConsoleFactory::InitParam(config::FileConfig* config) {
   //TimeFetchTask();
   console_db_->FetchBatchRuleTask(&console_cache_->task_idle_map_);
   console_db_->FetchBatchCountTask(&console_cache_->task_idle_map_);
-//  kafka_producer_ = new ConsoleKafka(config);
+  //kafka_producer_ = new ConsoleKafka(config);
+  //base::ConnAddr conn = config->kafka_list_.front();
+  //kafka_producer_ = new ConsoleKafka(conn);
   hexun_task_mgr_ = new console_logic::HexunTaskManager(kafka_producer_);
   xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager(/*kafka_producer_*/);
 
