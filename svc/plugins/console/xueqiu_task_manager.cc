@@ -12,7 +12,7 @@
 namespace console_logic {
 
 XueqiuTaskManager::XueqiuTaskManager(console_logic::ConsoleKafka* producer) {
-//  kafka_producer_ = producer;
+  //kafka_producer_ = producer;
   stock_manager_ = ConsoleStockEngine::GetConsoleStockManager();
 }
 
@@ -77,7 +77,7 @@ void XueqiuTaskManager::CreateUser(const console_logic::KafkaInfo& kafka,const s
                                                      &error_str);
   if (value == NULL)
     return;
-  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","",kafka.kafka_name());
   console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
   base_logic::DictionaryValue* dict_value =
       (base_logic::DictionaryValue*) (value);

@@ -42,6 +42,7 @@ StockInfo& StockInfo::operator =(const StockInfo& stock) {
   if (stock.data_ != NULL) {
     stock.data_->AddRef();
   }
+
   if (data_ != NULL) {
     data_->Release();
   }
