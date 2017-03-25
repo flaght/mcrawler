@@ -10,6 +10,13 @@
 
 namespace console_logic {
 
+HexunTaskManager::HexunTaskManager() {
+  kafka_producer_ = NULL;
+  stock_manager_ = ConsoleStockEngine::GetConsoleStockManager();
+  cache_ = new HexunCache();
+  InitThreadrw(&lock_);
+}
+
 HexunTaskManager::HexunTaskManager(console_logic::ConsoleKafka* producer) {
   kafka_producer_ = producer;
   stock_manager_ = ConsoleStockEngine::GetConsoleStockManager();
@@ -72,9 +79,10 @@ void HexunTaskManager::CreateAllStockHeat(const base_logic::TaskInfo& task,
 
     LOG_DEBUG2("%s",btask.url().c_str());
     kafka_producer_->AddKafkaTaskInfo(task.id(), task.attrid(), 1, 1,
-                                     task.method(), task.machine(),
-                                     task.storage(), 0, 0, btask.polling_time(),
-                                     btask.last_task_time(), s_url);
+                                      task.method(), task.machine(),
+                                      task.storage(), 0, 0,
+                                      btask.polling_time(),
+                                      btask.last_task_time(), s_url);
   }
 }
 
@@ -89,7 +97,7 @@ void HexunTaskManager::CreateAllStockDayHeat(const base_logic::TaskInfo& task) {
 
 void HexunTaskManager::CreateSecondaryStockDayHeat(
     const base_logic::TaskInfo& task) {
-  CreateSecondaryStockHeat(task, 1,10);
+  CreateSecondaryStockHeat(task, 1, 10);
 }
 
 void HexunTaskManager::CreateSecondaryStockQuarterHeat(
@@ -98,8 +106,7 @@ void HexunTaskManager::CreateSecondaryStockQuarterHeat(
 }
 
 void HexunTaskManager::CreateSecondaryStockHeat(
-    const base_logic::TaskInfo& task, const int32 start,
-    int32 ago_day) {
+    const base_logic::TaskInfo& task, const int32 start, int32 ago_day) {
   std::string stcode_symbol = "{%stcode}";
   std::string time_symbol = "{%Y-%M-%D}";
   std::list<console_logic::StockInfo> list;
@@ -118,13 +125,12 @@ void HexunTaskManager::CreateSecondaryStockHeat(
       month_str = "0";
     month_str += base::BasicUtil::StringUtil::Int64ToString(exploded.month);
     if (exploded.day_of_month < 10) {
-          day_str = "0";
+      day_str = "0";
     }
-    day_str += base::BasicUtil::StringUtil::Int64ToString(exploded.day_of_month);
+    day_str += base::BasicUtil::StringUtil::Int64ToString(
+        exploded.day_of_month);
     std::string time_format = base::BasicUtil::StringUtil::Int64ToString(
-            exploded.year) + "-"
-            + month_str + "-"
-            + day_str;
+        exploded.year) + "-" + month_str + "-" + day_str;
 
     //LOG_MSG2("%s", time_format.c_str());
     std::list<console_logic::StockInfo>::iterator it;
@@ -144,10 +150,10 @@ void HexunTaskManager::CreateSecondaryStockHeat(
       btask.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
       LOG_MSG2("%s", stock_url.c_str());
       kafka_producer_->AddKafkaTaskInfo(btask.id(), btask.attrid(), 1, 1,
-                                       btask.method(), btask.machine(),
-                                       btask.storage(), 0, 0,
-                                       btask.polling_time(),
-                                       btask.last_task_time(), stock_url);
+                                        btask.method(), btask.machine(),
+                                        btask.storage(), 0, 0,
+                                        btask.polling_time(),
+                                        btask.last_task_time(), stock_url);
     }
   }
 }

@@ -73,14 +73,14 @@ class CrawlerScheduler {
 
   void del_task(TaskInfo& task);
 
-  void sync_task_count(){
+  void sync_task_count() {
     data_->task_count_ = data_->task_infos_.size();
   }
 
   void set_socket(const int socket) {
     data_->socket_ = socket;
   }
-  void set_port(const int port){
+  void set_port(const int port) {
     data_->port_ = port;
   }
   void set_ip(const std::string& ip) {
@@ -91,7 +91,7 @@ class CrawlerScheduler {
   }
 
   void set_available_resource(const int32 available_resource_count) {
-    data_->task_count_ =  available_resource_count;
+    data_->task_count_ = available_resource_count;
   }
 
   void set_mac(const std::string& mac) {
@@ -164,10 +164,9 @@ class CrawlerScheduler {
     return t_scheduler.task_count() < r_scheduler.task_count();
   }
 
-  int32 exec_task_count(){
+  int32 exec_task_count() {
     return data_->task_infos_.size();
   }
-
 
   void GetTaskSetId(std::list<int64>& list);
 
@@ -185,13 +184,13 @@ class CrawlerScheduler {
           send_last_time_(0),
           recv_last_time_(0),
           port_(0),
-          is_inlock_(false){
+          is_inlock_(false) {
     }
 
-    ~Data(){
+    ~Data() {
       task_infos_.clear();
       //if (is_inlock_)
-        //DeinitThreadrw(lock_);
+      //DeinitThreadrw(lock_);
     }
 
    public:
@@ -207,7 +206,7 @@ class CrawlerScheduler {
     std::string ip_;
     std::string password_;
     std::string mac_;
-    std::map<int64,TaskInfo>  task_infos_;
+    std::map<int64, TaskInfo> task_infos_;
     bool is_inlock_;
 
     void AddRef() {
@@ -243,7 +242,8 @@ class TaskInfo {
 
   static bool cmp(const base_logic::TaskInfo& t_task,
                   const base_logic::TaskInfo& r_task) {
-    return t_task.totoal_polling_time() <= r_task.totoal_polling_time();
+    //return t_task.totoal_polling_time() <= r_task.totoal_polling_time();
+    return Data::cmp(t_task.data_,r_task.data_);
   }
 
   static bool create_time_sort(const base_logic::TaskInfo& t_task,
@@ -315,6 +315,10 @@ class TaskInfo {
     data_->type_ = type;
   }
 
+  void set_svc_id(const int32 svc_id) {
+    data_->svc_id_= svc_id;
+  }
+
   void set_cralwer_id(const int32 crawler_id) {
     data_->crawler_id_ = crawler_id;
   }
@@ -382,6 +386,11 @@ class TaskInfo {
   const int8 type() const {
     return data_->type_;
   }
+
+  const int32 svc_id() const {
+    return data_->svc_id_;
+  }
+
   const int64 is_finish() const {
     return data_->is_finish_;
   }
@@ -434,6 +443,7 @@ class TaskInfo {
           state_(0),
           is_over_(0),
           is_login_(0),
+          svc_id_(0),
           is_finish_(0),
           is_forge_(0),
           crawl_num_(0),
@@ -448,7 +458,7 @@ class TaskInfo {
 
    public:
     int64 id_;
-    int64 pid_; //任务父id
+    int64 pid_;  //任务父id
     int8 type_;
     int8 depth_;
     int8 cur_depth_;
@@ -459,16 +469,23 @@ class TaskInfo {
     int8 is_over_;
     int8 state_;
     int8 method_;
+    int32 svc_id_;
     int64 is_finish_;
     int64 attrid_;
     int64 polling_time_;
     int64 base_polling_time_;
     int64 last_task_time_;
     int64 create_time_;
-    int64 crawl_num_; //Invalid
+    int64 crawl_num_;  //Invalid
     int64 crawler_id_;
     int64 total_polling_time_;
     std::string url_;
+
+    static bool cmp(const Data* t_data, const Data* r_data) {
+      return (t_data->last_task_time_ + t_data->polling_time_)
+          < (r_data->last_task_time_ + r_data->polling_time_);
+    }
+
     void AddRef() {
       __sync_fetch_and_add(&refcount_, 1);
     }
@@ -992,7 +1009,6 @@ class LoginCookie {
     data_->send_last_time_ = time(NULL);
   }
 
-
   void set_cookie_id(const int64 id) {
     data_->cookie_id_ = id;
   }
@@ -1004,7 +1020,7 @@ class LoginCookie {
     data_->cookie_body = cookie_body;
   }
 
-  void set_cookie_last_time(time_t send_last_time){
+  void set_cookie_last_time(time_t send_last_time) {
     data_->send_last_time_ = send_last_time;
   }
 
@@ -1085,7 +1101,7 @@ class LoginCookie {
           is_read(false),
           is_first(false),
           send_last_time_(0),
-          rule_(0){
+          rule_(0) {
     }
    public:
     int64 cookie_id_;

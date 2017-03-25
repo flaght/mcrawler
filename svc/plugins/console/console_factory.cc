@@ -17,8 +17,8 @@ ConsoleFactory::GetInstance() {
   return instance_;
 }
 
-void ConsoleFactory::FreeInstance(){
-  if (instance_ != NULL){
+void ConsoleFactory::FreeInstance() {
+  if (instance_ != NULL) {
     delete instance_;
     instance_ = NULL;
   }
@@ -43,7 +43,7 @@ ConsoleFactory::~ConsoleFactory() {
     delete console_db_;
     console_db_ = NULL;
   }
-  if (console_cache_){
+  if (console_cache_) {
     delete console_cache_;
     console_cache_ = NULL;
   }
@@ -66,9 +66,9 @@ void ConsoleFactory::InitParam(config::FileConfig* config) {
   //TimeFetchTask();
   console_db_->FetchBatchRuleTask(&console_cache_->task_idle_map_);
   console_db_->FetchBatchCountTask(&console_cache_->task_idle_map_);
-  kafka_producer_ = new ConsoleKafka(config);
+//  kafka_producer_ = new ConsoleKafka(config);
   hexun_task_mgr_ = new console_logic::HexunTaskManager(kafka_producer_);
-  xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager(kafka_producer_);
+  xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager(/*kafka_producer_*/);
 
 }
 
@@ -83,22 +83,34 @@ void ConsoleFactory::TimeFetchTask() {
   std::list<base_logic::TaskInfo> list;
   console_db_->FetchBatchRuleTask(&list, true);
   base_logic::WLockGd lk(lock_);
-  if(list.size() > 0) {
+  if (list.size() > 0) {
     base_logic::TaskInfo info = list.front();
     list.pop_front();
     console_cache_->task_idle_map_[info.id()] = info;
   }
 }
 
-void ConsoleFactory::UpdateStock(){
+void ConsoleFactory::UpdateStock() {
   stock_mgr_->UpdateStock();
+}
+
+void ConsoleFactory::SetKafkaInfo(console_logic::KafkaInfo& kafka) {
+  console_cache_->svc_map_[kafka.svc_id()] = kafka;
+}
+
+bool ConsoleFactory::GetKafkaInfo(const int32 svc_id,
+                                  console_logic::KafkaInfo& kafka) {
+  base_logic::RLockGd lk(lock_);
+  bool r = base::MapGet< SVC_MAP, SVC_MAP::iterator, int32, console_logic::KafkaInfo>
+  (console_cache_->svc_map_,svc_id,kafka);
+  return r;
 }
 
 void ConsoleFactory::DistributionTask() {
   time_t current_time = time(NULL);
   base_logic::RLockGd lk(lock_);
   LOG_MSG2("distrubute task current_time=%d console_cache_->task_idle_map_.size=%d",
-               (int)current_time, console_cache_->task_idle_map_.size());
+      (int)current_time, console_cache_->task_idle_map_.size());
   if (console_cache_->task_idle_map_.size() <= 0)
     return;
 
@@ -109,22 +121,26 @@ void ConsoleFactory::DistributionTask() {
   for (; it != console_cache_->task_idle_map_.end(), index < count;
       it++, index++) {
     base_logic::TaskInfo& info = it->second;
-    if (info.is_finish()==0 || info.is_finish() < -1){
+    if (info.is_finish() == 0 || info.is_finish() < -1) {
       continue;
-    }
-    LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
+    }LOG_MSG2("id %lld current %lld last_time %lld polling_time %lld state %d",
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
     if (info.last_task_time() + info.polling_time() < current_time) {
       info.release_isfinish();
-      info.update_time(0,base::SysRadom::GetInstance()->GetRandomID());
+      info.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
+      console_logic::KafkaInfo kafka;
+      bool r = GetKafkaInfo(info.svc_id(), kafka);
+      if (!r)
+        continue;
+
       switch (info.attrid()) {
         case HEXUN_PLATFORM_ID: {
           hexun_task_mgr_->CreateTask(info);
           break;
         }
         case XUEQIU_PLATFORM_ID: {
-          xueqiu_task_mgr_->CreateTask(info);
+          xueqiu_task_mgr_->CreateTask(kafka,info);
           break;
         }
         default:
@@ -136,18 +152,18 @@ void ConsoleFactory::DistributionTask() {
 
 void ConsoleFactory::Test() {
   /*
-  std::map<int64,base_logic::TaskInfo> lst;
-  console_db_->FetchBatchRuleTask(&list);
-  //LOG_DEBUG2("list size %lld", list.size());
-  // stock_mgr_->Test();
+   std::map<int64,base_logic::TaskInfo> lst;
+   console_db_->FetchBatchRuleTask(&list);
+   //LOG_DEBUG2("list size %lld", list.size());
+   // stock_mgr_->Test();
 
-  while (list.size() > 0) {
-    base_logic::TaskInfo task = list.front();
-    list.pop_front();
-    if (task.attrid() == 60008)
-      hexun_task_mgr_->CreateTask(task);
-  }
-  */
+   while (list.size() > 0) {
+   base_logic::TaskInfo task = list.front();
+   list.pop_front();
+   if (task.attrid() == 60008)
+   hexun_task_mgr_->CreateTask(task);
+   }
+   */
 
 }
 

@@ -11,9 +11,12 @@
 namespace console_logic {
 
 class ConsoleKafka {
+
  public:
   ConsoleKafka(config::FileConfig* config);
+  ConsoleKafka(base::ConnAddr& addr);
   virtual ~ConsoleKafka();
+
  public:
   void AddTaskInfo(const base_logic::TaskInfo& task,
                    const int64 base_polling_time,
