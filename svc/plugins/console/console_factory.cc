@@ -23,7 +23,13 @@ void ConsoleFactory::FreeInstance() {
     instance_ = NULL;
   }
 }
-ConsoleFactory::ConsoleFactory() {
+
+ConsoleFactory::ConsoleFactory()
+:hexun_task_mgr_(NULL)
+,xueqiu_task_mgr_(NULL)
+,sina_task_mgr_(NULL)
+,console_db_(NULL)
+,kafka_producer_(NULL) {
   Init();
   InitThreadrw(&lock_);
   base::SysRadom::GetInstance();
@@ -31,6 +37,8 @@ ConsoleFactory::ConsoleFactory() {
 
 ConsoleFactory::~ConsoleFactory() {
   console_logic::ConsoleStockEngine::FreeConsoleStockManager();
+  console_logic::ConsoleWeiboEngine::FreeConsoleWeiboManager();
+  ClearKafkaInfo();
   if (hexun_task_mgr_) {
     delete hexun_task_mgr_;
     hexun_task_mgr_ = NULL;
@@ -39,6 +47,12 @@ ConsoleFactory::~ConsoleFactory() {
     delete xueqiu_task_mgr_;
     xueqiu_task_mgr_ = NULL;
   }
+
+  if (sina_task_mgr_) {
+    delete sina_task_mgr_;
+    sina_task_mgr_ = NULL;
+  }
+
   if (console_db_) {
     delete console_db_;
     console_db_ = NULL;
@@ -57,12 +71,14 @@ ConsoleFactory::~ConsoleFactory() {
 
 void ConsoleFactory::Init() {
   stock_mgr_ = console_logic::ConsoleStockEngine::GetConsoleStockManager();
+  weibo_mgr_ = console_logic::ConsoleWeiboEngine::GetConsoleWeiboManager();
   console_cache_ = new ConsoleCache();
 }
 
 void ConsoleFactory::InitParam(config::FileConfig* config) {
   console_db_ = new console_logic::ConsoleDB(config);
   stock_mgr_->Init(console_db_);
+  weibo_mgr_->Init(console_db_);
   //TimeFetchTask();
   console_db_->FetchBatchRuleTask(&console_cache_->task_idle_map_);
   console_db_->FetchBatchCountTask(&console_cache_->task_idle_map_);
@@ -71,7 +87,7 @@ void ConsoleFactory::InitParam(config::FileConfig* config) {
   //kafka_producer_ = new ConsoleKafka(conn);
   hexun_task_mgr_ = new console_logic::HexunTaskManager(kafka_producer_);
   xueqiu_task_mgr_ = new console_logic::XueqiuTaskManager(/*kafka_producer_*/);
-
+  sina_task_mgr_ = new console_logic::SinaTaskManager();
 }
 
 void ConsoleFactory::Dest() {
@@ -94,18 +110,49 @@ void ConsoleFactory::TimeFetchTask() {
 
 void ConsoleFactory::UpdateStock() {
   stock_mgr_->UpdateStock();
+  weibo_mgr_->UpdateWeibo();
+}
+
+void ConsoleFactory::ClearKafkaInfo() {
+  CONSOLE_KAFKA_MAP::iterator it = console_cache_->console_kafka_map_.begin();
+  for(;it != console_cache_->console_kafka_map_.end();it++) {
+    console_logic::ConsoleKafka* kafka = it->second;
+    if (kafka) {delete kafka;kafka = NULL;}
+    //it = console_cache_->console_kafka_map_.erase(it);
+  }
+  console_cache_->console_kafka_map_.clear();
+}
+
+void ConsoleFactory::SetKafkaInfo(console_logic::KafkaInfo& kafka) {
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","",kafka.kafka_name());
+  console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
+  console_cache_->console_kafka_map_[kafka.svc_id()] = kafka_producer;
+}
+
+/*
+=======
 }
 
 void ConsoleFactory::SetKafkaInfo(console_logic::KafkaInfo& kafka) {
   console_cache_->svc_map_[kafka.svc_id()] = kafka;
 }
 
+>>>>>>> 4883ed9df1646ddefbf6b1ca4b94e79720d36bf7
 bool ConsoleFactory::GetKafkaInfo(const int32 svc_id,
                                   console_logic::KafkaInfo& kafka) {
   base_logic::RLockGd lk(lock_);
   bool r = base::MapGet< SVC_MAP, SVC_MAP::iterator, int32, console_logic::KafkaInfo>
   (console_cache_->svc_map_,svc_id,kafka);
   return r;
+<<<<<<< HEAD
+}*/
+
+console_logic::ConsoleKafka* ConsoleFactory::GetKafkaInfo(const int32 svc_id) {
+  base_logic::RLockGd lk(lock_);
+  console_logic::ConsoleKafka* console_kafka = NULL;
+  bool r = base::MapGet<CONSOLE_KAFKA_MAP, CONSOLE_KAFKA_MAP::iterator, int32,
+		console_logic::ConsoleKafka*>(console_cache_->console_kafka_map_,svc_id,console_kafka);
+ return console_kafka;
 }
 
 void ConsoleFactory::DistributionTask() {
@@ -129,12 +176,13 @@ void ConsoleFactory::DistributionTask() {
         info.id(), current_time, info.last_task_time(),
         info.polling_time(), info.state());
     if (info.last_task_time() + info.polling_time() < current_time) {
-      info.release_isfinish();
+      if (info.is_finish() > 0)
+           info.release_isfinish();
       info.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
       console_logic::KafkaInfo kafka;
-      bool r = GetKafkaInfo(info.svc_id(), kafka);
-      if (!r)
-        continue;
+      //bool r = GetKafkaInfo(info.svc_id(), kafka);
+      //if (!r)
+        //continue;
 
       switch (info.attrid()) {
         case HEXUN_PLATFORM_ID: {
@@ -145,6 +193,11 @@ void ConsoleFactory::DistributionTask() {
           xueqiu_task_mgr_->CreateTask(kafka,info);
           break;
         }
+
+        case SINA_PLATFORM_ID: {
+          sina_task_mgr_->CreateTask(GetKafkaInfo(info.svc_id()),info);
+        }
+
         default:
           break;
       }
