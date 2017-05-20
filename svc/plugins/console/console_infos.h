@@ -147,5 +147,85 @@ class StockInfo {
   Data* data_;
 };
 
+class WeiboInfo{
+public:
+ WeiboInfo();
+
+ WeiboInfo(const WeiboInfo& wb);
+
+ WeiboInfo& operator =(const WeiboInfo& wb);
+
+ ~WeiboInfo() {
+   if (data_ != NULL) {
+     data_->Release();
+   }
+ }
+
+ void set_id(const int32 id) {
+   data_->id_ = id;
+ }
+
+ void set_weibo_id(const std::string& weibo_id) {
+   data_->weibo_id_ = weibo_id;
+ }
+
+ void set_weibo_index_id(const std::string& weibo_index_id){
+   data_->weibo_index_id_ = weibo_index_id;
+ }
+   
+ void set_name(const std::string& name) {
+   data_->name_ = name;  
+ }
+
+ void set_is_vaild(const bool is_vaild){
+   data_->is_vaild_ = is_vaild;
+ }
+  
+ const int32 id() const {
+   return data_->id_;
+ }
+
+ const std::string& weibo_id() const {
+   return data_->weibo_id_;
+ }
+
+ const std::string& weibo_index() const {
+   return data_->weibo_index_id_;
+ }
+
+ const std::string& name() const {
+   return data_->name_;
+ }
+
+ void ValueSerialization(base_logic::DictionaryValue* dict);
+ class Data{
+   public:
+     Data()
+      :id_(0)
+      ,is_vaild_(true)
+      ,refcount_(1){}  
+   public:
+    int32        id_;
+    std::string  weibo_id_;
+    std::string  weibo_index_id_;
+    std::string  name_;
+    bool         is_vaild_;
+   
+    void AddRef() {
+      __sync_fetch_and_add(&refcount_, 1);
+    }
+    void Release() {
+      __sync_fetch_and_sub(&refcount_, 1);
+      if (!refcount_)
+        delete this;
+    }
+
+   private:
+    int refcount_;
+ };
+ 
+ Data*   data_;
+};
+
 }
 #endif
