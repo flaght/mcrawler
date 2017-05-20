@@ -45,7 +45,7 @@ std::string XueQiuCookie::CreateRand(const char* src, int32 len) {
     name[i] = src[pos];
   }
   std::string s;
-  s.assgin(name, len);
+  s.assign(name, len);
   if (name) {delete [] name; name = NULL;}
   return s;
 }

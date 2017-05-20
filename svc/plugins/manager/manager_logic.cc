@@ -139,7 +139,7 @@ bool Managerlogic::OnTimeout(struct server *srv, char *id,
         int opcode, int time) {
     switch (opcode) {
       case TIME_CRALWER_MANAGER_LIVE:
-          crawler_schduler_engine_->CheckHeartPacket(0);
+          //crawler_schduler_engine_->CheckHeartPacket(0);
         break;
       default:
         break;
@@ -214,7 +214,7 @@ bool Managerlogic::OnCrawlerReg(struct server* srv, int socket,
 bool Managerlogic::OnCheckHeartPacket(struct server* srv, int socket,
         struct PacketHead *packet, const void *msg,
         int32 len) {
-	crawler_schduler_engine_->CheckHeartPacket(socket);
+    //crawler_schduler_engine_->CheckHeartPacket(socket);
 	return true;
 }
 
