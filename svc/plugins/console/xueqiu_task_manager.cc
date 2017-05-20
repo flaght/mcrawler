@@ -139,8 +139,8 @@ void XueqiuTaskManager::CreateUserDiscuss(const console_logic::KafkaInfo& kafka,
   if (value == NULL)
     return;
 
-  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
-  console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);
+  base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","",kafka.kafka_name());
+  console_logic::ConsoleKafka* m_kafka_producer = new console_logic::ConsoleKafka(conn);
   base_logic::DictionaryValue* dict_value =
       (base_logic::DictionaryValue*) (value);
   base_logic::DictionaryValue::key_iterator it = dict_value->begin_keys();
@@ -152,9 +152,9 @@ void XueqiuTaskManager::CreateUserDiscuss(const console_logic::KafkaInfo& kafka,
     stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, symbol,
                                                     "10000");
     LOG_MSG2("%s", stock_url.c_str());
-    //kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
+    m_kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
   }LOG_DEBUG2("size %d",dict_value->size());
-  if (kafka_producer) {delete kafka_producer; kafka_producer = NULL;}
+  if (m_kafka_producer) {delete m_kafka_producer; m_kafka_producer = NULL;}
 }
 
 void XueqiuTaskManager::CreateCNSMStockDiscuss(

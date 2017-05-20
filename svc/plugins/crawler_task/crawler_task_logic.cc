@@ -43,8 +43,7 @@ bool CrawlerTasklogic::Init() {
     return false;
 
   task_kafka_.reset(
-      new crawler_task_logic::CrawlerTaskKafka(svc_id_,
-                                               config->kafka_list_.front()));
+      new crawler_task_logic::CrawlerTaskKafka(svc_id_, config->kafka_list_.front()));
 
   task_time_mgr_.reset(
       new crawler_task_logic::TaskTimeManager(task_db_.get(),

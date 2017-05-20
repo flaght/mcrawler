@@ -27,9 +27,11 @@ ConsoleKafka::ConsoleKafka(config::FileConfig* config) {
 
 ConsoleKafka::ConsoleKafka(base::ConnAddr& addr) {
   if (PRODUCER_INIT_SUCCESS != kafka_producer_.Init(addr))
-    LOG_ERROR("producer kafka_newsparser_algo init failed");
+    LOG_ERROR2("producer init failed: host:%s source:%s additional %s",
+              addr.host().c_str(),addr.source().c_str(),addr.additional().c_str());
   else
-    LOG_ERROR("producer kafka_newsparser_algo init success");
+    LOG_MSG2("producer init success: host:%s source:%s additional:%s",
+              addr.host().c_str(), addr.source().c_str(),addr.additional().c_str());
 }
 
 ConsoleKafka::~ConsoleKafka() {

@@ -249,6 +249,9 @@ bool TaskSchdulerManager::DistributionTempTask() {
       if (task.task_set.size() % base_num == 0 && task.task_set.size() != 0) {
         int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
             (const void *) &task, 0);
+
+        LOG_MSG2("crawler_id %d task size %d", crawler_id, task.task_set.size());
+        
         if (crawler_id > 0) {
           SetTaskInfosCrawlerId(&task, crawler_id);
           // task_db_->CreateTaskLog(crawler_id, &log_list);
@@ -270,7 +273,10 @@ bool TaskSchdulerManager::DistributionTempTask() {
              log_list.size());
     int32 crawler_id = crawler_schduler_engine_->SendOptimalCrawler(
         (const void *) &task, 0);
-    if (crawler_id > 0) {
+
+   LOG_MSG2("crawler_id %d task size %d", crawler_id, task.task_set.size());
+   if (crawler_id > 0) {
+
       SetTaskInfosCrawlerId(&task, crawler_id);
       //新增日志
       // task_db_->CreateTaskLog(crawler_id, &log_list);

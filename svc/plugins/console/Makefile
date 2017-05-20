@@ -101,6 +101,9 @@ console_infos.o : ./console_infos.cc ./console_infos.h
 console_stock_manager.o : ./console_stock_manager.cc ./console_stock_manager.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_stock_manager.cc $(INCLUDE_PATHS)
 
+console_weibo_manager.o : ./console_weibo_manager.cc ./console_weibo_manager.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_weibo_manager.cc $(INCLUDE_PATHS)
+
 console_kafka.o : ./console_kafka.cc ./console_kafka.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_kafka.cc $(INCLUDE_PATHS)
 
@@ -110,6 +113,9 @@ hexun_task_manager.o : ./hexun_task_manager.cc ./hexun_task_manager.h
 xueqiu_task_manager.o : ./xueqiu_task_manager.cc ./xueqiu_task_manager.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./xueqiu_task_manager.cc $(INCLUDE_PATHS)
 
+sina_task_manager.o : ./sina_task_manager.cc ./sina_task_manager.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./sina_task_manager.cc $(INCLUDE_PATHS)
+	
 console_time_manager.o : ./console_time_manager.cc ./console_time_manager.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./console_time_manager.cc $(INCLUDE_PATHS)
 		
@@ -139,8 +145,9 @@ mysql_pool.o :  $(USER_DIR)/storage/mysql_pool.cc $(USER_DIR)/storage/mysql_pool
 	
 
 $(PLUGIN) : console_init.o  console_logic.o console_db.o console_kafka.o packet_processing.o logic_unit.o time.o xueqiu_task_manager.o\
-	auto_crawler_infos.o console_factory.o console_infos.o console_stock_manager.o hexun_task_manager.o console_time_manager.o mcontainer.o\
+	auto_crawler_infos.o console_factory.o console_infos.o console_stock_manager.o console_weibo_manager.o\
+	hexun_task_manager.o console_time_manager.o mcontainer.o sina_task_manager.o\
 	data_engine.o data_mysql_engine.o mysql_pool.o\
-	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a $(CUSTOM_THIRD_PATH)/librdkafka/librdkafka.a
+	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a $(CUSTOM_THIRD_PATH)/lib/librdkafka.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient \
 	$^ -o $@

@@ -4,6 +4,37 @@
 
 namespace console_logic {
 
+
+WeiboInfo::WeiboInfo(void){
+ data_ = new Data();
+}
+
+WeiboInfo::WeiboInfo(const WeiboInfo& wb)
+:data_(wb.data_){
+ if (data_ != NULL){
+   data_->AddRef();
+ }
+}
+
+WeiboInfo& WeiboInfo::operator = (const WeiboInfo& wb) {
+ if (wb.data_ != NULL) {
+   wb.data_->AddRef();
+ }
+ if (data_ != NULL) {
+   data_->Release();
+ }
+ 
+ data_ = wb.data_;
+ return (*this);
+}
+
+void WeiboInfo::ValueSerialization(base_logic::DictionaryValue* dict) {
+  dict->GetInteger(L"id", &data_->id_);
+  dict->GetString(L"weibo_id", &data_->weibo_id_);
+  dict->GetString(L"weibo_index_id", &data_->weibo_index_id_);
+  dict->GetString(L"weibo_name", &data_->name_);
+}
+
 KafkaInfo::KafkaInfo(void) {
   data_ = new Data();
 }

@@ -38,6 +38,35 @@ ConsoleDB::~ConsoleDB(void) {
   }
 }
 
+
+bool ConsoleDB::FetchWeiboInfo(std::map<int32,console_logic::WeiboInfo>& map) {
+  bool r = false;
+  scoped_ptr<base_logic::DictionaryValue> dict(
+      new base_logic::DictionaryValue());
+  
+  std::string sql;
+  sql = "call proc_GetWeiboIndex()";
+  base_logic::ListValue* listvalue;
+  dict->SetString(L"sql", sql);
+  r = mysql_engine_->ReadData(0, (base_logic::DictionaryValue*)(dict.get()),
+                             CallFetchWeiboInfo);
+  if (!r)
+    return false;
+  dict->GetList(L"resultvalue", & listvalue);
+  while (listvalue->GetSize()) {
+    console_logic::WeiboInfo wb;
+    base_logic::Value* result_value;
+    listvalue->Remove(0, &result_value);
+    base_logic::DictionaryValue* dict_result_value = 
+        (base_logic::DictionaryValue*)(result_value);
+    wb.ValueSerialization(dict_result_value);
+   map[wb.id()] = wb;
+   delete dict_result_value;
+   dict_result_value = NULL;
+  }
+  return true;
+}
+
 bool ConsoleDB::FectchStCode(
     std::map<std::string, console_logic::StockInfo>& map) {
   bool r = false;
@@ -132,6 +161,34 @@ bool ConsoleDB::FetchBatchTaskT(
 
   return true;
 }
+
+
+void ConsoleDB::CallFetchWeiboInfo(void* param, base_logic::Value* value) {
+  base_logic::DictionaryValue* dict = (base_logic::DictionaryValue*)(value);
+  base_logic::ListValue* list = new base_logic::ListValue();
+  base_storage::DBStorageEngine* engine = 
+     (base_storage::DBStorageEngine*)(param);
+  MYSQL_ROW rows;
+  int32 num = engine->RecordCount();
+  if (num > 0) {
+    while (rows = (*(MYSQL_ROW*) (engine->FetchRows())->proc)) {
+      base_logic::DictionaryValue* info_value =
+          new base_logic::DictionaryValue();
+      if (rows[0] != NULL)
+        info_value->SetInteger(L"id", atoll(rows[0]));
+      if (rows[1] != NULL)
+        info_value->SetString(L"weibo_id", rows[1]);
+      if (rows[2] != NULL)
+        info_value->SetString(L"weibo_index_id", rows[2]);
+      if (rows[3] != NULL)
+        info_value->SetString(L"weibo_name", rows[3]);
+
+      list->Append((base_logic::Value*)(info_value));
+    }
+  }
+  dict->Set(L"resultvalue", (base_logic::Value*) (list));
+}
+
 
 void ConsoleDB::CallFectchStCode(void* param, base_logic::Value* value) {
   base_logic::DictionaryValue* dict = (base_logic::DictionaryValue*) (value);
