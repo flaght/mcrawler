@@ -31,6 +31,10 @@ class ConsoleDB {
 
   bool FectchStCode(std::map<std::string, console_logic::StockInfo>& map);
 
+
+  bool FetchWeiboInfo(std::map<int32,console_logic::WeiboInfo>& map);
+
+
  private:
   bool FetchBatchListTask(const std::string& sql,
                           std::list<int64,base_logic::TaskInfo>* list);
@@ -43,6 +47,10 @@ class ConsoleDB {
   static void CallBackFetchBatchRuleTask(void* param, base_logic::Value* value);
 
   static void CallFectchStCode(void* param, base_logic::Value* value);
+  	
+  static void CallFetchWeiboInfo(void* param, base_logic::Value* value);
+
+ 
  private:
   base_logic::DataEngine* mysql_engine_;
 };
