@@ -244,7 +244,6 @@ def parser_ftp_method(config, path, pid):
 
 
 
-
 if __name__ == '__main__':
     if platform.system() == "Darwin" or platform.system() == "Linux":
         reload(sys)
