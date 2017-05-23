@@ -11,6 +11,17 @@
 
 namespace storager_logic {
 
+StroagerKafka::StroagerKafka(base::ConnAddr& addr) {
+   if (PRODUCER_INIT_SUCCESS != kafka_producer_.Init(addr))
+        LOG_ERROR2("producer init failed: host:%s source %s additional %s",
+                  addr.host().c_str(), addr.source().c_str(),addr.additional().c_str());
+   else
+        
+        LOG_MSG2("producer init failed: host:%s source %s additional %s",
+                 addr.host().c_str(), addr.source().c_str(),addr.additional().c_str());
+}
+
+
 StroagerKafka::StroagerKafka(config::FileConfig* config) {
 /*  if (PRODUCER_INIT_SUCCESS
       != kafka_producer_.Init(
@@ -18,11 +29,16 @@ StroagerKafka::StroagerKafka(config::FileConfig* config) {
           "newsparser_task_algo",
           "61.147.114.85:9092,61.147.114.80:9092,61.147.114.81:9092",
           NULL))*/
-  if (PRODUCER_INIT_SUCCESS
-      != kafka_producer_.Init(config->kafka_list_.front()))
-    LOG_ERROR("producer newsparser_task_test init failed");
-  else
-    LOG_ERROR("producer newsparser_task_test init success");
+  base::ConnAddr addr = config->kafka_list_.front();
+  //StroagerKafka::StroagerKafka(addr);
+
+   if (PRODUCER_INIT_SUCCESS != kafka_producer_.Init(addr))
+        LOG_ERROR2("producer init failed: host:%s source %s additional %s",
+                  addr.host().c_str(), addr.source().c_str(),addr.additional().c_str());
+   else
+        
+        LOG_MSG2("producer init failed: host:%s source %s additional %s",
+                 addr.host().c_str(), addr.source().c_str(),addr.additional().c_str());
 }
 
 StroagerKafka::~StroagerKafka() {
@@ -53,6 +69,9 @@ bool StroagerKafka::AddStorageInfo(const std::list<struct StorageUnit*>& list,
   for (; it != list.end(); it++) {
     struct StorageUnit* hbase = (*it);
     //LOG_DEBUG("push data to newsparser_task");
+     LOG_DEBUG2("task_id %lld, attr_id %lld, key_name %s pos_name %s",
+               hbase->task_id, hbase->attr_id, hbase->key_name,
+               hbase->pos_name);
     base_logic::DictionaryValue* task_info = new base_logic::DictionaryValue();
     task_info->Set(
         L"analyze_id",

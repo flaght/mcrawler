@@ -18,6 +18,7 @@ namespace storager_logic {
 class StroagerKafka {
  public:
     StroagerKafka(config::FileConfig* config);
+    StroagerKafka(base::ConnAddr& addr);
     virtual ~StroagerKafka();
 
 
