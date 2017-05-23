@@ -1,27 +1,41 @@
 # -*- coding: utf-8 -*-
 
-'''
-Created on 2017-05-23
-@author kerry
-'''
+"""
+Created on 2016年11月13日
+
+@author: kerry
+"""
+
 from analysis.parser.parser import Parser as MParser
+from analysis.scheduler.cleaning.cralwer.cleaning import CleaningCrawler
 from analysis.scheduler.fetch.fetch_manage import FetchFileManager
 from analysis.scheduler.input.input_manage import InputManager
-from analysis.scheduler.logic.schedule_engine import ScheduleEngine as LGSchedulerEngine
+from analysis.scheduler.logic.schedule_engine import ScheduleEngne
 
-class ScheduleEngine:
-    
-    def __init__(self,config):
+"""
+采用多线程方式来获取数据,解析,存储数据。
+ftp kafka hbase sqlite等采用预先建立连接数(和线程数相同),以参数方式传递进去。
+"""
+class AnalysisEngine:
+
+    def __init__(self, config):
+        """
+
+        Returns:
+            object:
+        """
+
         self.parser = MParser()
         self.task_queue = []
         self.recovery_file = {}
         self.fetch_mgr = FetchFileManager()
-        self.scheduler = LGSchedulerEngine(config)
+        self.scheduler = ScheduleEngne(config)
         self.config = config
         self.input_mgr = InputManager(config)
 
     def __del__(self):
         pass
+
 
     def start(self,func_callback=None):
         if func_callback is not None:
@@ -29,14 +43,14 @@ class ScheduleEngine:
         else:
             self.input_mgr.start()
 
-
     def input_data(self, path, filename=None):
         if filename is None:
             return self.input_mgr.get_alldata(path)
         else:
             return self.input_mgr.get_data(path, filename)
 
-    
+
+
     """
     解析数据
     """
@@ -81,3 +95,18 @@ class ScheduleEngine:
     """
     多线程处理文件
     """
+
+
+
+
+def main():
+    """
+    test
+    """
+    pass
+
+
+
+if __name__ == '__main__':
+    main()
+

@@ -16,14 +16,14 @@ if __name__ == '__main__':
         reload(sys)
         sys.setdefaultencoding('utf-8')
 
-    config = AnalysisConfig
+    config = AnalysisConfig()
     config.set_ftp(host='61.147.114.73',
                    port=21,
                    user='crawler',
                    passwd='123456x')
 
-    config.set_reuslt(pid=600006,type=5,name='../follwer.db')
-    config.set_reuslt(pid=600068,type=5,name='../f.db')
+    config.set_result(pid=600006,type=5,name='../follwer.db')
+    config.set_result(pid=600068,type=5,name='../f.db')
 
     console = AnalysisConsole(config)
     console.handle_all_file()

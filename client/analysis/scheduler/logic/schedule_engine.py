@@ -8,7 +8,7 @@ Created on 2015年9月29日
 from analysis.scheduler.logic.xueqiu.scheduler import Scheduler as XQScheduler
 from analysis.scheduler.logic.hexun.scheduler import Scheduler as HXScheduler
 
-class ScheduleEngne:
+class ScheduleEngine:
     def __init__(self, config):
         self.xq_scheduler = XQScheduler(config)
         self.hx_scheduler = HXScheduler(config)
