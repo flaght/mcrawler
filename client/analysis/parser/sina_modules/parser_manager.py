@@ -26,7 +26,7 @@ class SinaParser(object):
     def __five_weibo_index(self,content):
         pid = content['pid']
         index,data = sina_weibo_index.five_star_index(content)
-        return {'result':data,'index':index,'pid':pid}
+        return {'result':data,'index':index,'pid':pid,'type':1} # 传输到计算平台上,进行区分。1,明星微博热度指数
 
 
 Sina_parser = SinaParser()
