@@ -9,11 +9,11 @@ Created on 2016年11月19日
 from analysis.scheduler.storage.manage_model.hexun.storage_manage import Storager
 from analysis.comm_opercode import net_task_opercode
 
-class Scheduler:
+class Scheduler(object):
     def __init__(self, config):
         tconfig = config.get('result')
         if tconfig is not None:
-            mconfig = tconfig.get('60008')
+            mconfig = tconfig.get(60008)
             if mconfig is not None:
                 self.storager = Storager(mconfig)
         self.__create_selector()

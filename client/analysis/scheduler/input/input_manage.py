@@ -18,7 +18,7 @@ type 2 :local
 class InputManager:
 
     def __init__(self,config):
-        if config.get('ftp') is not  None:
+        if config.get('ftp') is not None:
             self.file_manager = InputFileManager.create_file_manager(config.get('ftp'))
             self.queue_manager = None
         elif config.get('local') is not  None:

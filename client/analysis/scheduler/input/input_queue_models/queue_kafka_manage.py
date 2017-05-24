@@ -44,9 +44,10 @@ class QueueKafkaManage():
             for message in consumer:
                 try:
                     json_info = json.loads(message[6])
+                    mlog.log().debug(json_info)
                     self.callback(json_info)
                 except Exception, e:
-                    mlog.log().error(json)
+                    mlog.log().error(json_info)
 
 
 

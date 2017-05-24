@@ -54,7 +54,7 @@ class RedisManageModel(object):
         """
         self.pipe.execute()
 
-redis_manager = RedisManageModel(analysis_conf.redis_info['host'],
-                                 analysis_conf.redis_info['port'],
-                                 analysis_conf.redis_info['db'],
-                                 analysis_conf.redis_info['password'])
+#redis_manager = RedisManageModel(analysis_conf.redis_info['host'],
+#                                analysis_conf.redis_info['port'],
+#                                analysis_conf.redis_info['db'],
+#                                analysis_conf.redis_info['password'])
