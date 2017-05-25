@@ -7,7 +7,6 @@ Created on 2016年7月28日
 import json
 from analysis.base.mlog import mlog
 from kafka import KafkaConsumer,KafkaProducer
-from kafka import SimpleClient, SimpleProducer, SimpleConsumer
 from analysis.base.analysis_conf_manager import analysis_conf
 
 
@@ -20,6 +19,10 @@ class KafkaProducerManager(object):
         self.host = host
         self.coname = coname
         self.producer = KafkaProducer(bootstrap_servers=self.host)
+
+    def __del__(self):
+        self.producer.close()
+
 
     def push_data(self, parmas_message):
         producer = self.producer
@@ -40,6 +43,9 @@ class KafkaConsumerManager(object):
         self.coname = coname
         # self.setDaemon(True)
         # self.start()
+
+    def __del__(self):
+        self
 
     def set_callback(self, callback):
         self.callback = callback

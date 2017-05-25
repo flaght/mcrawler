@@ -28,6 +28,9 @@ class RedisManageModel(object):
             return
         print 'redis init successed'
 
+    def __del__(self):
+        self.redis.shutdown()
+
     def get_storage_info(self, cmd=None, params=None):
         """
         get storage info
