@@ -37,17 +37,19 @@ class QueueKafkaManage():
         连接取数据
         """
         while True:
-            consumer = KafkaConsumer(self.coname,
+            consumer = KafkaConsumer(self.coname,auto_offset_reset='latest',
                                      bootstrap_servers=self.host,
                                      group_id='my-group')
             i = 0
             for message in consumer:
-                #try:
-                json_info = json.loads(message[6])
-                mlog.log().debug(json_info)
-                self.callback(json_info)
-                #except Exception, e:
-                 #   mlog.log().error(message[6])
+                json_info=""
+                try:
+                    json_info = json.loads(message[6])
+                except Exception, e:
+                    mlog.log().error(message)
+                if len(json_info) > 0:
+                    mlog.log().debug(json_info)
+                    self.callback(json_info)
 
 
 
