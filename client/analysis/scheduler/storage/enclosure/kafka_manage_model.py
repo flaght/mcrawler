@@ -6,11 +6,32 @@ Created on 2016年7月28日
 """
 import json
 from analysis.base.mlog import mlog
-from kafka import KafkaConsumer
-from kafka import SimpleClient, SimpleProducer, SimpleConsumer
+from kafka import KafkaConsumer,KafkaProducer
 from analysis.base.analysis_conf_manager import analysis_conf
 
-class KafkaConsumerManager():
+
+class KafkaProducerManager(object):
+
+
+
+    def __init__(self, client, host, coname):
+        self.client = client
+        self.host = host
+        self.coname = coname
+        self.producer = KafkaProducer(bootstrap_servers=self.host)
+
+    def __del__(self):
+        self.producer.close()
+
+
+    def push_data(self, parmas_message):
+        producer = self.producer
+        producer.send(self.coname, parmas_message.encode('utf-8'))
+        producer.flush()
+
+
+
+class KafkaConsumerManager(object):
     """
     kafka管理
     """
@@ -22,6 +43,9 @@ class KafkaConsumerManager():
         self.coname = coname
         # self.setDaemon(True)
         # self.start()
+
+    def __del__(self):
+        self
 
     def set_callback(self, callback):
         self.callback = callback
@@ -49,35 +73,15 @@ class KafkaConsumerManager():
 
 
 def main():
-    #t = KafkaConsumerManager(None, analysis_conf.kafka_info['host'],
-    #                        analysis_conf.kafka_info['name'])
+    t = KafkaProducerManager(None,"kafka.t.smartdata-x.com:9092","kafka_newsparser_algo_1005")
 
-    #t.run()
+    t.push_data("jiaoha")
 
-    t = KafkaConsumerManager(None, "61.147.114.85:9092,61.147.114.80:9092,61.147.114.81:9092",
-                             "kafka_newsparser_algo")
-
+    '''
+    t = KafkaConsumerManager(None, "kafka.t.smartdata-x.com:9092",
+                             "kafka_newsparser_algo_1005")
     t.run()
-
-    #t = KafkaConsumerManager(None, "61.147.114.74:9092",
-     #                                               "newsparser_task_algo")
-    #t.run()
-    # threads = [
-    #    KafkaConsumer(None,'61.147.80.85:9092','algo_cralwer_kafka')
-    #          ]
-    # for t in threads:
-    #   t.start()
     '''
-    client = KafkaClient(hosts="61.147.80.245:9092")
-    topic = client.topics['kafka_algo']
-    consumer = topic.get_simple_consumer()
-    for message in consumer:
-        if message is not None:
-            print message.offset, message.value
-    '''
-    # KafkaManage(None, '61.147.80.245')
-    # while True:
-    #   time.sleep(1)
 
 
 if __name__ == '__main__':

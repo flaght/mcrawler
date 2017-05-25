@@ -21,6 +21,7 @@ class NetTaskOpcode:
     #XUEQIU_GET_MEMBER_COUT = 600 #从雪球接口json内容获取每个用户关注个数
     XUEQIU_GET_ALL_MEMBER = 600 # 从雪球接口json内容中获每个用户关注的用户信息
     XUEQIU_GET_FLLOWER_COUNT = 601 #从雪球接口json内容中获取每个用户粉丝的个数
+    SINA_WEIBO_INDEX = 602 #获取新浪微博的明星微指数
 
 net_task_opercode = NetTaskOpcode()
 

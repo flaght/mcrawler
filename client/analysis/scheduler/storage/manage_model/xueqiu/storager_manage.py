@@ -23,6 +23,8 @@ class Storager:
             self.sqlite_manager = BaseStorager.create_storager(storage_opcode.sqlite, config)
         elif config.get('type') == 3:
             self.text_manager = BaseStorager.create_storager(storage_opcode.text, config)
+        elif config.get('type') == 0:
+            self.redis_manager = BaseStorager.create_storager(storage_opcode.redis, config)
         self.__create_selector()
 
 

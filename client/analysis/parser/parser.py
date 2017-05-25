@@ -12,6 +12,7 @@ from analysis.scheduler.storage.enclosure.text_storage_model import TextStorage
 
 from hexun_models.parser_manager import HX_parser
 from xueqiu_models.parser_manager import XQ_parser
+from sina_modules.parser_manager import Sina_parser
 
 
 """
@@ -31,6 +32,9 @@ class Parser:
             status = -1 if rt is None else 1
         elif parse_id == 60008:
             rt = HX_parser.parse(parse_id, content)
+            status = -1 if rt is None else 1
+        elif parse_id == 60009:
+            rt = Sina_parser.parse(parse_id,content)
             status = -1 if rt is None else 1
         else:
             rt = content

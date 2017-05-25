@@ -18,7 +18,7 @@ class Scheduler:
     def __init__(self, config):
         tconfig = config.get('result')
         if tconfig is not None:
-            mconfig = tconfig.get('60006')
+            mconfig = tconfig.get(60006)
             if mconfig is not None:
                 self.storager = Storager(mconfig)
         self.__create_selector()

@@ -33,6 +33,10 @@ class FilerOpcode:
 
     kafka = 4
 
+    hbase = 5
+
+    redis = 6
+
 filer_opcode = FilerOpcode()
 
 
@@ -51,6 +55,10 @@ class StorageOpcode(object):
     memcache = 4
 
     sqlite = 5
+
+    kafka_p = 6
+
+    kafka_c = 7
 
 storage_opcode = StorageOpcode()
 

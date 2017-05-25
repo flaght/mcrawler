@@ -28,6 +28,9 @@ class RedisManageModel(object):
             return
         print 'redis init successed'
 
+    def __del__(self):
+        self.redis.shutdown()
+
     def get_storage_info(self, cmd=None, params=None):
         """
         get storage info
@@ -39,6 +42,11 @@ class RedisManageModel(object):
         """
         set storage info
         """
+
+        '''
+        #self.redis.set('kerry', 'redis')
+        #self.pipe.hset('hash_key','leizhu11',9)
+        '''
         if cmd == 'INCR' or cmd == 'incr':
             self.pipe.incr(params['name'])
         elif cmd == 'EXPIRE' or cmd == 'expire':
@@ -47,6 +55,8 @@ class RedisManageModel(object):
             self.pipe.zincrby(params['name'], params['value'], params['amount'])
         elif cmd == 'HINCRBY' or cmd == 'hincrby':
             self.pipe.hincrby(params['name'], params['value'], params['amount'])
+        elif cmd == 'HSET' or cmd == 'hset':
+            self.pipe.hset(params['name'],params['key'],params['value'])
 
     def commit(self):
         """
@@ -54,7 +64,7 @@ class RedisManageModel(object):
         """
         self.pipe.execute()
 
-redis_manager = RedisManageModel(analysis_conf.redis_info['host'],
-                                 analysis_conf.redis_info['port'],
-                                 analysis_conf.redis_info['db'],
-                                 analysis_conf.redis_info['password'])
+#redis_manager = RedisManageModel(analysis_conf.redis_info['host'],
+#                                analysis_conf.redis_info['port'],
+#                                analysis_conf.redis_info['db'],
+#                                analysis_conf.redis_info['password'])

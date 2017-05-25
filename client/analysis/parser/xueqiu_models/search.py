@@ -15,7 +15,7 @@ class Search():
     雪球
     """
     prefix = "xueqiu"
-    plt_id = "60006"
+    plt_id = 60006
     def __init__(self):
         pass
 
