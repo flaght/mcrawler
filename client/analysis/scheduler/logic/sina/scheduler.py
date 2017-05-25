@@ -54,9 +54,11 @@ class Scheduler(object):
         self.storager.process_data(pid, storage_dict)
 
     def __change_unixtime(self,daykey):
-        localtime = time.localtime(time.time())
+        localtime = time.gmtime(time.time())
         a = str(localtime.tm_year) + "-" + str(localtime.tm_mon) + "-" + str(
             localtime.tm_mday) + " " + daykey
-
         t = time.strptime(a, "%Y-%m-%d %H:%M")
-        return (time.mktime(t) / 60 / 60) * 60 * 60
+        u = time.mktime(t) - 8 * 60 * 60
+
+        t_unix = int(u / 60 / 60) * 60 * 60
+        return t_unix
