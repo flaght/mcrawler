@@ -22,10 +22,8 @@ if __name__ == '__main__':
     config.set_source(type=analysis_conf.kafka_info['type'],host=analysis_conf.kafka_info['host'],
                       name=analysis_conf.kafka_info['name'])
 
-    #config.set_result(pid=60006, type=storage_opcode.sqlite, name='../follwer.db')
-    #config.set_result(pid=60009, type=storage_opcode.sqlite, name='../f.db')
     config.set_result(pid=60009, type=storage_opcode.kafka_p, host='kafka.t.smartdata-x.com', name='kafka_weibo_index_1010')
-
+    config.set_result(pid=60009, type=storage_opcode.redis, host='122.144.169.216',port=6379)
     console = AnalysisConsole(config.get_config())
     console.start(console.callback_parser_file)
 #    console.handle_all_file(60009,"~/text_storage/60009/602")

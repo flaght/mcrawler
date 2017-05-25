@@ -12,14 +12,14 @@ SOCKET INFO
 # socket state
 CONNECT=0
 # socket host
-TEST=0
+TEST=1
 if TEST == 0:
     SERVER_IP='61.147.114.87'
     SERVER_PORT=15020
     __VER=1
 elif TEST == 1:
     SERVER_IP='222.73.34.92'
-    SERVER_PORT=16003
+    SERVER_PORT=15021
     __VER=1
 elif TEST == 2:
     SERVER_IP='222.73.34.92'

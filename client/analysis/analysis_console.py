@@ -16,6 +16,11 @@ class AnalysisConsole(object):
         self.scheduler_engine = ScheduleEngine(config)
         #self.scheduler_engine.start()
         self.conf = config
+class AnalysisConsole(object):
+    def __init__(self, config):
+        self.scheduler_engine = ScheduleEngine(config)
+        #self.scheduler_engine.start()
+        self.conf = config
 
 
     def start(self,callback=None):
@@ -88,7 +93,13 @@ class AnalysisConfig(object):
             dict['passwd'] = passwd
         if name is not None:
             dict['name'] = name
-        self.reslut_dict[pid] = dict
+        #修改一个平台支持多个存储方式
+        if self.reslut_dict.has_key(pid): #存在
+            config_dict = self.reslut_dict[pid]
+        else:
+            config_dict = {}
+        config_dict[type] = dict
+        self.reslut_dict[pid] = config_dict
 
     def get_config(self):
         self.conf_dict['result'] = self.reslut_dict

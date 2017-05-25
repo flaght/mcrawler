@@ -39,6 +39,11 @@ class RedisManageModel(object):
         """
         set storage info
         """
+
+        '''
+        #self.redis.set('kerry', 'redis')
+        #self.pipe.hset('hash_key','leizhu11',9)
+        '''
         if cmd == 'INCR' or cmd == 'incr':
             self.pipe.incr(params['name'])
         elif cmd == 'EXPIRE' or cmd == 'expire':
@@ -47,6 +52,8 @@ class RedisManageModel(object):
             self.pipe.zincrby(params['name'], params['value'], params['amount'])
         elif cmd == 'HINCRBY' or cmd == 'hincrby':
             self.pipe.hincrby(params['name'], params['value'], params['amount'])
+        elif cmd == 'HSET' or cmd == 'hset':
+            self.pipe.hset(params['name'],params['key'],params['value'])
 
     def commit(self):
         """

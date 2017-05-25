@@ -23,7 +23,7 @@ class BaseStorager:
             return None
         elif stype == storage_opcode.text:
             return TextStorage(config['name'])
-        elif stype ==storage_opcode.redis:
+        elif stype == storage_opcode.redis:
             return RedisManageModel(config['host'],config['port'])
         elif stype == storage_opcode.kafka_p:
             return KafkaProducerManager(None, config['host'],config['name'])
