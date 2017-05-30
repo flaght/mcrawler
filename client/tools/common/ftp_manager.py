@@ -4,9 +4,8 @@ Created on 2016年8月6日
 
 @author: kerry
 """
-from analysis.base.ftp_ext import FTPExt
-from analysis.base.analysis_conf_manager import analysis_conf
-from analysis.base.mlog import mlog
+from tools.base.ftp_ext import FTPExt
+from tools.base.mlog import mlog
 import io
 
 
@@ -126,27 +125,3 @@ class FTPManager:
     def close(self):
         self.ftp.close()
         mlog.log().info("close ftp ip %s",self.host)
-
-
-def main():
-    """test"""
-    ftp_manager = FTPManager(analysis_conf.ftp_info['host'],
-                             analysis_conf.ftp_info['port'],
-                             analysis_conf.ftp_info['user'],
-                             analysis_conf.ftp_info['passwd'],
-                             analysis_conf.ftp_info['local'])
-    ftp_manager.connect()
-    ftp_manager.run()
-    ftp_manager.get('~/text_storage/60005/ffc926edd312d4e1dd1c2d4fc22314f4', None)
-    # ftp_manager.download('./3.txt', '~/text_storage/60005/fd0c096acbf091ff81f1f7f925044187')
-    ftp_manager.close()
-
-
-if __name__ == '__main__':
-    main()
-
-ftp_manager_t = FTPManager(analysis_conf.ftp_info['host'],
-                           analysis_conf.ftp_info['port'],
-                           analysis_conf.ftp_info['user'],
-                           analysis_conf.ftp_info['passwd'],
-                           analysis_conf.ftp_info['local'])
