@@ -10,8 +10,8 @@ import base64
 import time
 import json
 import icu
-from analysis.base.ftp_ext import FTPExt
-from analysis.base.mlog import mlog
+from tools.base.ftp_ext import FTPExt
+from tools.base.mlog import mlog
 
 
 class TextStorage(threading.Thread):

@@ -11,8 +11,7 @@ Created on 2017年5月23日
 """
 
 from calculate.scheduler.storage.base_storager import BaseStorager
-from analysis.common.operationcode import storage_opcode
-from analysis.comm_opercode import net_task_opercode
+from tools.common.operationcode import storage_opcode
 import json
 
 

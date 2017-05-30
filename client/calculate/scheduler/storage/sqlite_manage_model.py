@@ -5,11 +5,9 @@ Created on 2016年11月6日
 @author: kerry
 """
 
-from analysis.base.sqlite_ext import SQLiteExt
-import threading
+from tools.base.sqlite_ext import SQLiteExt
 import icu
-import os
-from analysis.base.mlog import mlog
+from tools.base.mlog import mlog
 
 
 class SQLLiteStorage():

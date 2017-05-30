@@ -7,7 +7,7 @@ Created on 2015年12月15日
 
 from ftplib import FTP, parse227, parse229
 import socket
-from calculate.base.mlog import mlog
+from tools.base.mlog import mlog
 
 class FTPExt(FTP):
     '''
