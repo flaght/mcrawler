@@ -72,7 +72,7 @@ bool Storagerlogic::Init() {
     storage_logic::ShareDataEngine::GetShareDataEngine();
     InitStorager(manager);
 
-    stroager_kafka_->Test();
+    //stroager_kafka_->Test();
     return true;
 }
 
