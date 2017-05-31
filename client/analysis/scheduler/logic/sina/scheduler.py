@@ -46,7 +46,7 @@ class Scheduler(object):
             total_num += int(u['value'])
         unix_time = self.__change_unixtime(daykey)
         value_dict = {'type':1,'index':weibo_index,'hot':total_num,'current':unix_time}
-        weibo_index_dict = {'name':'weibo_index_' + weibo_index,
+        weibo_index_dict = {'name':'weibo_index:' + weibo_index,
                             'key':unix_time,
                             'value':json.dumps(value_dict)}
         storage_dict = {storage_opcode.redis:weibo_index_dict,

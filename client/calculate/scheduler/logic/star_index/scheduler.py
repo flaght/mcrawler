@@ -7,7 +7,7 @@ Created on 2017年5月23日
 """
 from calculate.scheduler.logic.star_index.storager_manager import Storager
 from tools.common.operationcode import storage_opcode
-
+import time
 
 class Scheduler(object):
     def __init__(self,config):
@@ -65,8 +65,7 @@ class Scheduler(object):
         # price + change
         last_price = self.__last_star_value[index] if self.__last_star_value.has_key(index) else 0
         change = price - last_price
-        value = {'symbol': str(index), 'current_price': price, 'change': change, 'current_unix_time': self._weibo_index[index].get('current') \
-            if self._weibo_index.has_key(index) else 0}
+        value = {'symbol': str(index), 'current_price': price, 'change': change, 'current_unix_time': int(time.time())}
         storage_dict = {storage_opcode.kafka_p: value}
         self.storager.star_index(storage_dict)
 
