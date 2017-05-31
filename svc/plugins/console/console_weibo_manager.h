@@ -10,7 +10,7 @@
 #include "console/console_db.h"
 namespace console_logic {
 
-typedef std::map<int32, console_logic::WeiboInfo> WEIBOINFO_MAP;
+typedef std::map<std::string, console_logic::WeiboInfo> WEIBOINFO_MAP;
 
 class ConsoleWeiboCache {
  public:

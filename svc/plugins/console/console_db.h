@@ -32,7 +32,7 @@ class ConsoleDB {
   bool FectchStCode(std::map<std::string, console_logic::StockInfo>& map);
 
 
-  bool FetchWeiboInfo(std::map<int32,console_logic::WeiboInfo>& map);
+  bool FetchWeiboInfo(std::map<std::string, console_logic::WeiboInfo>& map);
 
 
  private:

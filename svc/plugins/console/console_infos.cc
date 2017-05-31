@@ -29,7 +29,7 @@ WeiboInfo& WeiboInfo::operator = (const WeiboInfo& wb) {
 }
 
 void WeiboInfo::ValueSerialization(base_logic::DictionaryValue* dict) {
-  dict->GetInteger(L"id", &data_->id_);
+  dict->GetString(L"symbol", &data_->symbol_);
   dict->GetString(L"weibo_id", &data_->weibo_id_);
   dict->GetString(L"weibo_index_id", &data_->weibo_index_id_);
   dict->GetString(L"weibo_name", &data_->name_);

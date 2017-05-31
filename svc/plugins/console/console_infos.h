@@ -161,8 +161,8 @@ public:
    }
  }
 
- void set_id(const int32 id) {
-   data_->id_ = id;
+ void set_symbol(const std::string& symbol) {
+   data_->symbol_ = symbol;
  }
 
  void set_weibo_id(const std::string& weibo_id) {
@@ -181,8 +181,8 @@ public:
    data_->is_vaild_ = is_vaild;
  }
   
- const int32 id() const {
-   return data_->id_;
+ const std::string& symbol() const {
+   return data_->symbol_;
  }
 
  const std::string& weibo_id() const {
@@ -201,11 +201,10 @@ public:
  class Data{
    public:
      Data()
-      :id_(0)
-      ,is_vaild_(true)
+      :is_vaild_(true)
       ,refcount_(1){}  
    public:
-    int32        id_;
+    std::string   symbol_;
     std::string  weibo_id_;
     std::string  weibo_index_id_;
     std::string  name_;

@@ -39,7 +39,7 @@ ConsoleDB::~ConsoleDB(void) {
 }
 
 
-bool ConsoleDB::FetchWeiboInfo(std::map<int32,console_logic::WeiboInfo>& map) {
+bool ConsoleDB::FetchWeiboInfo(std::map<std::string,console_logic::WeiboInfo>& map) {
   bool r = false;
   scoped_ptr<base_logic::DictionaryValue> dict(
       new base_logic::DictionaryValue());
@@ -60,7 +60,7 @@ bool ConsoleDB::FetchWeiboInfo(std::map<int32,console_logic::WeiboInfo>& map) {
     base_logic::DictionaryValue* dict_result_value = 
         (base_logic::DictionaryValue*)(result_value);
     wb.ValueSerialization(dict_result_value);
-   map[wb.id()] = wb;
+   map[wb.symbol()] = wb;
    delete dict_result_value;
    dict_result_value = NULL;
   }
@@ -175,7 +175,7 @@ void ConsoleDB::CallFetchWeiboInfo(void* param, base_logic::Value* value) {
       base_logic::DictionaryValue* info_value =
           new base_logic::DictionaryValue();
       if (rows[0] != NULL)
-        info_value->SetInteger(L"id", atoll(rows[0]));
+        info_value->SetString(L"symbol", rows[0]);
       if (rows[1] != NULL)
         info_value->SetString(L"weibo_id", rows[1]);
       if (rows[2] != NULL)
