@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     conf = ConfManager.get_instance()
     base_path = os.path.dirname(__file__)
-    conf.init(base_path + "./calculate.conf",filer_opcode)
+    conf.init(base_path + "/calculate.conf",filer_opcode)
     config = CalculateConfig()
     config.set_source(type=conf.kafka_info['type'],host=conf.kafka_info['host'],
                       name=conf.kafka_info['name'])

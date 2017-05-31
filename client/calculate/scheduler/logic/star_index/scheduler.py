@@ -68,6 +68,7 @@ class Scheduler(object):
         value = {'symbol': str(index), 'current_price': price, 'change': change, 'current_unix_time': int(time.time())}
         storage_dict = {storage_opcode.kafka_p: value}
         self.storager.star_index(storage_dict)
+        self.__last_star_value[index] = last_price
 
     def process_data(self, data):
         if not data.has_key('index'):
