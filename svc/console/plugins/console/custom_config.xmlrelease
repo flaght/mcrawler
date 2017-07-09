@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xml>
+   <cluster>
+   	<kafka name = "1">
+        	<id>1001</id>
+		<host>10.25.194.204:9092</host> 
+		<name>kafka_newsparser_algo_1001</name>
+        	<valid>1</valid>
+  	</kafka>
+  	<kafka name = "2">
+		<id>1002</id>
+       		<host>10.25.194.204:9092</host>
+        	<name>kafka_newsparser_algo_1002</name>
+        	<valid>1</valid>
+  	</kafka>
+  	<kafka name = "3">
+		<id>1003</id>
+       		<host>10.25.194.204:9092</host>
+        	<name>kafka_newsparser_algo_1003</name>
+        	<valid>1</valid>
+  	</kafka>
+  </cluster>
+</xml>

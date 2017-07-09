@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <database>
+     <mysql host ="127.0.0.1" 
+            port ="3306" 
+            user = "crawler" 
+            pass = "FkY8oitZAaWMy"  
+            name = "crawler"/>
+
+     <mssql host = "migdb"
+            user = "web_Test"
+            pass = "9158com"
+            name = "WeiShow_new"/>
+  </database>
+  
+  <cached>
+     <redis host ="127.0.0.1"
+  		port ="6379"/>
+
+     <memcached host = "127.0.0.1" port="11211"/>
+  </cached>
+  
+  <queue>
+     <kafka host = "10.25.231.195:9092" name = "kafka_newsparser_algo"/>
+  </queue>
+  
+</config>
