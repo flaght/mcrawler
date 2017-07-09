@@ -18,6 +18,7 @@ class Scheduler(object):
         pass
 
     def process_data(self,data):
+        print data
         type = data['type']
         scheduler = self.logic_selector[type]
         if scheduler:
@@ -26,6 +27,7 @@ class Scheduler(object):
     def __create_selector(self):
         self.logic_selector = {1: self.si_scheduler,
                                2: self.si_scheduler,
-                               3: self.si_scheduler}
+                               3: self.si_scheduler,
+                               4: self.si_scheduler}
 
 
