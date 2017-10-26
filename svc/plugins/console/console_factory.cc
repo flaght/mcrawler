@@ -25,11 +25,13 @@ void ConsoleFactory::FreeInstance() {
 }
 
 ConsoleFactory::ConsoleFactory()
-:hexun_task_mgr_(NULL)
-,xueqiu_task_mgr_(NULL)
-,sina_task_mgr_(NULL)
+:stock_mgr_(NULL)
+,weibo_mgr_(NULL)
 ,console_db_(NULL)
-,kafka_producer_(NULL) {
+,kafka_producer_(NULL)
+,hexun_task_mgr_(NULL)
+,xueqiu_task_mgr_(NULL)
+,sina_task_mgr_(NULL){
   Init();
   InitThreadrw(&lock_);
   base::SysRadom::GetInstance();

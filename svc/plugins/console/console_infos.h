@@ -18,19 +18,19 @@ class KafkaInfo {
 
   KafkaInfo& operator =(const KafkaInfo& kafka);
 
-  const void set_svc_id(const int32 svc_id){
+  void set_svc_id(const int32 svc_id){
     data_->svc_id_ = svc_id;
   }
 
-  const void set_host(const std::string& host){
+  void set_host(const std::string& host){
     data_->host_ = host;
   }
 
-  const void set_kafka_name(const std::string& kafka_name){
+  void set_kafka_name(const std::string& kafka_name){
     data_->kafka_name_ = kafka_name;
   }
 
-  const int32 svc_id() const {
+  int32 svc_id() const {
     return data_->svc_id_;
   }
 
@@ -45,8 +45,8 @@ class KafkaInfo {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          svc_id_(0) {
+        : svc_id_(0),
+        refcount_(1) {
     }
 
    public:
@@ -100,7 +100,7 @@ class StockInfo {
     data_->flag_ = flag;
   }
 
-  const int32 stock_id() const {
+  int32 stock_id() const {
     return data_->stock_id_;
   }
 
@@ -121,8 +121,8 @@ class StockInfo {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          stock_id_(0) {
+        : stock_id_(0),
+        refcount_(1){
     }
 
    public:

@@ -125,37 +125,37 @@ class CrawlerScheduler {
     __sync_fetch_and_add(&data_->task_count_, 1);
   }
 
-  const int32 id() const {
+  int32 id() const {
     return data_->id_;
   }
-  const int task_count() const {
+  int task_count() const {
     return data_->task_count_;
   }
-  const int socket() const {
+  int socket() const {
     return data_->socket_;
   }
-  const int port() const {
+  int port() const {
     return data_->port_;
   }
-  const time_t send_last_time() const {
+  time_t send_last_time() const {
     return data_->send_last_time_;
   }
-  const time_t recv_last_time() const {
+  time_t recv_last_time() const {
     return data_->recv_last_time_;
   }
-  const int32 send_error_count() const {
+  int32 send_error_count() const {
     return data_->send_error_count_;
   }
-  const bool is_effective() const {
+  bool is_effective() const {
     return data_->is_effective_;
   }
-  const std::string& ip() const {
+  std::string& ip() const {
     return data_->ip_;
   }
-  const std::string& mac() const {
+  std::string& mac() const {
     return data_->mac_;
   }
-  const std::string& password() const {
+  std::string& password() const {
     return data_->password_;
   }
 
@@ -174,17 +174,17 @@ class CrawlerScheduler {
   class Data {
    public:
     Data(bool is_inlock)
-        : refcount_(1),
-          id_(0),
-          is_effective_(true),
+        : id_(0),
           task_count_(0),
-          socket_(0),
           send_error_count_(0),
           recv_error_count_(0),
+          socket_(0),
+          port_(0),
+          is_effective_(true),
           send_last_time_(0),
           recv_last_time_(0),
-          port_(0),
-          is_inlock_(false) {
+          is_inlock_(false),
+          refcount_(1){
     }
 
     ~Data() {
@@ -346,78 +346,78 @@ class TaskInfo {
           % data_->base_polling_time_ + data_->base_polling_time_;
   }
 
-  const int64 id() const {
+  int64 id() const {
     return data_->id_;
   }
 
-  const int64 pid() const {
+  int64 pid() const {
     return data_->pid_;
   }
-  const int64 crawl_num() const {
+  int64 crawl_num() const {
     return data_->crawl_num_;
   }
-  const int8 depth() const {
+  int8 depth() const {
     return data_->depth_;
   }
-  const int8 cur_depth() const {
+  int8 cur_depth() const {
     return data_->cur_depth_;
   }
-  const int8 machine() const {
+  int8 machine() const {
     return data_->machine_;
   }
-  const int8 storage() const {
+  int8 storage() const {
     return data_->storage_;
   }
-  const int8 method() const {
+  int8 method() const {
     return data_->method_;
   }
-  const int8 state() const {
+  int8 state() const {
     return data_->state_;
   }
-  const int8 is_login() const {
+  int8 is_login() const {
     return data_->is_login_;
   }
-  const int8 is_forge() const {
+  int8 is_forge() const {
     return data_->is_forge_;
   }
-  const int8 is_over() const {
+  int8 is_over() const {
     return data_->is_over_;
   }
-  const int8 type() const {
+  int8 type() const {
     return data_->type_;
   }
 
-  const int32 svc_id() const {
+  int32 svc_id() const {
     return data_->svc_id_;
   }
 
-  const int64 is_finish() const {
+  int64 is_finish() const {
     return data_->is_finish_;
   }
-  const int64 create_time() const {
+  int64 create_time() const {
     return data_->create_time_;
   }
-  const int64 polling_time() const {
+  int64 polling_time() const {
     return data_->polling_time_;
   }
-  const int64 base_polling_time() const {
+  int64 base_polling_time() const {
     return data_->base_polling_time_;
   }
-  const int64 last_task_time() const {
+  int64 last_task_time() const {
     return data_->last_task_time_;
   }
-  const int64 totoal_polling_time() const {
+  int64 totoal_polling_time() const {
     return data_->last_task_time_ + data_->polling_time_;
   }
-  const int64 attrid() const {
+  int64 attrid() const {
     return data_->attrid_;
   }
 
-  const int32 crawler_id() const {
+  int32 crawler_id() const {
     return data_->crawler_id_;
   }
 
-  const std::string url() const {
+  std::string url() const {
     return data_->url_;
   }
 
@@ -431,29 +431,29 @@ class TaskInfo {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          id_(0),
+        : id_(0),
           pid_(0),
           type_(UNKNOW_TASK),
           depth_(1),
           cur_depth_(1),
           machine_(0),
           storage_(0),
-          method_(0),
-          state_(0),
-          is_over_(0),
           is_login_(0),
+          is_forge_(0),
+          is_over_(0),
+          state_(0),
+          method_(0),
           svc_id_(0),
           is_finish_(0),
-          is_forge_(0),
-          crawl_num_(0),
           attrid_(0),
-          crawler_id_(0),
           polling_time_(10),
           base_polling_time_(10),
-          create_time_(time(NULL)),
           last_task_time_(time(NULL)),
-          total_polling_time_(total_polling_time_ + last_task_time_) {
+          create_time_(time(NULL)),
+          crawl_num_(0),
+          crawler_id_(0),
+          total_polling_time_(total_polling_time_ + last_task_time_),
+          refcount_(1){
     }
 
    public:
@@ -537,13 +537,13 @@ class ForgeryIP {
     __sync_fetch_and_sub(&data_->count_, 1);
   }
 
-  const int32 id() const {
+  int32 id() const {
     return data_->id_;
   }
-  const int8 type() const {
+  int8 type() const {
     return data_->type_;
   }
-  const int64 count() const {
+  int64 count() const {
     return data_->count_;
   }
   const std::string& create_time() const {
@@ -560,10 +560,10 @@ class ForgeryIP {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          id_(0),
+        : id_(0),
           type_(0),
-          count_(0) {
+          count_(0),
+          refcount_(1){
     }
 
    public:
@@ -622,10 +622,10 @@ class ForgeryUA {
     __sync_fetch_and_sub(&data_->count_, 1);
   }
 
-  const int32 id() const {
+  int32 id() const {
     return data_->id_;
   }
-  const int8 type() const {
+  int8 type() const {
     return data_->type_;
   }
   const std::string& create_time() const {
@@ -634,7 +634,7 @@ class ForgeryUA {
   const std::string& ua() const {
     return data_->ua_;
   }
-  const int64 count() const {
+  int64 count() const {
     return data_->count_;
   }
   void ValueSerialization(base_logic::DictionaryValue* dict);
@@ -642,10 +642,10 @@ class ForgeryUA {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          id_(0),
+        : id_(0),
           type_(0),
-          count_(0) {
+          count_(0),
+          refcount_(1){
     }
 
    public:
@@ -704,22 +704,22 @@ class TaskPlatDescription {
     data_->description_ = description;
   }
 
-  const int64 id() const {
+  int64 id() const {
     return data_->id_;
   }
-  const int8 depth() const {
+  int8 depth() const {
     return data_->depth_;
   }
-  const int8 machine() const {
+  int8 machine() const {
     return data_->machine_;
   }
-  const int8 storage() const {
+  int8 storage() const {
     return data_->storage_;
   }
-  const int8 over() const {
+  int8 over() const {
     return data_->over_;
   }
-  const int8 forge() const {
+  int8 forge() const {
     return data_->forge_;
   }
   const std::string& description() const {
@@ -731,13 +731,13 @@ class TaskPlatDescription {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          id_(0),
+        : id_(0),
           depth_(0),
           machine_(0),
           storage_(0),
           over_(0),
-          forge_(0) {
+          forge_(0),
+          refcount_(1){
     }
 
    public:
@@ -810,25 +810,25 @@ class StorageInfo {
     data_->state_ = state;
   }
 
-  const int64 id() const {
+  int64 id() const {
     return data_->id_;
   }
-  const int64 taskid() const {
+  int64 taskid() const {
     return data_->task_id_;
   }
-  const int32 attrid() const {
+  int32 attrid() const {
     return data_->attr_id_;
   }
-  const int8 max_depth() const {
+  int8 max_depth() const {
     return data_->max_depth_;
   }
-  const int8 cur_depth() const {
+  int8 cur_depth() const {
     return data_->cur_depth_;
   }
-  const int8 state() const {
+  int8 state() const {
     return data_->state_;
   }
-  const int8 type() const {
+  int8 type() const {
     return data_->type_;
   }
   const std::string& key_name() const {
@@ -846,14 +846,14 @@ class StorageInfo {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          id_(0),
-          type_(0),
-          state_(ANALYTICAL_WAIT),
+        : id_(0),
+          task_id_(0),
+          attr_id_(0),
           max_depth_(1),
           cur_depth_(1),
-          task_id_(0),
-          attr_id_(0) {
+          state_(ANALYTICAL_WAIT),
+          type_(0),
+          refcount_(1){
     }
 
    public:
@@ -925,22 +925,22 @@ class StorageHBase {
     data_->state_ = state;
   }
 
-  const int64 id() const {
+  int64 id() const {
     return data_->id_;
   }
-  const int64 taskid() const {
+  int64 taskid() const {
     return data_->task_id_;
   }
-  const int32 attrid() const {
+  int32 attrid() const {
     return data_->attr_id_;
   }
-  const int8 max_depth() const {
+  int8 max_depth() const {
     return data_->max_depth_;
   }
-  const int8 cur_depth() const {
+  int8 cur_depth() const {
     return data_->cur_depth_;
   }
-  const int8 state() const {
+  int8 state() const {
     return data_->state_;
   }
   const std::string& name() const {
@@ -958,13 +958,13 @@ class StorageHBase {
   class Data {
    public:
     Data()
-        : refcount_(1),
-          id_(0),
-          state_(ANALYTICAL_WAIT),
+        : id_(0),
+          task_id_(0),
+          attr_id_(0),
           max_depth_(1),
           cur_depth_(1),
-          task_id_(0),
-          attr_id_(0) {
+          state_(ANALYTICAL_WAIT),
+          refcount_(1){
     }
 
    public:
@@ -1049,14 +1049,14 @@ class LoginCookie {
     data_->send_last_time_ = appoint_time;
   }
 
-  const time_t send_last_time() const {
+  time_t send_last_time() const {
     return data_->send_last_time_;
   }
 
-  const int64 get_cookie_id() const {
+  int64 get_cookie_id() const {
     return data_->cookie_id_;
   }
-  const int64 get_cookie_attr_id() const {
+  int64 get_cookie_attr_id() const {
     return data_->cookie_attr_id_;
   }
   const std::string& get_cookie_body() const {
@@ -1071,15 +1071,15 @@ class LoginCookie {
     return data_->passwd;
   }
 
-  const bool get_is_read() const {
+  bool get_is_read() const {
     return data_->is_read;
   }
 
-  const time_t get_update_time() const {
+  time_t get_update_time() const {
     return data_->update_last_time_;
   }
 
-  const int32 rule() const {
+  int32 rule() const {
     return data_->rule_;
   }
 
@@ -1095,13 +1095,14 @@ class LoginCookie {
   class Data {
    public:
     Data()
-        : refcount_(1),
+        : cookie_id_(0),
           cookie_attr_id_(0),
-          cookie_id_(0),
+          rule_(0),
+          send_last_time_(0),
+          update_last_time_(0),
           is_read(false),
           is_first(false),
-          send_last_time_(0),
-          rule_(0) {
+          refcount_(1){
     }
    public:
     int64 cookie_id_;

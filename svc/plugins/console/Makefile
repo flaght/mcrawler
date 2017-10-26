@@ -26,7 +26,7 @@ CPPFLAGS += -isystem -shared -fPIC -D_DB_POOL_ -D_DEBUG -DUSR_LOG_MSG\
 	-DNET_WORK -DHEAD_SHORT -Wall
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g  -Wextra -pthread -shared -fPIC
+CXXFLAGS += -g -Wextra -Wno-unused-parameter -pthread -shared -fPIC
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.

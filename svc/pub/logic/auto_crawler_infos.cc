@@ -251,8 +251,8 @@ StorageInfo& StorageInfo::operator =(const StorageInfo& info) {
 void StorageInfo::ValueSerialization(base_logic::DictionaryValue* dict) {
   dict->GetBigInteger(L"id", &data_->id_);
   dict->GetBigInteger(L"taskid", &data_->task_id_);
-  int8 temp_depth = 0;
-  /*dict->GetInteger(L"max_depth", reinterpret_cast<int32*>(&temp_depth));
+  /*int8 temp_depth = 0;
+  dict->GetInteger(L"max_depth", reinterpret_cast<int32*>(&temp_depth));
    data_->max_depth_ = temp_depth;
 
    int8 cur_temp_depth = 0;

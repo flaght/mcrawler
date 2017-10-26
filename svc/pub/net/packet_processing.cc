@@ -11,7 +11,7 @@
 #include "logic/logic_comm.h"
 //#include "login/login_cookie.h"
 
-#define DUMPPACKBUF     4096 * 10
+#define PACKETDUMPPACKBUF     4096 * 10
 
 namespace net {
 
@@ -1164,7 +1164,7 @@ void PacketProsess::DumpPacket(const struct PacketHead* packet_head) {
     int32 reserved = packet_head->reserved;
     int16 signature = packet_head->signature;
 
-    char buf[DUMPPACKBUF];
+    char buf[PACKETDUMPPACKBUF];
     bool r = false;
     int32 j = 0;
 
