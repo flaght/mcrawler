@@ -13,7 +13,7 @@ struct forgeryplugin{
     char* provider;
 };
 
-static void *OnForgeryStart() {
+static void *OnForgeryStart(struct server* srv) {
     signal(SIGPIPE, SIG_IGN);
     struct forgeryplugin* forgery =
             (struct forgeryplugin*)calloc(1, sizeof(struct forgeryplugin));

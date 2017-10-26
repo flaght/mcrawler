@@ -14,7 +14,7 @@ struct loginplugin{
 };
 
 
-static void *OnLoginStart() {
+static void *OnLoginStart(struct server* srv) {
     signal(SIGPIPE, SIG_IGN);
     struct loginplugin* login = (struct loginplugin*)calloc(1,
             sizeof(struct loginplugin));

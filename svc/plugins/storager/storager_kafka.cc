@@ -69,7 +69,7 @@ bool StroagerKafka::AddStorageInfo(const std::list<struct StorageUnit*>& list,
   for (; it != list.end(); it++) {
     struct StorageUnit* hbase = (*it);
     //LOG_DEBUG("push data to newsparser_task");
-     LOG_DEBUG2("task_id %lld, attr_id %lld, key_name %s pos_name %s",
+     ULOG_DEBUG2("task_id %lld, attr_id %lld, key_name %s pos_name %s",
                hbase->task_id, hbase->attr_id, hbase->key_name,
                hbase->pos_name);
     base_logic::DictionaryValue* task_info = new base_logic::DictionaryValue();

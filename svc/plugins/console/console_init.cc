@@ -12,7 +12,7 @@ struct consoleplugin {
   char* provider;
 };
 
-static void *OnConsoleStart() {
+static void *OnConsoleStart(struct server* srv) {
   signal(SIGPIPE, SIG_IGN);
   struct consoleplugin* console = (struct consoleplugin*) calloc(
       1, sizeof(struct consoleplugin));

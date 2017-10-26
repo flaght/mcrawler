@@ -15,7 +15,7 @@ struct storagerplugin{
 };
 
 
-static void *OnStoragerStart() {
+static void *OnStoragerStart(struct server* srv) {
     signal(SIGPIPE, SIG_IGN);
     struct storagerplugin* storager = (struct storagerplugin*)calloc(1,
             sizeof(struct storagerplugin));

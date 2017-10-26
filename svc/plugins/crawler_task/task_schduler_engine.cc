@@ -59,7 +59,7 @@ void TaskSchdulerManager::Test() {
   while (list.size() > 0) {
     base_logic::TaskInfo info = list.front();
     list.pop_front();
-    LOG_DEBUG2("count %lld create_time %lld", info.id(), info.create_time());
+    ULOG_DEBUG2("count %lld create_time %lld", info.id(), info.create_time());
   }
   /* base_logic::TaskInfo info;
    info.set_id(base::SysRadom::GetInstance()->GetRandomID());
@@ -396,7 +396,7 @@ void TaskSchdulerManager::DumpTask() {
     struct tm *polling_local = localtime(&polling_time);
     struct tm *create_local = localtime(&create_time);
 
-    LOG_DEBUG2("==> id-->%lld  polling_time-->%lld(%d-%d %d:%d:%d) "
+    ULOG_DEBUG2("==> id-->%lld  polling_time-->%lld(%d-%d %d:%d:%d) "
                "create_time-->%lld(%d-%d %d:%d:%d)",
                task.id(), task.totoal_polling_time(), polling_local->tm_mon + 1,
                polling_local->tm_mday, polling_local->tm_hour,
@@ -427,7 +427,7 @@ int32 TaskSchdulerManager::GetSurplusTaskCount() {
   for (; it != crawler_map.end(); it++) {
     base_logic::CrawlerScheduler crawler = it->second;
     task_count += crawler.exec_task_count();
-    LOG_DEBUG2("crawler id %d  exec_task_count %d", crawler.id(),
+    ULOG_DEBUG2("crawler id %d  exec_task_count %d", crawler.id(),
                crawler.exec_task_count());
   }
 

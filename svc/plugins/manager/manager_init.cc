@@ -14,7 +14,7 @@ struct managerplugin{
 };
 
 
-static void *OnManagerStart() {
+static void *OnManagerStart(struct server* srv) {
     signal(SIGPIPE, SIG_IGN);
     struct managerplugin* manager = (struct managerplugin*)calloc(1,
             sizeof(struct managerplugin));

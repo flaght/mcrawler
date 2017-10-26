@@ -103,7 +103,7 @@ void XueqiuTaskManager::CreateUser(const console_logic::KafkaInfo& kafka,const s
       kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
       index++;
     }
-  }LOG_DEBUG2("size %d",dict_value->size());
+  }ULOG_DEBUG2("size %d",dict_value->size());
   if (kafka_producer) {delete kafka_producer; kafka_producer = NULL;}
 }
 
@@ -153,7 +153,7 @@ void XueqiuTaskManager::CreateUserDiscuss(const console_logic::KafkaInfo& kafka,
                                                     "10000");
     LOG_MSG2("%s", stock_url.c_str());
     m_kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
-  }LOG_DEBUG2("size %d",dict_value->size());
+  }ULOG_DEBUG2("size %d",dict_value->size());
   if (m_kafka_producer) {delete m_kafka_producer; m_kafka_producer = NULL;}
 }
 

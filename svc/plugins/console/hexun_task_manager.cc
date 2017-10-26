@@ -77,7 +77,7 @@ void HexunTaskManager::CreateAllStockHeat(const base_logic::TaskInfo& task,
     btask.set_base_polling_time(task.base_polling_time());
     btask.update_time(0, base::SysRadom::GetInstance()->GetRandomID());
 
-    LOG_DEBUG2("%s",btask.url().c_str());
+    ULOG_DEBUG2("%s",btask.url().c_str());
     kafka_producer_->AddKafkaTaskInfo(task.id(), task.attrid(), 1, 1,
                                       task.method(), task.machine(),
                                       task.storage(), 0, 0,

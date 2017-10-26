@@ -12,7 +12,7 @@ struct taskplugin {
   char *provider;
 };
 
-static void *OnCrawlerTaskStart() {
+static void *OnCrawlerTaskStart(struct server* srv) {
   signal(SIGPIPE, SIG_IGN);
   struct taskplugin *task =
       (struct taskplugin *)calloc(1, sizeof(struct taskplugin));

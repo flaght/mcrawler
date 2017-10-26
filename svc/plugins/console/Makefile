@@ -148,6 +148,6 @@ $(PLUGIN) : console_init.o  console_logic.o console_db.o console_kafka.o packet_
 	auto_crawler_infos.o console_factory.o console_infos.o console_stock_manager.o console_weibo_manager.o\
 	hexun_task_manager.o console_time_manager.o mcontainer.o sina_task_manager.o\
 	data_engine.o data_mysql_engine.o mysql_pool.o\
-	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a $(CUSTOM_THIRD_PATH)/lib/librdkafka.a
+	$(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a $(CUSTOM_THIRD_PATH)/lib/librdkafka.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient \
 	$^ -o $@

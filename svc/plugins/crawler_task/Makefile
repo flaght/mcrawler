@@ -129,6 +129,6 @@ time.o :  $(USER_DIR)/logic/time.cc $(USER_DIR)/logic/time.h
 $(PLUGIN) : crawler_task_init.o  crawler_task_logic.o crawler_task_db.o crawler_task_kafka.o task_schduler_engine.o task_time_manager.o\
 	packet_processing.o logic_unit.o auto_crawler_infos.o\
 	mysql_pool.o data_mysql_engine.o data_engine.o time.o\
-	$(CUSTOM_THIRD_PATH)/dmg_fp/lib/dmg_fp.a $(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a  $(CUSTOM_THIRD_PATH)/librdkafka/librdkafka.a
+	$(LIB_DIR)/mylib/base/lib/mybase.a $(LIB_DIR)/mylib/third_party/lib/libhiredis.a  $(CUSTOM_THIRD_PATH)/librdkafka/librdkafka.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LINK_PATHS) -lpthread -lexpat -lrt -ldl -lmysqlclient -lcurl  \
 	$^ -o $@

@@ -25,11 +25,30 @@ CLEAN = make clean
 
 all: crawler_schduler crawler_task forgery\
 	login manager storager 
-	
-	
-	
-	
 
+clean: crawler_schduler_clean  crawler_task_clean forgery_clean\
+		login_clean manager_clean storager_clean
+
+
+
+crawler_schduler_clean:
+	cd $(PLUGINS_DIR)/$(CRAWLER_SCHDULER)&&$(CLEAN)
+	
+crawler_task_clean:
+	cd $(PLUGINS_DIR)/$(CRAWLER_TASK)&&$(CLEAN)
+		
+forgery_clean:
+	cd $(PLUGINS_DIR)/$(FORGERY)&&$(CLEAN)
+	
+login_clean:
+	cd $(PLUGINS_DIR)/$(LOGIN)&&$(CLEAN)
+	
+manager_clean:
+	cd $(PLUGINS_DIR)/$(MANAGER)&&$(CLEAN)
+	
+storager_clean:
+	cd $(PLUGINS_DIR)/$(STORAGER)&&$(CLEAN)
+	
 crawler_schduler:
 	cd $(PLUGINS_DIR)/$(CRAWLER_SCHDULER)&&$(CLEAN)&&$(MAKE)
 	
