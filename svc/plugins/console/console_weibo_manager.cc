@@ -29,13 +29,13 @@ ConsoleWeiboManager::~ConsoleWeiboManager() {
 
 void ConsoleWeiboManager::Init(console_logic::ConsoleDB* console_db) {
   console_db_ = console_db;
-  console_db_->FetchWeiboInfo(weibo_cache_->weibo_map_);
+  // console_db_->FetchWeiboInfo(weibo_cache_->weibo_map_);
 }
 
 void ConsoleWeiboManager::UpdateWeibo(){
   base_logic::RLockGd lk(lock_);
-  console_db_->FetchWeiboInfo(weibo_cache_->weibo_map_);
-  LOG_MSG2("stock size %d", weibo_cache_->weibo_map_.size());
+  // console_db_->FetchWeiboInfo(weibo_cache_->weibo_map_);
+  // LOG_MSG2("stock size %d", weibo_cache_->weibo_map_.size());
 }
 
 void ConsoleWeiboManager::Test() {

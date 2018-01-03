@@ -131,23 +131,6 @@ void ConsoleFactory::SetKafkaInfo(console_logic::KafkaInfo& kafka) {
   console_cache_->console_kafka_map_[kafka.svc_id()] = kafka_producer;
 }
 
-/*
-=======
-}
-
-void ConsoleFactory::SetKafkaInfo(console_logic::KafkaInfo& kafka) {
-  console_cache_->svc_map_[kafka.svc_id()] = kafka;
-}
-
->>>>>>> 4883ed9df1646ddefbf6b1ca4b94e79720d36bf7
-bool ConsoleFactory::GetKafkaInfo(const int32 svc_id,
-                                  console_logic::KafkaInfo& kafka) {
-  base_logic::RLockGd lk(lock_);
-  bool r = base::MapGet< SVC_MAP, SVC_MAP::iterator, int32, console_logic::KafkaInfo>
-  (console_cache_->svc_map_,svc_id,kafka);
-  return r;
-<<<<<<< HEAD
-}*/
 
 console_logic::ConsoleKafka* ConsoleFactory::GetKafkaInfo(const int32 svc_id) {
   base_logic::RLockGd lk(lock_);

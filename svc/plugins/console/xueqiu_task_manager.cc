@@ -57,6 +57,14 @@ void XueqiuTaskManager::CreateTask(const console_logic::KafkaInfo& kafka, base_l
       CreateUserFollowers(kafka, task);
       break;
     }
+    case SB_LHB_LIST: {
+      CreateLHBList(kafka, task);
+      break;
+    }
+    case SB_LHB_DETAIL: {
+      CreateLHBDetail(kafka, task);
+      break;
+    }
     default:
       break;
   }
@@ -121,6 +129,45 @@ void XueqiuTaskManager::CreateUserFollowers(const console_logic::KafkaInfo& kafk
 
 void XueqiuTaskManager::CreateUserMembersMax(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
   CreateUserDiscuss(kafka,task);
+}
+void XueqiuTaskManager::CreateLHBList(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task){
+    std::string market_date_symbol = "{%d}";
+    std::string s_file_name = "./market_date.txt";
+    
+    std::string content;
+    int error_code;
+    std::string error_str;
+    file::FilePath file_name(s_file_name);
+    bool r = file::ReadFileToString(file_name, &content);
+    if (!r)
+        return;
+    base_logic::ValueSerializer* serializer = base_logic::ValueSerializer::Create(
+        base_logic::IMPL_JSON);
+    
+    base_logic::Value* value = serializer->Deserialize(&content, &error_code,
+                                                     &error_str);
+    
+    if (value == NULL)
+        return;
+    
+    base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","",kafka.kafka_name());
+    console_logic::ConsoleKafka* m_kafka_producer = new console_logic::ConsoleKafka(conn);
+    base_logic::DictionaryValue* dict_value = (base_logic::DictionaryValue*) (value);
+  
+    base_logic::DictionaryValue::key_iterator it = dict_value->begin_keys();
+    for (; it != dict_value->end_keys(); ++it) {
+        std::string market_date = base::BasicUtil::StringConversions::WideToASCII((*it));
+        std::string stock_url = task.url();
+        stock_url = logic::SomeUtils::StringReplaceUnit(stock_url, market_date_symbol, market_date);
+        LOG_MSG2("%s", stock_url.c_str());
+        m_kafka_producer->AddTaskInfo(task, task.base_polling_time(), stock_url);
+    }ULOG_DEBUG2("size %d",dict_value->size());
+    if (m_kafka_producer) {delete m_kafka_producer; m_kafka_producer = NULL;}
+}
+
+
+void XueqiuTaskManager::CreateLHBDetail(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
+
 }
 
 void XueqiuTaskManager::CreateUserDiscuss(const console_logic::KafkaInfo& kafka, const base_logic::TaskInfo& task) {
