@@ -292,7 +292,7 @@ StorageHBase& StorageHBase::operator =(const StorageHBase& hbase) {
 void StorageHBase::ValueSerialization(base_logic::DictionaryValue* dict) {
   dict->GetBigInteger(L"id", &data_->id_);
   dict->GetBigInteger(L"taskid", &data_->task_id_);
-  int8 temp_depth = 0;
+  // int8 temp_depth = 0;
   /*dict->GetInteger(L"max_depth", reinterpret_cast<int32*>(&temp_depth));
    data_->max_depth_ = temp_depth;
 

@@ -37,7 +37,7 @@ std::string XueQiuCookie::CreateS() {
 }
 
 std::string XueQiuCookie::CreateU() {
-  char *str = "0123456789";
+  const char *str = "0123456789";
   std::string u = CreateRand(str, 15);
   return std::string("u=") + u + ";";
 }

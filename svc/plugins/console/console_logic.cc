@@ -35,7 +35,8 @@ bool Consolelogic::Init() {
   if (config == NULL)
     return false;
   bool r = config->LoadConfig(path);
-
+  if (!r)
+    return false;
   console_time_mgr_ = new console_logic::ConsoleTimeManager();
 
   factory_ = console_logic::ConsoleFactory::GetInstance();
@@ -81,14 +82,14 @@ bool Consolelogic::ReadConfigXML(const std::string& file) {
     return -1;
   }
   base_logic::DictionaryValue* cluster = NULL;
-  int64 id = 0;
+  //int64 id = 0;
   r = value->GetDictionary(L"cluster", &cluster);
   if (!r) {
     if (value) {
       delete value;
       value = NULL;
     }
-    return -1;
+    return false;
   }
   //解析kafka信息
   base_logic::DictionaryValue::key_iterator it = cluster->begin_keys();

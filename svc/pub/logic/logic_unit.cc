@@ -59,7 +59,7 @@ bool SendUtils::SendMessage(int socket, struct PacketHead* packet,
   void *packet_stream = NULL;
   int32_t packet_stream_length = 0;
   int ret = 0;
-  bool r1 = false;
+  // bool r1 = false;
   if (socket <= 0 || packet == NULL)
     return false;
 

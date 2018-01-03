@@ -132,6 +132,8 @@ void XueqiuTaskManager::CreateUserDiscuss(const console_logic::KafkaInfo& kafka,
   std::string error_str;
   file::FilePath file_name(s_fle_name);
   bool r = file::ReadFileToString(file_name, &content);
+  if (!r)
+      return;
   base_logic::ValueSerializer* serializer = base_logic::ValueSerializer::Create(
       base_logic::IMPL_JSON);
   base_logic::Value* value = serializer->Deserialize(&content, &error_code,
@@ -165,7 +167,7 @@ void XueqiuTaskManager::CreateCNSMStockDiscuss(
   std::string count_symbol = "{%d}";
   std::string stock_symbol = "{%tstcode}";
   std::string page_symbol = "{%d}";
-  int32 max_page = 100;
+  // int32 max_page = 100;
   stock_manager_->Swap(list); 
   base::ConnAddr conn(kafka.svc_id(),kafka.host(),0,"","","",kafka.kafka_name());
   console_logic::ConsoleKafka* kafka_producer = new console_logic::ConsoleKafka(conn);

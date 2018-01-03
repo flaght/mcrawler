@@ -154,6 +154,8 @@ console_logic::ConsoleKafka* ConsoleFactory::GetKafkaInfo(const int32 svc_id) {
   console_logic::ConsoleKafka* console_kafka = NULL;
   bool r = base::MapGet<CONSOLE_KAFKA_MAP, CONSOLE_KAFKA_MAP::iterator, int32,
 		console_logic::ConsoleKafka*>(console_cache_->console_kafka_map_,svc_id,console_kafka);
+ if (!r)
+     LOG_ERROR("no have kafka");
  return console_kafka;
 }
 

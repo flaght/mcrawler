@@ -6,10 +6,10 @@
 #include "console/console_logic.h"
 
 struct consoleplugin {
-  char* id;
-  char* name;
-  char* version;
-  char* provider;
+  const char* id;
+  const char* name;
+  const char* version;
+  const char* provider;
 };
 
 static void *OnConsoleStart(struct server* srv) {

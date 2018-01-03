@@ -14,7 +14,7 @@
 
 typedef std::list<base_logic::LoginCookie> COOKIE_LIST;
 
-typedef struct CookiePlatform{
+struct CookiePlatform{
     COOKIE_LIST list;
     int64       current_pos_;
     time_t      update_time_;
