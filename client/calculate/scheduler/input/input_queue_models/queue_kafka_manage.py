@@ -17,7 +17,7 @@ class QueueKafkaManage(object):
         self.client = None
         self.host = config['host']
         self.coname = config['name']
-        self.consumer = KafkaConsumer(self.coname,auto_offset_reset='latest',
+        self.consumer = KafkaConsumer(self.coname, auto_offset_reset='latest',
                                  bootstrap_servers=self.host,
                                  group_id='my-group')
 

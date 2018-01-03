@@ -27,7 +27,7 @@ if __name__ == '__main__':
     config.set_source(type=conf.kafka_info['type'],host=conf.kafka_info['host'],
                       name=conf.kafka_info['name'])
 
-    config.set_result(pid=60009, type=storage_opcode.kafka_p, host='kafka.t.smartdata-x.com', name='kafka_weibo_index_1011')
+    config.set_result(pid=60009, type=storage_opcode.kafka_p, host='139.224.18.190:9092', name='kafka_weibo_index_1011')
 
     console = CalculateConsole(config.get_config())
     console.start(console.callback_parser)
